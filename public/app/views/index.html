@@ -1,12 +1,125 @@
 <!DOCTYPE html>
-<html>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-<body>
+<html lang="en">
+<head>
+	<base href="/">
+	<title>Evelabs Care</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel = "stylesheet" href = "assets/css/angular-material.css">
+	<link rel = "stylesheet" href = "assets/css/bootstrap.css">
+	<link rel = "stylesheet" href = "assets/css/style.css">
+	<script src="assets/js/angular.js"></script>
+	<script src="assets/js/angular-animate.js"></script>
+	<script src="assets/js/angular-aria.js"></script>
+	<script src="assets/js/angular-messages.js"></script>
+	<script src="assets/js/angular-route.js"></script>
+	<script src="assets/js/angular-material.js"></script> 
+	<script src="app/route.js"></script> 
+	<script src="app/app.js"></script> 
+</head>
 
-<div ng-app="">
-  <p>Name: <input type="text" ng-model="name"></p>
-  <p ng-bind="name"></p>
-</div>
+<body  ng-app = "myApp" ng-controller="AppCtrl" ng-cloak>
+	<md-toolbar class = "md-default">
+     	<div class = "md-toolbar-tools" layout="row" layout-align="start center">
+     		<div flex="initial"> 
+     			<md-button class="md-icon-button" ng-click="openSideNavPanel()">
+     				<md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
+     			</md-button>
+     		</div>
+     		<div flex="none">
+        		<h2><a ng-href="/" class = "md-flex">Evelabs Care</a></h2>
+        	</div>
+        	<div flex-md="none" flex-offset-sm="30" flex-offset-md= "40" flex-offset-lg="50" flex-offset-xl="60" hide-xs>
+        		  	<md-button class="md-icon-button">
+        					<md-icon class="md-default-theme" class="material-icons">&#xE853;</md-icon>
+        		  	</md-button>
+        	</div>
+        	<div flex="none" hide-xs>
+        		<h5 class = "md-flex">Hello Guest</h5>
+        	</div>
+        	<div flex="none" flex-offset-md= "2" flex-offset-lg="10"  flex-offset-xl="3" flex-xs="25">
+        		<div md-theme="altTheme">
+        			<md-button  class="md-accent"  href="/signin">Sign in</md-button>
+        		</div>
+        	</div>
+        	<div flex="none" hide-xs>
+        		<h5 class = "md-flex">or</h5>
+        	</div>
+        	<div flex="none" flex-xs="25">
+        		<div md-theme="altTheme">
+        			<md-button  class="md-accent"  href="/signup">Sign up</md-button>
+        		</div>
+        	</div>
+     	</div>
+  	</md-toolbar>
+		  
+  	<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
+  	    <md-toolbar layout="row">
+  	    	<div class="md-toolbar-tools">
+  	        	<h2>
+  	          		<span>Menu</span>
+  	        	</h2>
+  	        	<span flex></span>
+  	        	<md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanel()">
+  	          		<md-tooltip>Close Side Panel</md-tooltip>
+  	          		<md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
+  	        	</md-button>
+  	       	</div>
+  	    </md-toolbar> 
+  	    <md-content layout-padding="">
+  	    	<md-list>
+  	        	<md-subheader class="md-no-sticky">User</md-subheader>
+  	          	<md-list-item>
+  	            	<md-icon  class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
+  	            	<p>Home</p>
+<!--   	            	<div class="md-secondary">2</div>
+ -->  	          	</md-list-item>
+  	          	<md-list-item>
+  	            	<md-icon class="md-default-theme" class="material-icons">&#xE55A;</md-icon>
+  	            	<p>Manage Patient</p>
+  	          	</md-list-item>
+  	          	<md-divider></md-divider>
+  	          	<md-subheader class="md-no-sticky">Admin</md-subheader>
+  	          	<md-list-item>
+  	            	<md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+  	            	<p>Manage Users</p>
+  	          	</md-list-item>
+  	            	<md-list-item>
+  	              	<md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+  	              	<p>Manage Nursing Station</p>
+  	            </md-list-item>
+  	            <md-list-item>
+  	                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+  	                <p>Manage Bed</p>
+  	            </md-list-item>
+  	            <md-list-item>
+  	                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+  	                <p>Manage IV-Set</p>
+  	            </md-list-item>
+  	            <md-list-item>
+  	                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+  	                <p>Manage Dripo</p>
+  	            </md-list-item>
+  	            <md-divider></md-divider>
+  	            <md-list-item>
+  	                <md-icon class="md-default-theme" class="material-icons">&#xE923;</md-icon>
+  	                <p>Update</p>
+  	            </md-list-item>
+  	            <md-list-item>
+  	                <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
+  	                <p>About</p>
+  	            </md-list-item>
+  	            <md-list-item>
+  	                <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
+  	                <p>Help</p>
+  	            </md-list-item>
+  	     	</md-list>  	    
+  	    </md-content> 
+  	</md-sidenav>
+
+
+  	<md-content layout="column"  layout-fill style="height:90%;min-height:90%;">
+     <div flex="100" ng-view></div>
+  	</md-content>
 
 </body>
 </html>

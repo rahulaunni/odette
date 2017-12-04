@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/users')
+var User = require('../models/users');
 
 
 router.post('/register', function(req,res){
@@ -13,11 +13,11 @@ router.post('/register', function(req,res){
 			res.send('User already exist');
 		}
 		else{
-			res.send('Account created')
+			res.send('Account created');
 		}
-	})
+	});
 
 	
-})
+});
 
 module.exports = router;

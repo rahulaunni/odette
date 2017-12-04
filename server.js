@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var morgan = require('morgan')
+var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var index = require('./routes/index');
@@ -15,8 +15,8 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/', index)
-app.use('/api', api)
+app.use('/', index);
+app.use('/api', api);
 
 //view engine
 app.set('views', path.join(__dirname, 'views'));
@@ -24,7 +24,7 @@ app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
 //set static folder for Angular stuffs
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 
 
@@ -37,7 +37,7 @@ mongoose.connect('mongodb://localhost/lauradb',{ useMongoClient: true }, functio
 	else{
 		console.log("Mongodb connection success");
 	}
-})
+});
 
        
 
@@ -45,4 +45,4 @@ mongoose.connect('mongodb://localhost/lauradb',{ useMongoClient: true }, functio
 
 app.listen(process.env.PORT || port, function(){
 	console.log("Server started listening in port"+port);
-})
+});

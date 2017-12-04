@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Evelabs Care</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<div layout="column" layout-align="center center" layout-padding="" layout-fill>
+	   <div layout="column" layout-fill layout-align="center center">
+	      <form>
+	         <div flex="none">
+	            <md-input-container>
+	               <label>Hospital Name</label>
+	               <input ng-model="user.hospitalname" type="text">
+	            </md-input-container>
+	         </div>
+	         <div flex="none">
+	            <md-input-container>
+	               <label>Username</label>
+	               <input ng-model="user.email" type="text">
+	            </md-input-container>
+	         </div>
+	         <div flex="none">
+	            <md-input-container>
+	               <label>Password</label>
+	               <input ng-model="user.password" type="text">
+	            </md-input-container>
+	         </div>
+	         <div flex="none">
+	            <md-input-container>
+	               <label>Confirm Password</label>
+	               <input ng-model="user.password" type="text">
+	            </md-input-container>
+	         </div>
+	         <div layout="row" layout-align="center center">
+	            <div md-theme="altTheme">
+	               <md-button  class="md-raised md-warn">Sign up</md-button>
+	            </div>
+	         </div>
+	      </form>
+	   </div>
+	</div>
+
+</body>
+</html>

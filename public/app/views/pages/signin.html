@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <title>Evelabs Care</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+   <div layout="column" layout-align="center center" layout-padding="" layout-fill>
+      <div layout="column" layout-fill layout-align="center center">
+         <form>
+            <div flex="none">
+               <md-input-container>
+                  <label>Username</label>
+                  <input ng-model="user.email" type="text"  md-autofocus>
+               </md-input-container>
+            </div>
+            <div flex="none">
+               <md-input-container>
+                  <label>Password</label>
+                  <input ng-model="user.password" type="password">
+               </md-input-container>
+            </div>
+            <div layout="row" layout-align="center center">
+               <div md-theme="altTheme">
+                  <md-button  class="md-raised md-warn">Sign in</md-button>
+               </div>
+            </div>
+            <div layout="row" layout-align="center start">
+               <div flex="none">
+                  <p><a ng-href="/forgotpassword" >Forgot Password</a></p>
+               </div>
+               <div flex="none" flex-offset="5">
+                  <p><a ng-href="/signup" >Register</a></p>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+</body>
+</html>
