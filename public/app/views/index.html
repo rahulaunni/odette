@@ -4,20 +4,33 @@
 	<base href="/">
 	<title>Evelabs Care</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Cascaded Style Sheets -->
 	<link rel = "stylesheet" href = "assets/css/angular-material.css">
 	<link rel = "stylesheet" href = "assets/css/bootstrap.css">
 	<link rel = "stylesheet" href = "assets/css/style.css">
+
+  <!-- Angular scripts -->
 	<script src="assets/js/angular.js"></script>
 	<script src="assets/js/angular-animate.js"></script>
 	<script src="assets/js/angular-aria.js"></script>
 	<script src="assets/js/angular-messages.js"></script>
 	<script src="assets/js/angular-route.js"></script>
 	<script src="assets/js/angular-material.js"></script> 
+
+  <!-- Angular config/routes -->
 	<script src="app/route.js"></script> 
-	<script src="app/app.js"></script> 
+	<script src="app/app.js"></script>
+
+  <!-- Angular controllers  -->
+  <script src="app/controllers/userCntrl.js"></script> 
+  <script src="app/controllers/mainCntrl.js"></script> 
+  <!-- Angular Servies -->
+  <script src="app/services/userServices.js"></script> 
+  <script src="app/services/authServices.js"></script> 
+
 </head>
 
-<body  ng-app = "myApp" ng-controller="AppCtrl" ng-cloak>
+<body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-cloak>
 	<md-toolbar class = "md-default">
      	<div class = "md-toolbar-tools" layout="row" layout-align="start center">
      		<div flex="initial"> 
@@ -35,6 +48,7 @@
         	</div>
         	<div flex="none" hide-xs>
         		<h5 class = "md-flex">Hello Guest</h5>
+            <md-button  class="md-accent" ng-click="main.logout()">Logout</md-button>
         	</div>
         	<div flex="none" flex-offset-md= "2" flex-offset-lg="10"  flex-offset-xl="3" flex-xs="25">
         		<div md-theme="altTheme">

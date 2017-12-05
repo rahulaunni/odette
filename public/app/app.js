@@ -1,13 +1,4 @@
-angular.module('myApp', ['ngMaterial','appRoutes'])
-.controller('AppCtrl', function($scope, $mdSidenav) {
-	$scope.showMobileMainHeader = true;
-	$scope.openSideNavPanel = function() {
-		$mdSidenav('left').open();
-	};
-	$scope.closeSideNavPanel = function() {
-		$mdSidenav('left').close();
-	};
-})
+angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','authServices','appRoutes','userControllers','mainController'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('altTheme')
     .primaryPalette('purple')
@@ -19,4 +10,7 @@ angular.module('myApp', ['ngMaterial','appRoutes'])
     	'hue-3': '100' 
     });
 
+})
+.config(function ($httpProvider) {
+    $httpProvider.interceptors.push('AuthInterceptors');
 });

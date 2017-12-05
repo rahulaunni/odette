@@ -7,37 +7,72 @@
 <body>
 	<div layout="column" layout-align="center center" layout-padding="" layout-fill>
 	   <div layout="column" layout-fill layout-align="center center">
-	      <form>
+	      <form name="userForm" ng-submit='signup.signupUser(userData);'>
 	         <div flex="none">
 	            <md-input-container>
 	               <label>Hospital Name</label>
-	               <input ng-model="user.hospitalname" type="text">
+	               <md-icon class="md-default-theme" class="material-icons">&#xE548;</md-icon>
+	               <input ng-model="signup.userData.hospitalName" type="text" name="hospitalName" class="validate" required>
+	               <md-tooltip md-direction="bottom">Enter hospital or company name</md-tooltip>
+	               <div ng-messages="userForm.hospitalName.$error" role="alert">
+	                    <div ng-message="required">This field is required</div>
+	                </div>
 	            </md-input-container>
 	         </div>
 	         <div flex="none">
 	            <md-input-container>
 	               <label>Username</label>
-	               <input ng-model="user.email" type="text">
+	               <md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
+	               <input ng-model="signup.userData.email" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i' required>
+	               <md-tooltip md-direction="bottom">Use a valid email address</md-tooltip>
+	               <div ng-messages="userForm.email.$error" role="alert" multiple>
+	                    <div ng-message="required" class="my-message">This field is required</div>
+	                    <div ng-message="pattern" class="my-message">Please enter valid email address</div>
+	                </div>
 	            </md-input-container>
 	         </div>
 	         <div flex="none">
 	            <md-input-container>
 	               <label>Password</label>
-	               <input ng-model="user.password" type="text">
+	               <md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
+	               <input ng-model="signup.userData.password" type="password" name="password"  minlength="4" required>
+	               <md-tooltip md-direction="bottom">Use a strong password</md-tooltip>
+	               <div ng-messages="userForm.password.$error" role="alert" multiple>
+	                    <div ng-message="required" class="my-message">This field is required</div>
+	                    <div ng-message="minlength" class="my-message">That's too short! </div>
+	                 </div>
 	            </md-input-container>
 	         </div>
 	         <div flex="none">
 	            <md-input-container>
 	               <label>Confirm Password</label>
-	               <input ng-model="user.password" type="text">
+	               <md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
+	               <input ng-model="signup.userData.confirmPassword" type="password" name="confirmPassword" ng-pattern="{{signup.userData.password}}" required>
+	               <div ng-messages="userForm.confirmPassword.$error" role="alert" multiple>
+	                    <div ng-message="required" class="my-message">This field is required</div>
+						<div ng-message="pattern" class="my-message">Passwords not matched!</div>
+	                 </div>
 	            </md-input-container>
 	         </div>
-	         <div layout="row" layout-align="center center">
+	         <div layout="row" layout-align="center center" ng-hide="signup.loader">
 	            <div md-theme="altTheme">
-	               <md-button  class="md-raised md-warn">Sign up</md-button>
+	               <md-button type="submit" class="md-raised md-warn">Sign up</md-button>
+	            </div>
+	         </div>
+	         <div layout="row" layout-align="center center" ng-show="signup.loader">
+	            <div md-theme="altTheme">
+	            	<md-progress-circular md-mode="indeterminate"></md-progress-circular>
 	            </div>
 	         </div>
 	      </form>
+	      <div class="show-hide-message" class="alert alert-danger" ng-show="signup.errorMsg">
+	      	<div>{{signup.errorMsg}}</div>
+	      </div>
+	      <div class="show-hide-message" ng-show="signup.successMsg">
+	      	<div>{{signup.successMsg}}</div>
+	      	<div>Redirecting...</div>
+	      	<md-progress-linear md-mode="indeterminate"></md-progress-linear>
+	      </div>
 	   </div>
 	</div>
 

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var bcrypt = require('bcrypt');
 
 var userSchema = new Schema({
     userName: {type:String, lowercase:true, required:true, unique:true},
@@ -7,5 +8,19 @@ var userSchema = new Schema({
     hospitalName: {type:String, required:true},
     roles: {type:String, enum:['admin','doctor','nurse'], default:['admin']}
 });
+
+userSchema.pre('save', function (next) {
+	var user = this;
+	bcrypt.hash(user.password,10,function (err,hash) {
+		if(err) return next(err);
+		user.password = hash;
+		next();
+	})
+})
+
+userSchema.methods.comparePassword = function (password) {
+	return bcrypt.compareSync(password,this.password)
+};
+
 
 module.exports = mongoose.model('user', userSchema);

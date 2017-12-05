@@ -27,6 +27,10 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static(path.join(__dirname, '/public')));
 
 
+// Just send the index.html for other files to support HTML5Mode
+app.all('/*', function(req, res, next) {
+    res.sendFile(path.join(__dirname,  'public/app/views', 'index.html'));
+});
 
 //mongodb configuration
 mongoose.Promise = global.Promise;
