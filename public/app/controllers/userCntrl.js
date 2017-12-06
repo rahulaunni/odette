@@ -1,8 +1,8 @@
 angular.module('userControllers',['userServices'])
-.controller('signupCntrl',function ($http,$location,$timeout,User) {
+.controller('registerCntrl',function ($http,$location,$timeout,User) {
 	var app=this;
 
-	this.signupUser = function (userData) {
+	this.registerUser = function (userData) {
 		app.loader = true;
 		app.errorMsg = false;
 		app.successMsg = false;
@@ -11,7 +11,7 @@ angular.module('userControllers',['userServices'])
 				app.successMsg = data.data.message;
 				app.loader = false;
 				$timeout(function () {
-					$location.path('/signin')
+					$location.path('/login')
 				},3000);
 			}
 			else{

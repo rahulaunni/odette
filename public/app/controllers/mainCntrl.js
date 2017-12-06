@@ -1,5 +1,5 @@
 angular.module('mainController',['authServices'])
-.controller('mainCntrl', function ($scope, $mdSidenav,Auth,$location,$timeout) {
+.controller('mainCntrl', function ($scope, $mdSidenav,Auth,$location,$timeout,$rootScope) {
 	$scope.showMobileMainHeader = true;
 	$scope.openSideNavPanel = function() {
 		$mdSidenav('left').open();
@@ -7,23 +7,31 @@ angular.module('mainController',['authServices'])
 	$scope.closeSideNavPanel = function() {
 		$mdSidenav('left').close();
 	};
-
-	// if(AuthToken.getToken()){
-	// 	console.log("User logged in");
-	// 	Auth.getUser().then(function (data) {
-	// 		console.log(data);
-	// 	})
-	// }
-	// else{
-	// 	console.log("User not logged in");
-	// }
-	//controller config for login dependency authServices
 	var app=this;
-	this.signinUser = function (signinData) {
+	app.loadMe=false;
+	$rootScope.$on("$routeChangeStart",function () {
+		if(Auth.isLoggedIn()){
+			app.isLoggedIn = true;
+			Auth.getUser().then(function (data) {
+				app.username = data.data.username;
+				app.loadMe = true;
+
+			})
+		}
+		else{
+			app.isLoggedIn = false;
+			app.username = "Guest";
+			app.loadMe = true;
+		}
+	});
+
+	//controller config for login dependency authServices
+	this.loginUser = function (loginData) {
 		app.loader = true;
 		app.errorMsg = false;
 		app.successMsg = false;
-		Auth.login(this.signinData).then(function (data) {
+		app.expired = false;
+		Auth.login(this.loginData).then(function (data) {
 			if(data.data.success){
 				app.successMsg = data.data.message;
 				app.loader = false;
@@ -32,17 +40,27 @@ angular.module('mainController',['authServices'])
 				},3000);
 			}
 			else{
-				app.errorMsg=data.data.message;
-				app.loader = false;
+				if(data.data.expired){
+					app.expired = true;
+					app.errorMsg=data.data.message;
+					app.loader = false;
+
+				}
+				else{
+					app.errorMsg=data.data.message;
+					app.loader = false;
+				}			
 			}
 		});
-	}
+	};
 
 	this.logout = function () {
-		Auth.logout();
+		app.errorMsg = false;
+		app.successMsg = false;
 		$location.path('/logout')
+		Auth.logout();
 		$timeout(function () {
-			$location.path('/signin')
+			$location.path('/login')
 		},3000);
 
 	};

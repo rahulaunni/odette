@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','authServices','appRoutes','userControllers','mainController'])
+angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','authServices','appRoutes','userControllers','mainController','emailController'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('altTheme')
     .primaryPalette('purple')

@@ -5,7 +5,8 @@ var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var index = require('./routes/index');
-var api = require('./routes/api');
+var router = express.Router();
+var api = require('./routes/api')(router);
 var port=3000;
 
 //for logging requests

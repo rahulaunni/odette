@@ -24,16 +24,17 @@
   <!-- Angular controllers  -->
   <script src="app/controllers/userCntrl.js"></script> 
   <script src="app/controllers/mainCntrl.js"></script> 
+  <script src="app/controllers/emailCntrl.js"></script> 
   <!-- Angular Servies -->
   <script src="app/services/userServices.js"></script> 
   <script src="app/services/authServices.js"></script> 
 
 </head>
 
-<body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-cloak>
+<body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
 	<md-toolbar class = "md-default">
      	<div class = "md-toolbar-tools" layout="row" layout-align="start center">
-     		<div flex="initial"> 
+     		<div flex="initial" ng-show="main.isLoggedIn"> 
      			<md-button class="md-icon-button" ng-click="openSideNavPanel()">
      				<md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
      			</md-button>
@@ -47,26 +48,30 @@
         		  	</md-button>
         	</div>
         	<div flex="none" hide-xs>
-        		<h5 class = "md-flex">Hello Guest</h5>
-            <md-button  class="md-accent" ng-click="main.logout()">Logout</md-button>
+        		<h5 class = "md-flex">Hello {{main.username}}</h5>
         	</div>
-        	<div flex="none" flex-offset-md= "2" flex-offset-lg="10"  flex-offset-xl="3" flex-xs="25">
+        	<div flex="none" flex-offset-md= "2" flex-offset-lg="10"  flex-offset-xl="3" flex-xs="25" ng-hide="main.isLoggedIn">
         		<div md-theme="altTheme">
-        			<md-button  class="md-accent"  href="/signin">Sign in</md-button>
+        			<md-button  class="md-accent"  href="/login" >Login</md-button>
         		</div>
         	</div>
-        	<div flex="none" hide-xs>
+        	<div flex="none" hide-xs ng-hide="main.isLoggedIn">
         		<h5 class = "md-flex">or</h5>
         	</div>
-        	<div flex="none" flex-xs="25">
+        	<div flex="none" flex-xs="25" ng-hide="main.isLoggedIn">
         		<div md-theme="altTheme">
-        			<md-button  class="md-accent"  href="/signup">Sign up</md-button>
+        			<md-button  class="md-accent"  href="/register" >Register</md-button>
         		</div>
         	</div>
+          <div flex="none" flex-xs="25" ng-show="main.isLoggedIn">
+            <div md-theme="altTheme">
+              <md-button  class="md-accent" href="#" ng-click="main.logout()">Logout</md-button>
+            </div>
+          </div>
      	</div>
   	</md-toolbar>
 		  
-  	<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
+  	<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" >
   	    <md-toolbar layout="row">
   	    	<div class="md-toolbar-tools">
   	        	<h2>

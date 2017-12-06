@@ -7,14 +7,14 @@
 <body>
    <div layout="column" layout-align="center center" layout-padding="" layout-fill>
       <div layout="column" layout-fill layout-align="center center">
-         <form name="signinForm" ng-submit='main.signinUser(signinData);'>
+         <form name="loginForm" ng-submit='main.loginUser(loginData);'>
             <div flex="none">
                <md-input-container>
                   <label>Username</label>
                   <md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
-                  <input ng-model="main.signinData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i' required>
+                  <input ng-model="main.loginData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i' required>
                   <md-tooltip md-direction="bottom">Enter Your registered email id</md-tooltip>
-                  <div ng-messages="signinForm.email.$error" role="alert" multiple>
+                  <div ng-messages="loginForm.email.$error" role="alert" multiple>
                        <div ng-message="required" class="my-message">This field is required</div>
                        <div ng-message="pattern" class="my-message">Please enter valid email address</div>
                    </div>
@@ -24,16 +24,16 @@
                <md-input-container>
                   <label>Password</label>
                   <md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
-                  <input ng-model="main.signinData.password" name="password" type="password" required>
+                  <input ng-model="main.loginData.password" name="password" type="password" required>
                   <md-tooltip md-direction="bottom">Please enter your password</md-tooltip>
-                  <div ng-messages="signinForm.password.$error" role="alert" multiple>
+                  <div ng-messages="loginForm.password.$error" role="alert" multiple>
                        <div ng-message="required" class="my-message">This field is required</div>
                     </div>
                </md-input-container>
             </div>
             <div layout="row" layout-align="center center" ng-hide="main.loader">
                <div md-theme="altTheme">
-                  <md-button type="submit" class="md-raised md-warn">Sign in</md-button>
+                  <md-button type="submit" class="md-raised md-warn">Login</md-button>
                </div>
             </div>
             <div layout="row" layout-align="center center" ng-show="main.loader">
@@ -46,12 +46,13 @@
                   <p><a ng-href="/forgotpassword" >Forgot Password</a></p>
                </div>
                <div flex="none" flex-offset="5">
-                  <p><a ng-href="/signup" >Register</a></p>
+                  <p><a ng-href="/register" >Register</a></p>
                </div>
             </div>
          </form>
          <div class="show-hide-message"  ng-show="main.errorMsg">
             <div>{{main.errorMsg}}</div>
+            <md-button type="submit" ng-show="main.expired" class="md-raised md-warn">Resend activation link</md-button>
          </div>
          <div class="show-hide-message" ng-show="main.successMsg">
             <div>Sigining in....</div>
