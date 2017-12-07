@@ -24,7 +24,7 @@ angular.module('mainController',['authServices'])
 			app.loadMe = true;
 		}
 	});
-
+	
 	//controller config for login dependency authServices
 	this.loginUser = function (loginData) {
 		app.loader = true;

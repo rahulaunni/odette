@@ -7,12 +7,12 @@
 <body>
    <div layout="column" layout-align="center center" layout-padding="" layout-fill>
       <div layout="column" layout-fill layout-align="center center">
-         <form name="loginForm" ng-submit='main.loginUser(loginData);'>
+         <form name="loginForm" ng-submit='resend.checkCredentials(loginData);'>
             <div flex="none">
                <md-input-container>
                   <label>Username</label>
                   <md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
-                  <input ng-model="main.loginData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i' required>
+                  <input ng-model="resend.loginData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i' required>
                   <md-tooltip md-direction="bottom">Enter Your registered email id</md-tooltip>
                   <div ng-messages="loginForm.email.$error" role="alert" multiple>
                        <div ng-message="required" class="my-message">This field is required</div>
@@ -24,40 +24,29 @@
                <md-input-container>
                   <label>Password</label>
                   <md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
-                  <input ng-model="main.loginData.password" name="password" type="password" required>
+                  <input ng-model="resend.loginData.password" name="password" type="password" required>
                   <md-tooltip md-direction="bottom">Please enter your password</md-tooltip>
                   <div ng-messages="loginForm.password.$error" role="alert" multiple>
                        <div ng-message="required" class="my-message">This field is required</div>
                     </div>
                </md-input-container>
             </div>
-            <div layout="row" layout-align="center center" ng-hide="main.loader">
+            <div layout="row" layout-align="center center">
                <div md-theme="altTheme">
-                  <md-button type="submit" class="md-raised md-warn">Login</md-button>
+                  <md-button type="submit" class="md-raised md-warn" ng-hide="resend.loader">Resend Activation Link</md-button>
                </div>
             </div>
-            <div layout="row" layout-align="center center" ng-show="main.loader">
+            <div layout="row" layout-align="center center" ng-show="resend.loader">
                <div md-theme="altTheme">
                   <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                </div>
             </div>
-            <div layout="row" layout-align="center start">
-               <div flex="none">
-                  <p><a ng-href="/forgotpassword" >Forgot Password</a></p>
-               </div>
-               <div flex="none" flex-offset="5">
-                  <p><a ng-href="/register" >Register</a></p>
-               </div>
-            </div>
          </form>
-         <div class="show-hide-message"  ng-show="main.errorMsg">
-            <div>{{main.errorMsg}}</div>
-            <div>
-               <p><a ng-href="/resend" >Request activation link</a></p>
-            </div>
+         <div class="show-hide-message"  ng-show="resend.errorMsg">
+            <div>{{resend.errorMsg}}</div>
          </div>
-         <div class="show-hide-message" ng-show="main.successMsg">
-            <div>Sigining in....</div>
+         <div class="show-hide-message" ng-show="resend.successMsg">
+            <div>{{resend.successMsg}}</div>
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
          </div>
       </div>

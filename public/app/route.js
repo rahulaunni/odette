@@ -15,14 +15,28 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'register',
 		authenticated:false
 	})
+	.when('/resend',{
+		templateUrl:'app/views/pages/resend.html',
+		controller:'resendCntrl',
+		controllerAs:'resend',
+		authenticated:false
+	})
 	.when('/forgotpassword',{
 		templateUrl:'app/views/pages/forgotpassword.html',
+		controller: 'passwordCntrl',
+		controllerAs: 'password',
 		authenticated:false
 	})
 	.when('/activate/:token',{
 		templateUrl:'app/views/pages/activation.html',
 		controller: 'emailCntrl',
 		controllerAs: 'email',
+		authenticated:false
+	})
+	.when('/resetpassword/:token',{
+		templateUrl:'app/views/pages/resetpassword.html',
+		controller : 'passwordrstCntrl',
+		controllerAs : 'passwordrst',
 		authenticated:false
 	})
 	.when('/logout',{

@@ -8,11 +8,13 @@ var userSchema = new Schema({
     hospitalName: {type:String, required:true},
     roles: {type:String, enum:['admin','doctor','nurse'], default:['admin']},
     active: {type:Boolean,required:true,default:false},
-    tempToken: {type:String,required:true}
+    tempToken: {type:String,required:true},
+    resetToken: {type:String,required:true}
 });
 
 userSchema.pre('save', function (next) {
 	var user = this;
+	if (!user.isModified('password')) return next(); // If password was not changed or is new, ignore middleware
 	bcrypt.hash(user.password,10,function (err,hash) {
 		if(err) return next(err);
 		user.password = hash;
