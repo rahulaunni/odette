@@ -58,6 +58,11 @@
         	<div flex="none" hide-xs ng-hide="main.isLoggedIn">
         		<h5 class = "md-flex">or</h5>
         	</div>
+          <div flex="none" flex-xs="25" ng-show="main.isLoggedIn">
+            <div md-theme="altTheme">
+              <md-button  class="md-accent" ng-show="main.adminaccess" href="/admin/addbed" >Add Bed</md-button>
+            </div>
+          </div>
         	<div flex="none" flex-xs="25" ng-hide="main.isLoggedIn">
         		<div md-theme="altTheme">
         			<md-button  class="md-accent"  href="/register" >Register</md-button>

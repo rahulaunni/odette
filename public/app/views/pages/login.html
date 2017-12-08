@@ -52,7 +52,7 @@
          </form>
          <div class="show-hide-message"  ng-show="main.errorMsg">
             <div>{{main.errorMsg}}</div>
-            <div>
+            <div ng-show="main.expired">
                <p><a ng-href="/resend" >Request activation link</a></p>
             </div>
          </div>

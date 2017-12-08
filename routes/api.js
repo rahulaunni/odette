@@ -56,7 +56,7 @@ router.post('/register', function(req,res){
 //user login route
 router.post('/login',function (req,res) {
 	//finding user from database
-	User.findOne({userName:req.body.username}).select('userName password active').exec(function (err,user) {
+	User.findOne({userName:req.body.username}).select('userName hospitalName password active').exec(function (err,user) {
 		if(err) throw err;
 		//if no user found resond with no user found error message
 		if(!user){
@@ -327,6 +327,23 @@ router.use(function (req,res,next) {
 router.post('/user',function (req,res) {
 	res.send(req.decoded);
 });
+//Routes after authentication;
+
+//routes for returning permission of user
+router.get('/permission',function (req,res) {
+	User.findOne({userName:req.decoded.username}).exec(function (err,user) {
+		if(err) throw err;
+		//if no user found resond with no user found error message
+		if(!user){
+			res.json({success:false,message:"No user found"});
+		}
+		else{
+			res.json({success:true,permission:user.permission});
+		}
+
+		});
+});
+
 
 return router;
 }

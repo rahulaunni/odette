@@ -6,7 +6,7 @@ var userSchema = new Schema({
     userName: {type:String, lowercase:true, required:true, unique:true},
     password: {type:String, required:true},
     hospitalName: {type:String, required:true},
-    roles: {type:String, enum:['admin','doctor','nurse'], default:['admin']},
+    permission: {type:String, enum:['admin','doctor','nurse'], default:['admin']},
     active: {type:Boolean,required:true,default:false},
     tempToken: {type:String,required:true,defualt:false},
     resetToken: {type:String,required:true,default:false}

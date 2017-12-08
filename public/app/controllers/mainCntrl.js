@@ -1,5 +1,5 @@
-angular.module('mainController',['authServices'])
-.controller('mainCntrl', function ($scope, $mdSidenav,Auth,$location,$timeout,$rootScope) {
+angular.module('mainController',['authServices','userServices'])
+.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$location,$timeout,$rootScope) {
 	$scope.showMobileMainHeader = true;
 	$scope.openSideNavPanel = function() {
 		$mdSidenav('left').open();
@@ -14,9 +14,26 @@ angular.module('mainController',['authServices'])
 			app.isLoggedIn = true;
 			Auth.getUser().then(function (data) {
 				app.username = data.data.username;
-				app.loadMe = true;
+				User.getPermission().then(function (data) {
+					if(data.data.permission === 'admin'){
+						app.adminaccess = true;
+						app.loadMe = true;
+					}
+					else if(data.data.permission === 'nurse'){
+						app.nurseaccess = true;
+						app.loadMe = true;
+					}
+					else if(data.data.permission === 'doctor'){
+						app.doctoraccess = true;
+						app.loadMe = true;
+					}
+					else{
+						app.loadMe = true;
 
-			})
+					}
+				});
+
+			});
 		}
 		else{
 			app.isLoggedIn = false;
