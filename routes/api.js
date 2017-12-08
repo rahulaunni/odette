@@ -5,19 +5,24 @@ var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
 
 module.exports = function(router) {
-//http://localhost/api/register
-//USER REGISTRATION ROUTE
+
+//route to resgister new user
 router.post('/register', function(req,res){
+	//creater user object by fetching values from req.body
 	var user = new User();
 	user.hospitalName = req.body.hospitalName;
 	user.userName = req.body.email;
 	user.password = req.body.password;
+	//tempToken is used for verification purpose of email
 	user.tempToken = jwt.sign({username:user.userName,hospitalname:user.hospitalName},secret,{expiresIn:'24h'});
+	//saving user to database
 	user.save(function(err){
 		if (err) {
+			//responding error back to frontend
 			res.json({success:false,message:'User already exist'});
 		}
 		else{
+			//nodemailer config
 			var transporter = nodemailer.createTransport({
 			  service: 'gmail',
 			  auth: {
@@ -25,8 +30,11 @@ router.post('/register', function(req,res){
 			    pass: '3v3lab5.co'
 			  }
 			});
+			//to get the host
 			var host=req.get('host');
+			//link for the mail for activation of account
 			var link="http://"+req.get('host')+"/activate/"+user.tempToken; 
+			//activation mail object
 			var mailOptions = {
 			  from: 'dripocare@gmail.com',
 			  to: user.userName,
@@ -45,23 +53,27 @@ router.post('/register', function(req,res){
 	});	
 });
 
-//USER LOGIN ROUTE
+//user login route
 router.post('/login',function (req,res) {
+	//finding user from database
 	User.findOne({userName:req.body.username}).select('userName password active').exec(function (err,user) {
 		if(err) throw err;
-
+		//if no user found resond with no user found error message
 		if(!user){
 			res.json({success:false,message:"No user found"});
 		}
+		//if user found checking for password match
 		else if(user){
 			var validPassword = user.comparePassword(req.body.password);
 			if (!validPassword){
 				res.json({success:false,message:"Wrong password"});
 			}
+			//if password matches check whether user has an active account
 			else if(!user.active){
 				res.json({success:false,message:"Account is not yet activated",expired:true});
 			}
 			else{
+				//successful login and passing a token to the user for login
 				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName},secret,{expiresIn:'24h'});
 				res.json({success:true,message:"Authentication success",token:token});
 
@@ -101,7 +113,6 @@ router.post('/resend',function (req,res) {
 router.put('/resend', function(req, res) {
 	User.findOne({ userName: req.body.username }).select('userName hospitalName tempToken').exec(function(err, user) {
 		if (err) throw err; // Throw error if cannot connect
-		console.log(user);
 		user.tempToken = jwt.sign({username:user.userName,hospitalname:user.hospitalName},secret,{expiresIn:'24h'});
 		user.password = req.body.password;
 		// Save user's new token to the database
@@ -184,6 +195,64 @@ router.put('/forgotpassword', function(req, res) {
 	});
 });
 
+router.get('/resetpassword/:token', function(req, res) {
+	User.findOne({ resetToken: req.params.token }, function(err, user) {
+		if (err) throw err; // Throw error if cannot login
+		var token = req.params.token; // Save the token from URL for verification 
+
+		// Function to verify the user's token
+		jwt.verify(token, secret, function(err, decoded) {
+			if (err) {
+				res.json({ success: false, message: 'Password reset link has expired' }); // Token is expired
+			} else if (!user) {
+				res.json({ success: false, message: 'Password reset link has expired' }); // Token may be valid but does not match any user in the database
+			} else {
+				res.json({ success: true, user:user}); // Return success message to controller
+			}
+		});
+	});
+	
+});
+
+router.put('/savepassword', function(req, res) {
+	User.findOne({userName: req.body.username}).select('userName password resetToken').exec(function(err, user) {
+		if (err) throw err; // Throw error if cannot connect
+		console.log(req.body);
+		console.log(user);
+		user.password = req.body.password;
+		user.resetToken = false;
+		user.save(function(err) {
+			if (err) {
+				console.log(err);
+				res.json({success:false,message:'Failed to connect to database'})
+			} else {
+				// If user successfully saved to database, create e-mail object
+				var transporter = nodemailer.createTransport({
+				  service: 'gmail',
+				  auth: {
+				    user: 'dripocare@gmail.com', 
+				    pass: '3v3lab5.co'
+				  }
+				});
+				var host=req.get('host');
+				var link="http://"+req.get('host')+"/login"; 
+				var mailOptions = {
+				  from: 'dripocare@gmail.com',
+				  to: user.userName,
+				  subject: 'Password reset successfull',
+				html : "Hello "+user.userName+",<br>You have successfully reset your password <br><a href="+link+">Click here to login</a>" 
+				};
+				transporter.sendMail(mailOptions, function (err, info) {
+				   if(err)
+				     console.log(err)
+				   else
+				     console.log(info);
+				});
+				res.json({ success: true, message: 'Your password changed successfully'}); 
+			}
+		});
+	});
+});
 
 router.put('/activate/:token', function(req, res) {
 	User.findOne({ tempToken: req.params.token }, function(err, user) {

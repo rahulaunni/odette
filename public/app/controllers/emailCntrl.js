@@ -59,7 +59,7 @@ angular.module('emailController',['userServices'])
 })
 
 // Controller: passwordCtrl is used to send a password reset link to the user
-.controller('passwordCntrl', function(User) {
+.controller('passwordCntrl', function(User,$timeout,$location) {
 
     app = this;
 
@@ -74,6 +74,9 @@ angular.module('emailController',['userServices'])
             // Check if reset link was sent
             if (data.data.success) {
                 app.successMsg = data.data.message; // Grab success message from JSON object
+                $timeout(function () {
+                	$location.path('/login')
+                },3000);
             } else {
                 app.errorMsg = data.data.message; // Grab error message from JSON object
             }
@@ -82,6 +85,42 @@ angular.module('emailController',['userServices'])
      }   
 })
 
-.controller('passwordrstCntrl',function (User) {
-	// body...
+.controller('passwordrstCntrl',function (User,$routeParams,$timeout,$location) {
+	app = this;
+	app.hide = true;
+	app.successMsg = false;
+	app.errorMsg = false;
+	app.successMsgsp = false;
+	app.errorMsgsp = false;
+	app.loader = true;
+	User.verifyLink($routeParams.token).then(function(data) {
+		if(data.data.success){
+			app.successMsg = "Reset link verified, enter a new password";
+			app.username = data.data.user.userName;
+			app.hide = false;
+		}
+		else{
+			app.errorMsg = data.data.message;
+			$timeout(function () {
+				$location.path('/login')
+			},3000);
+		}
+	}); 
+	app.savePassword = function (userData) {
+		this.userData.username = app.username;
+		User.savePassword(this.userData).then(function(data) {
+			if(data.data.success){
+				app.successMsgsp = data.data.message;
+				app.hide = true;
+				$timeout(function () {
+					$location.path('/login')
+				},3000);
+
+			}
+			else{
+				app.errorMsgsp = data.data.message;
+
+			}
+	});
+	}
 });

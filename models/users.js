@@ -8,10 +8,11 @@ var userSchema = new Schema({
     hospitalName: {type:String, required:true},
     roles: {type:String, enum:['admin','doctor','nurse'], default:['admin']},
     active: {type:Boolean,required:true,default:false},
-    tempToken: {type:String,required:true},
-    resetToken: {type:String,required:true}
+    tempToken: {type:String,required:true,defualt:false},
+    resetToken: {type:String,required:true,default:false}
 });
 
+//run this before saving a user collection
 userSchema.pre('save', function (next) {
 	var user = this;
 	if (!user.isModified('password')) return next(); // If password was not changed or is new, ignore middleware
@@ -22,6 +23,7 @@ userSchema.pre('save', function (next) {
 	})
 })
 
+//comparing encrypted password for authentication
 userSchema.methods.comparePassword = function (password) {
 	return bcrypt.compareSync(password,this.password)
 };
