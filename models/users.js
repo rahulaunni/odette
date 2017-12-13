@@ -9,7 +9,8 @@ var userSchema = new Schema({
     permission: {type:String, enum:['admin','doctor','nurse'], default:['admin']},
     active: {type:Boolean,required:true,default:false},
     tempToken: {type:String,required:true,defualt:false},
-    resetToken: {type:String,required:true,default:false}
+    resetToken: {type:String,required:true,default:false},
+    _admin : {type:String,default:'dripocare@gmail.com'}
 });
 
 //run this before saving a user collection

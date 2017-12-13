@@ -1,3 +1,4 @@
+//this files hold all the angular routes
 var app = angular.module('appRoutes', ['ngRoute'])
 .config(function($routeProvider, $locationProvider) {
 	$routeProvider
@@ -39,9 +40,21 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs : 'passwordrst',
 		authenticated:false
 	})
-	.when('/admin/addbed',{
+	.when('/admin/managebed',{
 		templateUrl:'app/views/adminpages/addbed.html',
 		authenticated:true,
+		permission:['admin']
+	})
+	.when('/admin/home',{
+		templateUrl:'app/views/adminpages/home.html',
+		authenticated:true,
+		permission:['admin']
+	})
+	.when('/admin/manageusers',{
+		templateUrl:'app/views/adminpages/manageuser.html',
+		authenticated:true,
+		controller: 'manageUserCntrl',
+		controllerAs: 'manageUser',
 		permission:['admin']
 	})
 	.when('/logout',{
@@ -49,7 +62,7 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		authenticated:true
 	})
 	.otherwise({redirectTo:'/'});
-
+//function to remove defualut /#/ thing
 	$locationProvider
 	.html5Mode({
 	  enabled: true,
@@ -58,11 +71,11 @@ var app = angular.module('appRoutes', ['ngRoute'])
 	.hashPrefix('');
 
 });
-
+//this code section will check for user's authentication and authorization, prevent user from accessing other contents
 app.run(['$rootScope','Auth','User','$location',function ($rootScope,Auth,User,$location) {
 	$rootScope.$on('$routeChangeStart',function (event,next,current) {
-		if (next.$$route !== undefined) {
-		if(next.$$route.authenticated == true){
+		if (next.$$route !== undefined) { //checking whether routes are defined
+		if(next.$$route.authenticated == true){ 
 			if(!Auth.isLoggedIn()){
 				event.preventDefault();
 				$location.path('/login')
@@ -70,7 +83,6 @@ app.run(['$rootScope','Auth','User','$location',function ($rootScope,Auth,User,$
 			else if (next.$$route.permission) {
 			    // Function: Get current user's permission to see if authorized on route
 			    User.getPermission().then(function(data) {
-			    	console.log(data);
 			        // Check if user's permission matches at least one in the array
 			        if (next.$$route.permission[0] !== data.data.permission) {
 			            if (next.$$route.permission[1] !== data.data.permission) {

@@ -343,6 +343,43 @@ router.get('/permission',function (req,res) {
 
 		});
 });
+//route to add a new user by admin
+router.post('/admin/adduser', function(req,res){
+		var user = new User();
+		user.hospitalName = req.decoded.hospitalname;
+		user.userName = req.body.username+req.body.domain;
+		user.password = req.body.password;
+		user.permission = req.body.permission;
+		user.active = true;
+		user._admin = req.decoded.username;
+		user.tempToken = false;
+		// saving user to database
+		user.save(function(err){
+			if (err) {
+				console.log(err);
+				//responding error back to frontend
+				res.json({success:false,message:'User already exist'});
+			}
+			else{
+
+				res.json({success:true,message:'User added'});
+			}
+	});
+});
+//route for fetching all the user details to the admin view
+router.post('/admin/viewuser', function(req,res){
+	User.find({_admin: req.decoded.username}).select('userName  permission').exec(function(err, user) {	
+			if (err) {
+				console.log(err);
+				//responding error back to frontend
+				res.json({success:false,message:'No users found'});
+			}
+			else{
+
+				res.json({success:true,message:'User found',users:user});
+			}
+	});
+});
 
 
 return router;

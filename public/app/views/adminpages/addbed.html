@@ -1,9 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Evelabs Care</title>
+   <title>Evelabs Care</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-	<p>Hello from admin route</p>
+   <div layout="column" layout-align="center center" layout-fill>
+      <md-content>
+         <form name="loginForm" ng-submit='main.loginUser(loginData);'>
+            <div flex="none">
+               <md-input-container>
+                  <label>Username</label>
+                  <md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
+                  <input ng-model="main.loginData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'  required>
+                  <md-tooltip md-direction="bottom">Enter Your registered email id</md-tooltip>
+                  <div ng-messages="loginForm.email.$error" role="alert" multiple>
+                       <div ng-message="required" class="my-message">This field is required</div>
+                       <div ng-message="pattern" class="my-message">Please enter valid email address</div>
+                   </div>
+                   <div ng-show="main.errorMsgNU" ng-messages="main.errorMsgNU" role="alert">
+                     <p>{{main.errorMsgNU}}</p>
+                   </div>
+               </md-input-container>
+            </div>
+            <div flex="none">
+               <md-input-container>
+                  <label>Password</label>
+                  <md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
+                  <input ng-model="main.loginData.password" name="password" type="password" required>
+                  <md-tooltip md-direction="bottom">Please enter your password</md-tooltip>
+                  <div ng-messages="loginForm.password.$error" role="alert" multiple>
+                       <div ng-message="required" class="my-message">This field is required</div>
+                  </div>
+                  <div ng-show="main.errorMsgWP" ng-messages="main.errorMsgWP" role="alert">
+                    <p>{{main.errorMsgWP}}</p>
+                  </div>
+               </md-input-container>
+            </div>
+            <div layout="row" layout-align="center center" ng-hide="main.loader">
+               <div md-theme="altTheme">
+                  <md-button type="submit" class="md-raised md-warn">Login</md-button>
+               </div>
+            </div>
+            <div layout="row" layout-align="center center" ng-show="main.loader">
+               <div md-theme="altTheme">
+                  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+               </div>
+            </div>
+            <div layout="row" layout-align="center start">
+               <div flex="none">
+                  <p><a ng-href="/forgotpassword" >Forgot Password</a></p>
+               </div>
+               <div flex="none" flex-offset="15">
+                  <p><a ng-href="/register" >Register</a></p>
+               </div>
+            </div>
+         </form>
+         <div class="show-hide-message" ng-show="main.successMsg">
+            <div>Sigining in....</div>
+            <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+         </div>
+      </md-content>
+   </div>
 </body>
 </html>

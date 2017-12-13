@@ -27,5 +27,11 @@ angular.module('userServices',[])
 	userFactory.getPermission = function () {
 		return $http.get('/api/permission/');
 	}
+	userFactory.addUser = function (userData) {
+		return $http.post('/api/admin/adduser',userData);
+	}
+	userFactory.viewUser = function (userData) {
+		return $http.post('/api/admin/viewuser',userData);
+	}
 	return userFactory;
 });

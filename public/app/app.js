@@ -1,3 +1,5 @@
+
+//files holds the angular app configuratin every dependencies, services and controllers are passed to myApp
 angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','authServices','appRoutes','userControllers','mainController','emailController'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('altTheme')
@@ -11,6 +13,7 @@ angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','a
     });
 
 })
+//inorder to inject token in every request header to make the user logged in
 .config(function ($httpProvider) {
     $httpProvider.interceptors.push('AuthInterceptors');
 });
