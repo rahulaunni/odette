@@ -33,5 +33,8 @@ angular.module('userServices',[])
 	userFactory.viewUser = function (userData) {
 		return $http.post('/api/admin/viewuser',userData);
 	}
+	userFactory.deleteUser = function (user) {
+		return $http.post('/api/admin/deleteuser',user);
+	}
 	return userFactory;
 });

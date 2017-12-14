@@ -21,13 +21,12 @@ angular.module('userControllers',['userServices'])
 		});
 	}
 })
-.controller('manageUserCntrl',function ($http,$route,$location,$timeout,$scope,User) {
+.controller('manageUserCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,User) {
 	var app=this;
-	$scope.users = false;
+	$scope.users = [];
 	User.viewUser().then(function (data) {
 		if(data.data.success){
 			$scope.users=data.data.users;
-			console.log($scope.users);
 
 		}
 		else{
@@ -45,7 +44,7 @@ angular.module('userControllers',['userServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$route.reload('/admin/manageusers')
+					$window.location.reload('/admin/manageusers')
 				},3000);
 			}
 			else{
@@ -55,5 +54,39 @@ angular.module('userControllers',['userServices'])
 		});
 
 	}
-	console.log("test");
+	this.editUser = function (userid) {
+		console.log(userid);
+	}
+
+	//function for deleteting an user by admin show a dialog box and delte on confirm
+	this.showConfirmdeleteUser = function(ev,user) {
+	  // Appending dialog to document.body to cover sidenav in docs app
+	  var confirm = $mdDialog.confirm({
+	  	onComplete: function afterShowAnimation() {
+                        var $dialog = angular.element(document.querySelector('md-dialog'));
+                        var $actionsSection = $dialog.find('md-dialog-actions');
+                        var $cancelButton = $actionsSection.children()[0];
+                        var $confirmButton = $actionsSection.children()[1];
+                        angular.element($confirmButton).addClass('md-raised md-warn');
+                        angular.element($cancelButton).addClass('md-raised');
+                    }
+            })
+	        .title('Would you like to delete '+user.userName)
+	        .textContent('This will remove '+user.userName+' permanantly from database')
+	        .ariaLabel('Lucky day')
+	        .targetEvent(ev)
+	        .ok('Yes, Delete!')
+	        .cancel('No, Keep User');
+
+	  $mdDialog.show(confirm).then(function() {
+	  	User.deleteUser(user).then(function (data) {
+	  		if(data.data.success){
+	  			$window.location.reload('/admin/manageusers');
+	  		}
+	  	});
+
+	  }, function() {
+
+	  });
+	};
 });

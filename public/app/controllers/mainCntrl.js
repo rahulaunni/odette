@@ -71,18 +71,8 @@ angular.module('mainController',['authServices','userServices'])
 			else{
 				if(data.data.expired){
 					app.expired = true;
-					if(data.data.message === "No user found"){
-						app.errorMsgNU=data.data.message;
-					}
-					else{
-						app.errorMsgWP=data.data.message;
-					}
-					if(data.data.message === "No user found"){
-						app.errorMsgNU=data.data.message;
-					}
-					else{
-						app.errorMsgWP=data.data.message;
-					}					app.loader = false;
+					app.errorMsgNU=data.data.message;	
+					app.loader = false;
 
 				}
 				else{
@@ -91,7 +81,8 @@ angular.module('mainController',['authServices','userServices'])
 					}
 					else{
 						app.errorMsgWP=data.data.message;
-					}					app.loader = false;
+					}					
+					app.loader = false;
 				}			
 			}
 		});

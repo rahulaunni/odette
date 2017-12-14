@@ -105,7 +105,7 @@
       </md-sidenav>
   </div>  
 <!-- Side Nav for laptops and tabs which is always open -->
-<div flex="20" hide-xs hide-sm hide-md>
+<div flex="20" hide-xs hide-sm hide-md class="lap-side-nav">
   <md-toolbar layout="row">
     <div class="md-toolbar-tools">
       <h2>
@@ -163,7 +163,7 @@
 </div>
 <div flex="80" flex-xs="100" flex-sm="100" flex-md="95">
 <md-content ng-show="main.adminaccess" layout="column"  layout-fill>
-  <div flex="100" ng-view></div>
+  <div flex="100" ng-view layout="row" layout-align="center center"></div>
 </md-content>
 </div>
 </div>
@@ -173,11 +173,11 @@
   <p>You login as nurse</p>
 </div>
 <md-content layout="column"  layout-fill ng-show="main.nurseaccess">
-  <div flex="100" ng-view></div>
+  <div flex="100" ng-view layout="row" layout-align="center center"></div>
 </md-content>
 <!-- for injecting page before login -->
 <md-content layout="column"  layout-fill ng-hide="main.isLoggedIn">
-  <div flex="100" ng-view></div>
+  <div flex="100" ng-view layout="row" layout-align="center center"></div>
 </md-content>
 </body>
 </html>

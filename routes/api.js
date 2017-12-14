@@ -87,7 +87,6 @@ router.post('/login',function (req,res) {
 router.post('/resend',function (req,res) {
 	User.findOne({userName:req.body.username}).select('userName password active').exec(function (err,user) {
 		if(err) throw err;
-
 		if(!user){
 			res.json({success:false,message:"No user found"});
 		}
@@ -347,7 +346,7 @@ router.get('/permission',function (req,res) {
 router.post('/admin/adduser', function(req,res){
 		var user = new User();
 		user.hospitalName = req.decoded.hospitalname;
-		user.userName = req.body.username+req.body.domain;
+		user.userName = req.body.username+'@'+req.decoded.hospitalname+'.care';
 		user.password = req.body.password;
 		user.permission = req.body.permission;
 		user.active = true;
@@ -379,6 +378,18 @@ router.post('/admin/viewuser', function(req,res){
 				res.json({success:true,message:'User found',users:user});
 			}
 	});
+});
+
+//route to delete an user from database
+router.post('/admin/deleteuser', function(req,res){
+	User.remove({userName:req.body.userName},function (err) {
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.json({success:true,message:"User removed successfully"});
+		}
+	})
 });
 
 

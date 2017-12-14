@@ -1,5 +1,5 @@
 angular.module('emailController',['userServices'])
-.controller('emailCntrl',function ($routeParams,$timeout,$location,User) {
+.controller('emailCntrl',function ($routeParams,$timeout,$route,User) {
 
 	var app = this;
 
@@ -9,7 +9,7 @@ angular.module('emailController',['userServices'])
 		if(data.data.success){
 			app.successMsg = data.data.message;
 			$timeout(function () {
-				$location.path('/login')
+				$route.reload('/login')
 			},3000);
 		}
 		else{
@@ -21,13 +21,14 @@ angular.module('emailController',['userServices'])
 
 })
 
-.controller('resendCntrl', function(User,$timeout,$location) {
+.controller('resendCntrl', function(User,$timeout,$route,$location) {
 	app=this;
 
 	app.checkCredentials = function (loginData) {
 		app.loader=true;
 		app.successMsg = false;
-		app.errorMsg = false;
+		app.errorMsgNU = false;
+		app.errorMsgWP = false;
 		User.checkCredentials(app.loginData).then(function (data) {
 			if(data.data.success){
 				// Custom function that sends activation link
@@ -43,14 +44,23 @@ angular.module('emailController',['userServices'])
 				});
 
 				$timeout(function () {
-					$location.path('/login')
+					$route.reload('/login')
 				},3000);
 
 			}
 			else{
-				app.errorMsg = data.data.message;
-				app.loader=false;
-
+				if(data.data.message === "No user found"){
+					app.loader=false;   				    	 // If not successful, grab message from JSON object
+					app.errorMsgNU = data.data.message;
+				}
+				else if(data.data.message === "Wrong password"){
+					app.loader=false;   				    	 // If not successful, grab message from JSON object
+					app.errorMsgWP = data.data.message;
+				}
+				else{
+					app.loader=false;   				    	 // If not successful, grab message from JSON object
+					app.errorMsgNU = data.data.message;
+				}								   
 			}
 
 		});
@@ -59,7 +69,7 @@ angular.module('emailController',['userServices'])
 })
 
 // Controller: passwordCtrl is used to send a password reset link to the user
-.controller('passwordCntrl', function(User,$timeout,$location) {
+.controller('passwordCntrl', function(User,$timeout,$route) {
 
     app = this;
 
@@ -75,7 +85,7 @@ angular.module('emailController',['userServices'])
             if (data.data.success) {
                 app.successMsg = data.data.message; // Grab success message from JSON object
                 $timeout(function () {
-                	$location.path('/login')
+                	$route.reload('/login')
                 },3000);
             } else {
                 app.errorMsg = data.data.message; // Grab error message from JSON object

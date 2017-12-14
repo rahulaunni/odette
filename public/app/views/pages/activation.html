@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <title>Evelabs Care</title>
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-	<div class="show-hide-message"  ng-show="email.errorMsg">
-		<div>{{email.errorMsg}}</div>
+<md-content flex="100" layout="row" layout-align="center center">
+	<md-card flex="30" flex-xs="90" style="padding:2%">
+	<div layout="row" layout-align="center center" ng-show="email.errorMsg">
+		{{email.errorMsg}}
 	</div>
-	<div class="show-hide-message" ng-show="email.successMsg">
+	<div layout="row" layout-align="center center" ng-show="email.successMsg">
 		<div>{{email.successMsg}}</div>
+		<div>Redirecting to login....</div>
+		<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 	</div>
-</body>
+	</md-card>
+</md-content>
