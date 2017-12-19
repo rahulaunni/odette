@@ -1,6 +1,6 @@
 <div layout="column" layout-padding="" layout-fill>
 		<md-content>
-		    <md-tabs md-dynamic-height md-border-bottom md-swipe-content="true">
+		    <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
 		      	<md-tab label="User List">
 		          	<md-content>
 		          		<div layout=row>
@@ -25,14 +25,55 @@
 		          		        	<h3>{{user.userName}}</h3>
 		          		        	<h4>{{user.permission}}</h4>
 		          		      	</div>
-		          		      	<md-button ng-click="manageUser.showConfirm($event,userid);" class="md-primary">Edit</md-button>
+		          		      	<md-button ng-click="manageUser.showEditUser(user);" class="md-primary">change password</md-button>
 		          		      	<md-button ng-click="manageUser.showConfirmdeleteUser($event,user);" class="md-warn">Delete</md-button>
 		          		      	<md-divider ng-if="!$last"></md-divider>
 		          		    </md-list-item>
 		          		  </md-list>
 		        	</md-content>
 		      	</md-tab>
-		      	<md-tab label="Add User">
+		      	<md-tab label="Change Password" ng-if="manageUser.showOnEditUser == true">
+		      		<md-content class="md-padding">
+		      			<div layout="column">
+		      				<md-content class="md-no-momentum">
+		      					<form name="userForm" ng-submit='manageUser.editUser(edituser);'  ng-hide="manageUser.editloader">
+									<md-input-container class="md-icon-float md-block">
+						  				<label>Username</label>
+						  				<md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
+						  				<input  ng-model="manageUser.edituser.userName" type="text" name="username" disabled>
+									</md-input-container>
+									<md-input-container class="md-icon-float md-block">
+									  	<label>Password</label>
+						  				<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
+						  				<input ng-model="manageUser.edituser.password" type="password" name="password" minlength="4" required>
+						  				<div ng-messages="userForm.password.$error" role="alert" multiple>
+						  	    			<div ng-message="required" class="my-message">This field is required</div>
+						  	    			<div ng-message="minlength" class="my-message">That's too short! </div>
+						  				</div>
+									</md-input-container>
+									<md-input-container class="md-icon-float md-block">
+						  				<label>Confirm Password</label>
+						  				<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
+						  				<input ng-model="manageUser.edituser.confirmPassword" type="password" name="confirmPassword" ng-pattern="{{manageUser.edituser.password}}" required>
+						  				<div ng-messages="userForm.confirmPassword.$error" role="alert" multiple>
+						  	    			<div ng-message="required" class="my-message">This field is required</div>
+						  					<div ng-message="pattern" class="my-message">Passwords not matched!</div>
+						  				</div>									
+									</md-input-container>
+									<div layout="row" md-theme="altTheme">
+						    			 <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+						    			 <md-button type="dismiss" ng-click="manageUser.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
+									</div>
+								</form>
+								<div layout="column" layout-fill layout-align="center center" ng-show="manageUser.editloader">
+									<div>{{manageUser.editsuccessMsg}}</div>
+									<md-progress-linear md-mode="indeterminate"></md-progress-linear>
+								</div>
+							</md-content>
+						</div>
+					</md-content>
+		      	</md-tab>
+		      	<md-tab label="Add User" ng-if="manageUser.showOnEditUser == false">
 		        	<md-content class="md-padding">
 		          		<div layout="column">
 		          			<md-content class="md-no-momentum">
@@ -90,6 +131,6 @@
 		          		</div>
 		        	</md-content>
 		      	</md-tab>
-		    </md-tabs>
+		</md-tabs>
 		</md-content>
 </div>

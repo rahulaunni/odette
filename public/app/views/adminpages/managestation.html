@@ -1,0 +1,88 @@
+<div layout="column" layout-padding="" layout-fill>
+		<md-content>
+		    <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
+		      	<md-tab label="Stations">
+		          	<md-content>
+		          		<div layout=row ng-hide="nostation">
+		          			<md-input-container class="md-icon-float md-block" flex="50">
+		          				<label>Search Station</label>
+		          				<md-icon class="md-default-theme" class="material-icons">&#xE8B6;</md-icon>
+		          				<input ng-model="stationSearch" type="text">
+		          			</md-input-container>
+		          		</div>
+		          		<div ng-show="nostation" layout="row" layout-fill layout-align="center center">
+		          			Add Station and Start Managing
+		          		</div>
+		          		<md-list>
+		          		  	<md-list-item class="md-3-line" ng-repeat="station in stations | filter:stationSearch">
+		          		      	<div class="md-list-item-text">
+		          		        	<h3>{{station.stationname}}</h3>
+		          		        	<h4>{{station.username}}</h4>
+		          		      	</div>
+		          		      	<md-button ng-click="manageStation.showEditStation(station);" class="md-primary">edit</md-button>
+		          		      	<md-button ng-click="manageStation.showConfirmdeleteStation($event,station);" class="md-warn">Delete</md-button>
+		          		      	<md-divider ng-if="!$last"></md-divider>
+		          		    </md-list-item>
+		          		  </md-list>
+		        	</md-content>
+		      	</md-tab>
+		      	      	<md-tab label="Edit" ng-if="manageStation.showOnEditStation == true">
+		      	      		<md-content class="md-padding">
+		      	      			<div layout="column">
+		      	      				<md-content class="md-no-momentum">
+		      	      					<form name="userForm" ng-submit='manageStation.editStation(editstation);'  ng-hide="manageStation.editloader">
+		      								<md-input-container class="md-icon-float md-block">
+		      								  	<label>Station Name</label>
+		      								  	<md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+		      								  	<input ng-model="manageStation.editstation.stationname" type="text" name="stationname"  required>
+		      								  	<div ng-messages="userForm.stationname.$error" role="alert" multiple>
+		      								  	    <div ng-message="required" class="my-message">This field is required</div>
+		      								  	</div>
+		      								  	<div ng-show="manageStation.editerrorMsg" ng-messages="manageStation.editerrorMsg" role="alert">
+		      								  		<p>{{manageStation.editerrorMsg}}</p>
+		      								  	</div>
+		      								</md-input-container>
+		      								<div layout="row" md-theme="altTheme">
+		      					    			 <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+		      					    			 <md-button type="dismiss" ng-click="manageStation.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
+		      								</div>
+		      							</form>
+		      							<div layout="column" layout-fill layout-align="center center" ng-show="manageStation.editloader">
+		      								<div>{{manageStation.editsuccessMsg}}</div>
+		      								<md-progress-linear md-mode="indeterminate"></md-progress-linear>
+		      							</div>
+		      						</md-content>
+		      					</div>
+		      				</md-content>
+		      	      	</md-tab>
+		      	<md-tab label="Add Station" ng-if="manageStation.showOnEditStation == false">
+		        	<md-content class="md-padding">
+		          		<div layout="column">
+		          			<md-content class="md-no-momentum">
+		          				<form name="userForm" ng-submit='manageStation.addStation(stationData);'  ng-hide="manageStation.loader">
+			          			    <md-input-container class="md-icon-float md-block">
+			          			      	<label>Station Name</label>
+			          			      	<md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+			          			      	<input ng-model="manageStation.stationData.stationname" type="text" name="stationname"  required>
+			          			      	<div ng-messages="userForm.stationname.$error" role="alert" multiple>
+			          			      	    <div ng-message="required" class="my-message">This field is required</div>
+			          			      	</div>
+			          			      	<div ng-show="manageStation.errorMsg" ng-messages="manageStation.errorMsg" role="alert">
+			          			      		<p>{{manageStation.errorMsg}}</p>
+			          			      	</div>
+			          			    </md-input-container>
+									<div layout="row" md-theme="altTheme">
+									    <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+									</div>
+								</form>
+								<div layout="column" layout-fill layout-align="center center" ng-show="manageStation.loader">
+									<div>Form Submitted</div>
+									<md-progress-linear md-mode="indeterminate"></md-progress-linear>
+								</div>
+			          		</md-content>
+		          		</div>
+		        	</md-content>
+		      	</md-tab>
+		</md-tabs>
+		</md-content>
+</div>

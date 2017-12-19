@@ -36,5 +36,8 @@ angular.module('userServices',[])
 	userFactory.deleteUser = function (user) {
 		return $http.post('/api/admin/deleteuser',user);
 	}
+	userFactory.savelocalPassword = function (edituser) {
+		return $http.put('/api/admin/savelocalpassword/',edituser);
+	}
 	return userFactory;
 });

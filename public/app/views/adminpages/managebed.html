@@ -1,0 +1,106 @@
+<div layout="column" layout-padding="" layout-fill>
+    <md-content>
+        <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
+            <md-tab label="Beds">
+                <md-content>
+                    <div layout=row>
+                        <md-input-container class="md-icon-float md-block" flex="50">
+                            <label>Select Station</label>
+                            <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+                            <md-select type="text" aria-label="filter" ng-model="stationname" name="station">
+                                <md-optgroup label="station">
+                                    <md-option ng-value="" ng-selected="true">All Stations</md-option>
+                                    <md-option ng-value="station.stationname" ng-repeat="station in stations">Stations {{station.stationname}}</md-option>
+                                    </md-optgroup>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-icon-float md-block" flex="50">
+                            <label>Search Bed</label>
+                            <md-icon class="md-default-theme" class="material-icons">&#xE8B6;</md-icon>
+                            <input ng-model="bedSearch" type="text">
+                        </md-input-container>
+                    </div>
+                    <div ng-show="nobed" layout="row" layout-fill layout-align="center center">
+                        Add Bed and Start Managing
+                    </div>
+                    <md-list>
+                        <md-list-item class="md-3-line" ng-repeat="bed in beds | filter:{stationname: stationname} | filter:bedSearch">
+                            <div class="md-list-item-text">
+                                <h3>{{bed.bedname}}</h3>
+                                <h4>{{bed.username}}</h4>
+                            </div>
+                            <md-button ng-click="manageBed.showEditBed(bed);" class="md-primary">edit</md-button>
+                            <md-button ng-click="manageBed.showConfirmdeleteBed($event,bed);" class="md-warn">Delete</md-button>
+                            <md-divider ng-if="!$last"></md-divider>
+                        </md-list-item>
+                      </md-list>
+                </md-content>
+            </md-tab>
+            <md-tab label="Edit Bed" ng-if="manageBed.showOnEditBed == true">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <md-content class="md-no-momentum">
+                            <form name="userForm" ng-submit='manageBed.editBed(editbed);'  ng-hide="manageBed.editloader">
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Bed Name</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
+                                    <input ng-model="manageBed.editbed.bedname" type="text" name="bedname"  required>
+                                    <div ng-messages="userForm.bedname.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <div layout="row" md-theme="altTheme">
+                                        <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+                                        <md-button type="dismiss" ng-click="manageBed.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
+                                </div>
+                            </form>
+                            <div layout="column" layout-fill layout-align="center center" ng-show="manageBed.editloader">
+                                <div>{{manageBed.editsuccessMsg}}</div>
+                                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                            </div>
+                        </md-content>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="Add Bed" ng-if="manageBed.showOnEditBed == false">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <md-content class="md-no-momentum">
+                            <form name="userForm" ng-submit='manageBed.addBed(bedData);'  ng-hide="manageBed.loader">
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Select Station</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+                                    <md-select type="text" aria-label="filter" ng-model="manageBed.bedData.stationname" name="station" required>
+                                        <md-optgroup label="station">
+                                            <md-option ng-value="station.stationname" ng-repeat="station in stations">Stations {{station.stationname}}</md-option>
+                                            </md-optgroup>
+                                    </md-select>
+                                    <div ng-messages="userForm.station.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Bed Name</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
+                                    <input ng-model="manageBed.bedData.bedname" type="text" name="bedname" ng-pattern="/^[A-Za-z0-9]+((,|-)[A-Za-z0-9]+)*[A-Za-z0-9]+$/" required>
+                                    <md-tooltip md-direction="bottom">Add multiple Beds separated by coma eg: B101,B102,B103</md-tooltip>
+                                    <div ng-messages="userForm.bedname.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                        <div ng-message="pattern" class="my-message">Try B101,B102,....</div>
+                                    </div>
+                                </md-input-container>
+                                <div layout="row" md-theme="altTheme">
+                                    <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+                                </div>
+                            </form>
+                            <div layout="column" layout-fill layout-align="center center" ng-show="manageBed.loader">
+                                <div>Form Submitted</div>
+                                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                            </div>
+                        </md-content>
+                    </div>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+</div>

@@ -1,8 +1,11 @@
 var express = require('express');
 var User = require('../models/users');
+var Station = require('../models/stations');
+var Bed = require('../models/beds');
 var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
+var ObjectId = require('mongodb').ObjectID;
 
 module.exports = function(router) {
 
@@ -56,7 +59,7 @@ router.post('/register', function(req,res){
 //user login route
 router.post('/login',function (req,res) {
 	//finding user from database
-	User.findOne({userName:req.body.username}).select('userName hospitalName password active').exec(function (err,user) {
+	User.findOne({userName:req.body.username}).select('userName _id hospitalName password active').exec(function (err,user) {
 		if(err) throw err;
 		//if no user found resond with no user found error message
 		if(!user){
@@ -74,7 +77,7 @@ router.post('/login',function (req,res) {
 			}
 			else{
 				//successful login and passing a token to the user for login
-				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName},secret,{expiresIn:'24h'});
+				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret,{expiresIn:'24h'});
 				res.json({success:true,message:"Authentication success",token:token});
 
 			}
@@ -342,6 +345,7 @@ router.get('/permission',function (req,res) {
 
 		});
 });
+//***routes for local users management starts from here***
 //route to add a new user by admin
 router.post('/admin/adduser', function(req,res){
 		var user = new User();
@@ -368,10 +372,9 @@ router.post('/admin/adduser', function(req,res){
 //route for fetching all the user details to the admin view
 router.post('/admin/viewuser', function(req,res){
 	User.find({_admin: req.decoded.username}).select('userName  permission').exec(function(err, user) {	
-			if (err) {
-				console.log(err);
-				//responding error back to frontend
-				res.json({success:false,message:'No users found'});
+			if (err) throw err;
+			if(!user.length){
+				res.json({success:false,message:'Add user and start Managing'});
 			}
 			else{
 
@@ -392,6 +395,173 @@ router.post('/admin/deleteuser', function(req,res){
 	})
 });
 
+router.put('/admin/savelocalpassword', function(req, res) {
+	User.findOne({userName: req.body.userName}).select('userName password resetToken').exec(function(err, user) {
+		if (err) throw err; // Throw error if cannot connect
+		user.password = req.body.password;
+		user.save(function(err) {
+			if (err) {
+				console.log(err);
+				res.json({success:false,message:'Failed to connect to database'})
+			} else {
+				res.json({ success: true, message: 'Your password changed successfully'}); 
+			}
+		});
+	});
+});
+
+//***routes for station management starts here***
+router.post('/admin/addstation',function (req,res) {
+	//to make sure unique station name for each admin
+	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+		if (err) throw err;
+		if(!station){
+				var station = new Station();
+				station.stationname = req.body.stationname;
+				station.username = req.decoded.username;
+				station._user = ObjectId(req.decoded.uid);
+				// saving user to database
+				station.save(function(err){
+					if (err) {
+						console.log(err);
+						//responding error back to frontend
+						res.json({success:false,message:'Data Base error try after sometimes'});
+					}
+					else{
+
+						res.json({success:true,message:'Station added'});
+					}
+			});
+		}
+		else{
+			res.json({success:false,message:'You have already added this station name'})
+		}
+
+	});
+
+});
+
+//route for fetching all the station details to the admin view
+router.post('/admin/viewstation', function(req,res){
+	Station.find({username: req.decoded.username}).exec(function(err, station) {	
+			if (err) throw err;
+			if(!station.length){
+				res.json({success:false,message:'Add Stations and Start Managing'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Station found',stations:station});
+			}
+	});
+});
+
+//route to delete a station from database
+router.post('/admin/deletestation', function(req,res){
+	Station.remove({stationname:req.body.stationname,username:req.decoded.username},function (err) {
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.json({success:true,message:"Station removed successfully"});
+		}
+	})
+});
+
+router.put('/admin/editstation',function (req,res) {
+	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+		if (err) throw err;
+		if(!station){
+			Station.findOne({stationname: req.body.oldstation,username:req.decoded.username}).select('stationname').exec(function(err,oldstation) {
+			console.log(oldstation);
+			oldstation.stationname=req.body.stationname;
+			oldstation.save(function (err) {
+				if(err) throw err;
+				else{
+					res.json({success:true,message:'Station name updated',stations:station});
+				}
+			});
+		});
+		}
+		else{
+			res.json({success:false,message:'You have already added this station name'})
+		}
+
+	});
+});
+//routes for bed management starts from here
+router.post('/admin/addbed',function (req,res) {
+	var bedArray = [];
+	var beds = req.body.bedname;
+	var bedArray = beds.split(",");
+	var bedObjArray=[{}];
+
+	for (var key in bedArray){
+		var bedObj={};
+		bedObj.bedname=bedArray[key];
+		bedObj.username=req.decoded.username;
+		bedObj.stationname=req.body.stationname;
+		bedObj._user = ObjectId(req.decoded.uid);
+		bedObjArray[key] = bedObj;
+	}
+
+	Bed.collection.insert(bedObjArray, onInsert);
+	    function onInsert(err,docs){
+	    	if(err){
+	    		console.log(err);
+	    		res.json({success:false,message:'Data Base error try after sometimes'});
+	    	} 
+	    	else{
+	    		res.json({success:true,message:'Bed added'});
+
+	    	}
+	    }
+
+});
+
+//route for fetching all the bed details to the admin view
+router.post('/admin/viewbed', function(req,res){
+	Bed.find({username: req.decoded.username}).exec(function(err, bed) {	
+			if (err) throw err;
+			if(!bed.length){
+				res.json({success:false,message:'Add Beds and Start Managing'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Bed found',beds:bed});
+			}
+	});
+});
+
+//route to delete a bed from database
+router.post('/admin/deletebed', function(req,res){
+	Bed.remove({bedname:req.body.bedname,username:req.decoded.username},function (err) {
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.json({success:true,message:"Station removed successfully"});
+		}
+	})
+});
+
+//edit bed route
+router.put('/admin/editbed',function (req,res) {
+	console.log(req.body);
+	Bed.findOne({bedname: req.body.oldbed,username:req.decoded.username}).select('bedname').exec(function(err,bed) {
+		if (err) throw err; // Throw error if cannot connect
+		bed.bedname= req.body.bedname;
+		bed.save(function(err) {
+			if (err) {
+				console.log(err);
+				res.json({success:false,message:'Failed to connect to database'})
+			} else {
+				res.json({ success: true, message: 'Bed name updated'}); 
+			}
+		});
+	});
+});
 
 return router;
 }

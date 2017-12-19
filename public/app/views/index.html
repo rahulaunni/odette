@@ -25,9 +25,11 @@
   <script src="app/controllers/userCntrl.js"></script> 
   <script src="app/controllers/mainCntrl.js"></script> 
   <script src="app/controllers/emailCntrl.js"></script> 
+  <script src="app/controllers/adminCntrl.js"></script> 
   <!-- Angular Servies -->
   <script src="app/services/userServices.js"></script> 
-  <script src="app/services/authServices.js"></script> 
+  <script src="app/services/authServices.js"></script>
+  <script src="app/services/adminServices.js"></script>  
 
 </head>
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
@@ -69,11 +71,11 @@
           </md-list-item>
           <md-list-item>
             <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-            <p>Manage Nursing Station</p>
+            <p><a href="/admin/managestations">Manage Nursing Station</a></p>
           </md-list-item>
           <md-list-item>
             <md-icon class="md-default-theme" class="material-icons" >&#xE869;</md-icon>
-            <p><a ng-href="/admin/addbed" >Manage Bed</a></p>
+            <p><a ng-href="/admin/managebeds" >Manage Bed</a></p>
           </md-list-item>
           <md-list-item>
             <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
@@ -126,11 +128,11 @@
       </md-list-item>
         <md-list-item>
           <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-          <p>Manage Nursing Station</p>
+          <p><a href="/admin/managestations">Manage Nursing Station</a></p>
       </md-list-item>
       <md-list-item>
           <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-          <p><a ng-href="/admin/addbed" >Manage Bed</a></p>
+          <p><a ng-href="/admin/managebeds" >Manage Bed</a></p>
       </md-list-item>
       <md-list-item>
           <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>

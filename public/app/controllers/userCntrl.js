@@ -35,8 +35,14 @@ angular.module('userControllers',['userServices'])
 		}
 	});
 	app.loader = false;
+	app.editloader = false;
+	app.editsuccessMsg = false;
+	app.editerrorMsg = false;
 	app.errorMsg = false;
 	app.successMsg = false;
+	app.showOnEditUser = false;
+	app.edituser ={};
+	//function for add user form submission
 	this.addUser = function (userData) {
 		User.addUser(this.userData).then(function (data) {
 			if(data.data.success){
@@ -44,7 +50,7 @@ angular.module('userControllers',['userServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/manageusers')
+					$window.location.reload('/admin/manageusers');
 				},3000);
 			}
 			else{
@@ -53,10 +59,38 @@ angular.module('userControllers',['userServices'])
 			}
 		});
 
-	}
-	this.editUser = function (userid) {
-		console.log(userid);
-	}
+	};
+	//function to provide edit user tab and hide add user tab
+	this.showEditUser = function (user) {
+		app.showOnEditUser = true;
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.edituser = user;
+	};
+	//form submit for change password
+	this.editUser = function (edituser) {
+		User.savelocalPassword(this.edituser).then(function(data) {
+			if(data.data.success){
+				app.editloader = true;
+				app.editsuccessMsg = data.data.message;
+				console.log(app.editsuccessMsg);
+				$timeout(function () {
+					app.loader = false;
+					$window.location.reload('/admin/manageusers');
+				},3000);
+			}
+			else{
+				app.editerrorMsg=data.data.message;
+				app.editloader = false;
+			}
+		});
+
+	};
+	//function to cancel change password tab
+	this.cancel=function () {
+		app.showOnEditUser = false;
+		$location.path('/admin/manageusers');
+	};
+
 
 	//function for deleteting an user by admin show a dialog box and delte on confirm
 	this.showConfirmdeleteUser = function(ev,user) {

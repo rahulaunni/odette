@@ -57,6 +57,20 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'manageUser',
 		permission:['admin']
 	})
+	.when('/admin/managestations',{
+		templateUrl:'app/views/adminpages/managestation.html',
+		authenticated:true,
+		controller: 'manageStationCntrl',
+		controllerAs: 'manageStation',
+		permission:['admin']
+	})
+	.when('/admin/managebeds',{
+		templateUrl:'app/views/adminpages/managebed.html',
+		authenticated:true,
+		controller: 'manageBedCntrl',
+		controllerAs: 'manageBed',
+		permission:['admin']
+	})
 	.when('/logout',{
 		templateUrl:'app/views/pages/logout.html',
 		authenticated:true
