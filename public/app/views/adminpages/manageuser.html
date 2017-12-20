@@ -3,10 +3,10 @@
 		    <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
 		      	<md-tab label="User List">
 		          	<md-content>
-		          		<div layout=row>
+		          		<div layout=row ng-hide="nouser">
 		          			<md-input-container class="md-icon-float md-block" flex="50">
 		          				<label>Select account Type</label>
-		          				<md-icon class="md-default-theme" class="material-icons">&#xE152;</md-icon>
+		          				<md-icon class="md-default-theme" class="material-icons">&#xE853;</md-icon>
 		          				<md-select type="text" aria-label="filter" ng-model="permission">
 		          					<md-option value="" ng-selected="true">All accounts</md-option>
 		          		    		<md-option value="doctor">Doctor accounts</md-option>
@@ -18,6 +18,9 @@
 		          				<md-icon class="md-default-theme" class="material-icons">&#xE8B6;</md-icon>
 		          				<input ng-model="userSearch" type="text">
 		          			</md-input-container>
+		          		</div>
+		          		<div ng-show="nouser" layout="row" layout-fill layout-align="center center">
+		          			Add User and Start Managing
 		          		</div>
 		          		<md-list>
 		          		  	<md-list-item class="md-3-line" ng-repeat="user in users | filter:{permission: permission} | filter:userSearch">

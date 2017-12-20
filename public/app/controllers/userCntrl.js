@@ -24,6 +24,7 @@ angular.module('userControllers',['userServices'])
 .controller('manageUserCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,User) {
 	var app=this;
 	$scope.users = [];
+	$scope.nouser = false;
 	User.viewUser().then(function (data) {
 		if(data.data.success){
 			$scope.users=data.data.users;
@@ -31,6 +32,7 @@ angular.module('userControllers',['userServices'])
 		}
 		else{
 			app.users=false;
+			$scope.nouser = true;
 
 		}
 	});

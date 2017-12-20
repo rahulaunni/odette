@@ -2,6 +2,8 @@ var express = require('express');
 var User = require('../models/users');
 var Station = require('../models/stations');
 var Bed = require('../models/beds');
+var Ivset = require('../models/ivsets');
+var Dripo = require('../models/dripos');
 var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
@@ -77,7 +79,7 @@ router.post('/login',function (req,res) {
 			}
 			else{
 				//successful login and passing a token to the user for login
-				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret,{expiresIn:'24h'});
+				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret);
 				res.json({success:true,message:"Authentication success",token:token});
 
 			}
@@ -385,7 +387,7 @@ router.post('/admin/viewuser', function(req,res){
 
 //route to delete an user from database
 router.post('/admin/deleteuser', function(req,res){
-	User.remove({userName:req.body.userName},function (err) {
+	User.remove({_id:req.body._id},function (err) {
 		if(err){
 			console.log(err);
 		}
@@ -396,7 +398,7 @@ router.post('/admin/deleteuser', function(req,res){
 });
 
 router.put('/admin/savelocalpassword', function(req, res) {
-	User.findOne({userName: req.body.userName}).select('userName password resetToken').exec(function(err, user) {
+	User.findOne({_id:req.body._id}).select('userName password resetToken').exec(function(err, user) {
 		if (err) throw err; // Throw error if cannot connect
 		user.password = req.body.password;
 		user.save(function(err) {
@@ -458,7 +460,7 @@ router.post('/admin/viewstation', function(req,res){
 
 //route to delete a station from database
 router.post('/admin/deletestation', function(req,res){
-	Station.remove({stationname:req.body.stationname,username:req.decoded.username},function (err) {
+	Station.remove({_id:req.body._id},function (err) {
 		if(err){
 			console.log(err);
 		}
@@ -472,8 +474,7 @@ router.put('/admin/editstation',function (req,res) {
 	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 		if (err) throw err;
 		if(!station){
-			Station.findOne({stationname: req.body.oldstation,username:req.decoded.username}).select('stationname').exec(function(err,oldstation) {
-			console.log(oldstation);
+			Station.findOne({_id:req.body._id}).select('stationname').exec(function(err,oldstation) {
 			oldstation.stationname=req.body.stationname;
 			oldstation.save(function (err) {
 				if(err) throw err;
@@ -536,7 +537,7 @@ router.post('/admin/viewbed', function(req,res){
 
 //route to delete a bed from database
 router.post('/admin/deletebed', function(req,res){
-	Bed.remove({bedname:req.body.bedname,username:req.decoded.username},function (err) {
+	Bed.remove({_id: req.body._id},function (err) {
 		if(err){
 			console.log(err);
 		}
@@ -549,7 +550,7 @@ router.post('/admin/deletebed', function(req,res){
 //edit bed route
 router.put('/admin/editbed',function (req,res) {
 	console.log(req.body);
-	Bed.findOne({bedname: req.body.oldbed,username:req.decoded.username}).select('bedname').exec(function(err,bed) {
+	Bed.findOne({_id: req.body._id}).select('bedname').exec(function(err,bed) {
 		if (err) throw err; // Throw error if cannot connect
 		bed.bedname= req.body.bedname;
 		bed.save(function(err) {
@@ -563,5 +564,152 @@ router.put('/admin/editbed',function (req,res) {
 	});
 });
 
+//***routes for ivset management strats here***
+//route to add a new ivset by admin
+router.post('/admin/addivset', function(req,res){
+		var ivset = new Ivset();
+		ivset.ivsetname = req.body.ivsetname;
+		ivset.ivsetdpf = req.body.ivsetdpf;
+		ivset.username = req.decoded.username;
+		ivset._user = ObjectId(req.decoded.uid)
+		// saving user to database
+		ivset.save(function(err){
+			if (err) {
+				console.log(err);
+				//responding error back to frontend
+				res.json({success:false,message:'Database error'});
+			}
+			else{
+
+				res.json({success:true,message:'Ivset added'});
+			}
+	});
+});
+
+//route for fetching all the ivset details to the admin view
+router.post('/admin/viewivset', function(req,res){
+	Ivset.find({username: req.decoded.username}).exec(function(err, ivset) {	
+			if (err) throw err;
+			if(!ivset.length){
+				res.json({success:false,message:'Add Ivset and Start Managing'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Ivset found',ivsets:ivset});
+			}
+	});
+});
+
+//route to delete a ivset from database
+router.post('/admin/deleteivset', function(req,res){
+	Ivset.remove({_id:req.body._id},function (err) {
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.json({success:true,message:"Ivset removed successfully"});
+		}
+	})
+});
+
+//edit ivset route
+router.put('/admin/editivset',function (req,res) {
+	console.log(req.body);
+	Ivset.findOne({_id:req.body._id}).select('ivsetname ivsetdpf').exec(function(err,ivset) {
+		console.log(ivset);
+		if (err) throw err; // Throw error if cannot connect
+		ivset.ivsetname= req.body.ivsetname;
+		ivset.ivsetdpf= req.body.ivsetdpf;
+		ivset.save(function(err) {
+			if (err) {
+				console.log(err);
+				res.json({success:false,message:'Failed to connect to database'})
+			} else {
+				res.json({ success: true, message: 'Ivset details updated'}); 
+			}
+		});
+	});
+});
+
+//***routes for dripo management starts here***
+//routes for adding dripos
+router.post('/admin/adddripo',function (req,res) {
+	var dripoArray = [];
+	var dripos = req.body.dripoid;
+	var dripoArray = dripos.split(",");
+	var dripoObjArray=[{}];
+	for (var key in dripoArray){
+		var dripoObj={};
+		dripoObj.dripoid=dripoArray[key];
+		dripoObj.username=req.decoded.username;
+		dripoObj.stationname=req.body.stationname;
+		dripoObj._user = ObjectId(req.decoded.uid);
+		dripoObjArray[key] = dripoObj;
+	}
+
+	Dripo.collection.insert(dripoObjArray, onInsert);
+	    function onInsert(err,docs){
+	    	if(err){
+	    		console.log(err);
+	    		res.json({success:false,message:'Data Base error try after sometimes'});
+	    	} 
+	    	else{
+	    		res.json({success:true,message:'Dripo added'});
+
+	    	}
+	    }
+
+});
+
+//route for fetching all the dripo details to the admin view
+router.post('/admin/viewdripo', function(req,res){
+	Dripo.find({username: req.decoded.username}).exec(function(err, dripo) {	
+			if (err) throw err;
+			if(!dripo.length){
+				res.json({success:false,message:'Add Ivset and Start Managing'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Dripo found',dripos:dripo});
+			}
+	});
+});
+
+//route to delete a dripo from database
+router.post('/admin/deletedripo', function(req,res){
+	Dripo.remove({_id:req.body._id},function (err) {
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.json({success:true,message:"Dripo removed successfully"});
+		}
+	})
+});
+
+//route for edit dripo
+router.put('/admin/editdripo',function (req,res) {
+	Dripo.findOne({dripoid: req.body.dripoid,username:req.decoded.username}).exec(function(err,dripo) {
+		if (err) throw err;
+		if(!dripo){
+			Dripo.findOne({_id:req.body._id}).select('stationname dripoid').exec(function(err,olddripo) {
+			olddripo.stationname=req.body.stationname;
+			olddripo.dripoid = req.body.dripoid;
+			olddripo.save(function (err) {
+				if(err) throw err;
+				else{
+					res.json({success:true,message:'Dripo details updated'});
+				}
+			});
+		});
+		}
+		else{
+			res.json({success:false,message:'You have already added this Dripo'})
+		}
+
+	});
+});
 return router;
 }

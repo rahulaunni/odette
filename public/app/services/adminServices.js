@@ -24,7 +24,30 @@ angular.module('adminServices',[])
 	}  
 	adminFactory.editBed = function (editbed) {
 		return $http.put('/api/admin/editbed',editbed);
-	}     
-	
+	} 
+	adminFactory.addIvset = function (ivsetData) {
+		return $http.post('/api/admin/addivset',ivsetData);
+	}    
+	adminFactory.viewIvset = function (ivsetData) {
+		return $http.post('/api/admin/viewivset',ivsetData);
+	} 
+	adminFactory.deleteIvset = function (ivset) {
+		return $http.post('/api/admin/deleteivset',ivset);
+	}
+	adminFactory.editIvset = function (editivset) {
+		return $http.put('/api/admin/editivset',editivset);
+	}
+	adminFactory.addDripo = function (dripoData) {
+		return $http.post('/api/admin/adddripo',dripoData);
+	}
+	adminFactory.viewDripo = function (dripoData) {
+		return $http.post('/api/admin/viewdripo',dripoData);
+	}
+	adminFactory.deleteDripo = function (dripo) {
+		return $http.post('/api/admin/deletedripo',dripo);
+	}
+	adminFactory.editDripo = function (editdripo) {
+		return $http.put('/api/admin/editdripo',editdripo);
+	}    
 	return adminFactory;
 });

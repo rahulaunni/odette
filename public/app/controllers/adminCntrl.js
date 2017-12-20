@@ -44,7 +44,6 @@ angular.module('adminController',['userServices'])
 		app.showOnEditStation = true;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.editstation = station;
-		app.editstation.oldstation = station.stationname;
 	};
 	//form submission after edit
 	this.editStation = function (editstation) {
@@ -127,7 +126,6 @@ angular.module('adminController',['userServices'])
 	$scope.nobed=false;
 	//function called on page load gives all the stations associated with the user to frontend
 	Admin.viewBed().then(function (data) {
-		console.log(data);
 		if(data.data.success){
 			$scope.beds=data.data.beds;
 
@@ -170,12 +168,10 @@ angular.module('adminController',['userServices'])
 		app.showOnEditBed = true;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.editbed = bed;
-		app.editbed.oldbed = bed.bedname;
 	};
 	//form submission after edit
 	this.editBed = function (editbed) {
 		Admin.editBed(this.editbed).then(function(data) {
-			console.log(data);
 			if(data.data.success){
 				app.editloader = true;
 				app.editsuccessMsg = data.data.message;
@@ -230,5 +226,242 @@ angular.module('adminController',['userServices'])
 		  });
 		};
 
+})
+
+.controller('manageIvsetCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin) {
+	var app = this;
+
+	$scope.ivsets = [];
+	$scope.noivset=false;
+	//function called on page load gives all the stations associated with the user to frontend
+	Admin.viewIvset().then(function (data) {
+		if(data.data.success){
+			$scope.ivsets=data.data.ivsets;
+
+		}
+		else{
+			$scope.noivset=true;
+
+		}
+	});
+
+
+	app.showOnEditIvset = false;
+	app.loader = false;
+	app.successMsg = false;
+	app.errorMsg = false;
+	app.editloader = false;
+	app.editsuccessMsg = false;
+	app.editerrorMsg = false;
+	//function to add bed while form submission
+	this.addIvset = function (ivsetData) {
+		Admin.addIvset(this.ivsetData).then(function (data) {
+			if(data.data.success){
+				app.successMsg = data.data.message;
+				app.loader = true;
+				$timeout(function () {
+					app.loader = false;
+					$window.location.reload('/admin/manageivsets');
+				},3000);
+			}
+			else{
+				app.errorMsg=data.data.message;
+				app.loader = false;
+			}
+			
+		});
+		
+	};
+
+	//function to provide edit ivset tab and hide add ivset tab
+	this.showEditIvset = function (ivset) {
+		app.showOnEditIvset = true;
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.editivset = ivset;
+	};
+	//form submission after edit
+	this.editIvset = function (editivset) {
+		Admin.editIvset(this.editivset).then(function(data) {
+			if(data.data.success){
+				app.editloader = true;
+				app.editsuccessMsg = data.data.message;
+				$timeout(function () {
+					app.loader = false;
+					$window.location.reload('/admin/manageivsets');
+				},3000);
+			}
+			else{
+				app.editerrorMsg=data.data.message;
+				app.editloader = false;
+			}
+		});
+		
+	};
+	//when cancel the edit tab
+	this.cancel=function () {
+		app.showOnEditIvset = false;
+		$location.path('/admin/manageivsets');
+	};
+
+		//function for deleteting an user by admin show a dialog box and delte on confirm
+		this.showConfirmdeleteIvset = function(ev,ivset) {
+		  // Appending dialog to document.body to cover sidenav in docs app
+		  var confirm = $mdDialog.confirm({
+		  	onComplete: function afterShowAnimation() {
+	                        var $dialog = angular.element(document.querySelector('md-dialog'));
+	                        var $actionsSection = $dialog.find('md-dialog-actions');
+	                        var $cancelButton = $actionsSection.children()[0];
+	                        var $confirmButton = $actionsSection.children()[1];
+	                        angular.element($confirmButton).addClass('md-raised md-warn');
+	                        angular.element($cancelButton).addClass('md-raised');
+	                    }
+	            })
+		        .title('Would you like to delete '+ivset.ivsetname)
+		        .textContent('This will remove '+ivset.ivsetname+' permanantly from database')
+		        .ariaLabel('Lucky day')
+		        .targetEvent(ev)
+		        .ok('Yes, Delete!')
+		        .cancel('No, Keep Ivset');
+
+		  $mdDialog.show(confirm).then(function() {
+		  	Admin.deleteIvset(ivset).then(function (data) {
+		  		if(data.data.success){
+		  			$window.location.reload('/admin/manageivsets');
+		  		}
+		  	});
+
+		  }, function() {
+
+		  });
+		};
+
+})
+.controller('manageDripoCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin) {
+	var app = this;
+	$scope.stations = [];
+	$scope.nostation=false;
+	//function called on page load gives all the stations associated with the user to frontend
+	Admin.viewStation().then(function (data) {
+		if(data.data.success){
+			$scope.stations=data.data.stations;
+
+		}
+		else{
+			$scope.nostation=true;
+
+		}
+	});
+	$scope.dripos = [];
+	$scope.nodripo=false;
+	//function called on page load gives all the stations associated with the user to frontend
+	Admin.viewDripo().then(function (data) {
+		if(data.data.success){
+			$scope.dripos=data.data.dripos;
+
+		}
+		else{
+			$scope.nodripo=true;
+
+		}
+	});
+
+	app.showOnEditDripo = false;
+	app.loader = false;
+	app.successMsg = false;
+	app.errorMsg = false;
+	app.editloader = false;
+	app.editsuccessMsg = false;
+	app.editerrorMsg = false;
+	//function to add dripo while form submission
+	this.addDripo = function (dripoData) {
+		Admin.addDripo(this.dripoData).then(function (data) {
+			if(data.data.success){
+				app.successMsg = data.data.message;
+				app.loader = true;
+				$timeout(function () {
+					app.loader = false;
+					$window.location.reload('/admin/managedripos');
+				},3000);
+			}
+			else{
+				app.errorMsg=data.data.message;
+				app.loader = false;
+			}
+
+		});
+		
+	};
+
+	//function to provide edit ivset tab and hide add ivset tab
+	this.showEditDripo = function (dripo) {
+		app.showOnEditDripo = true;
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.editdripo = dripo;
+	};
+	//form submission after edit
+	this.editDripo = function (editdripo) {
+		Admin.editDripo(this.editdripo).then(function(data) {
+			if(data.data.success){
+				app.editloader = true;
+				app.editsuccessMsg = data.data.message;
+				$timeout(function () {
+					app.loader = false;
+					$window.location.reload('/admin/managedripos');
+				},3000);
+			}
+			else{
+				app.editerrorMsg=data.data.message;
+				app.editloader = false;
+			}
+		});
+		
+	};
+	//when cancel the edit tab
+	this.cancel=function () {
+		app.showOnEditDripo = false;
+		$location.path('/admin/managedripos');
+	};
+
+
+		//function for deleteting an user by admin show a dialog box and delte on confirm
+		this.showConfirmdeleteDripo = function(ev,dripo) {
+		  // Appending dialog to document.body to cover sidenav in docs app
+		  var confirm = $mdDialog.confirm({
+		  	onComplete: function afterShowAnimation() {
+	                        var $dialog = angular.element(document.querySelector('md-dialog'));
+	                        var $actionsSection = $dialog.find('md-dialog-actions');
+	                        var $cancelButton = $actionsSection.children()[0];
+	                        var $confirmButton = $actionsSection.children()[1];
+	                        angular.element($confirmButton).addClass('md-raised md-warn');
+	                        angular.element($cancelButton).addClass('md-raised');
+	                    }
+	            })
+		        .title('Would you like to delete '+dripo.dripoid)
+		        .textContent('This will remove '+dripo.dripoid+' permanantly from database')
+		        .ariaLabel('Lucky day')
+		        .targetEvent(ev)
+		        .ok('Yes, Delete!')
+		        .cancel('No, Keep Dripo');
+
+		  $mdDialog.show(confirm).then(function() {
+		  	Admin.deleteDripo(dripo).then(function (data) {
+		  		if(data.data.success){
+		  			$window.location.reload('/admin/managedripos');
+		  		}
+		  	});
+
+		  }, function() {
+
+		  });
+		};
+
+})
+
+.controller('adminHomeCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
+	var app=this;
+	
+
 });
+
+
 

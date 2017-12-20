@@ -1,0 +1,125 @@
+<div layout="column" layout-padding="" layout-fill>
+    <md-content>
+        <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
+            <md-tab label="Dripos">
+                <md-content>
+                    <div layout=row  ng-hide="nodripo">
+                        <md-input-container class="md-icon-float md-block" flex="50">
+                            <label>Select Station</label>
+                            <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+                            <md-select type="text" aria-label="filter" ng-model="stationname" name="station">
+                                <md-optgroup label="station">
+                                    <md-option ng-value="" ng-selected="true">All Stations</md-option>
+                                    <md-option ng-value="station.stationname" ng-repeat="station in stations">Stations {{station.stationname}}</md-option>
+                                    </md-optgroup>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-icon-float md-block" flex="50">
+                            <label>Search Dripo</label>
+                            <md-icon class="md-default-theme" class="material-icons">&#xE8B6;</md-icon>
+                            <input ng-model="dripoSearch" type="text">
+                        </md-input-container>
+                    </div>
+                    <div ng-show="nodripo" layout="row" layout-fill layout-align="center center">
+                        Add Bed and Start Managing
+                    </div>
+                    <md-list>
+                        <md-list-item class="md-3-line" ng-repeat="dripo in dripos | filter:{stationname: stationname} | filter:dripoSearch">
+                            <div class="md-list-item-text">
+                                <h3>{{dripo.dripoid}}</h3>
+                                <h4>{{dripo.stationname}}</h4>
+                                <h4>{{dripo.username}}</h4>
+                            </div>
+                            <md-button ng-click="manageDripo.showEditDripo(dripo);" class="md-primary">edit</md-button>
+                            <md-button ng-click="manageDripo.showConfirmdeleteDripo($event,dripo);" class="md-warn">Delete</md-button>
+                            <md-divider ng-if="!$last"></md-divider>
+                        </md-list-item>
+                      </md-list>
+                </md-content>
+            </md-tab>
+            <md-tab label="Edit Dripo" ng-if="manageDripo.showOnEditDripo == true">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <md-content class="md-no-momentum">
+                            <form name="userForm" ng-submit='manageDripo.editDripo(editdripo);'  ng-hide="manageDripo.editloader">
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Select Station</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+                                    <md-select type="text" aria-label="filter" ng-model="manageDripo.editdripo.stationname" name="station" required>
+                                        <md-optgroup label="station">
+                                            <md-option ng-value="station.stationname" ng-repeat="station in stations">Stations {{station.stationname}}</md-option>
+                                            </md-optgroup>
+                                    </md-select>
+                                    <div ng-messages="userForm.station.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Dripo #id</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE30E;</md-icon>
+                                    <input ng-model="manageDripo.editdripo.dripoid" type="text" name="dripoid"  required>
+                                    <div ng-messages="userForm.dripoid.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                    <div ng-show="manageDripo.editerrorMsg" ng-messages="manageDripo.editerrorMsg" role="alert">
+                                        <p>{{manageDripo.editerrorMsg}}</p>
+                                    </div>
+                                </md-input-container>
+                                <div layout="row" md-theme="altTheme">
+                                    <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+                                    <md-button type="dismiss" ng-click="manageDripo.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
+                                </div>
+                            </form>
+                            <div layout="column" layout-fill layout-align="center center" ng-show="manageDripo.editloader">
+                                <div>{{manageDripo.editsuccessMsg}}</div>
+                                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                            </div>
+                        </md-content>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="Add Dripo" ng-if="manageDripo.showOnEditDripo == false">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <md-content class="md-no-momentum">
+                            <form name="userForm" ng-submit='manageDripo.addDripo(dripoData);'  ng-hide="manageDripo.loader">
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Select Station</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+                                    <md-select type="text" aria-label="filter" ng-model="manageDripo.dripoData.stationname" name="station" required>
+                                        <md-optgroup label="station">
+                                            <md-option ng-value="station.stationname" ng-repeat="station in stations">Stations {{station.stationname}}</md-option>
+                                            </md-optgroup>
+                                    </md-select>
+                                    <div ng-messages="userForm.station.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Dripo #id</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE30E;</md-icon>
+                                    <input ng-model="manageDripo.dripoData.dripoid" type="text" name="dripoid" ng-pattern="/^[A-Za-z0-9]+((,|-)[A-Za-z0-9]+)*[A-Za-z0-9]+$/" required>
+                                    <md-tooltip md-direction="bottom">Add multiple dripos separated by coma eg: DRIPO-12345,DRIPO-56789,DRIPO-098765</md-tooltip>
+                                    <div ng-messages="userForm.dripoid.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                        <div ng-message="pattern" class="my-message">Try DRIPO-12345,DRIPO-56789,DRIPO-098765</div>
+                                    </div>
+                                    <div ng-show="manageDripo.errorMsg" ng-messages="manageDripo.errorMsg" role="alert">
+                                        <p>Device already added</p>
+                                    </div>
+                                </md-input-container>
+                                <div layout="row" md-theme="altTheme">
+                                    <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+                                </div>
+                            </form>
+                            <div layout="column" layout-fill layout-align="center center" ng-show="manageDripo.loader">
+                                <div>Form Submitted</div>
+                                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                            </div>
+                        </md-content>
+                    </div>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+</div>

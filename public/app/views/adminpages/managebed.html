@@ -3,7 +3,7 @@
         <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
             <md-tab label="Beds">
                 <md-content>
-                    <div layout=row>
+                    <div layout=row  ng-hide="nobed">
                         <md-input-container class="md-icon-float md-block" flex="50">
                             <label>Select Station</label>
                             <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
@@ -27,6 +27,7 @@
                         <md-list-item class="md-3-line" ng-repeat="bed in beds | filter:{stationname: stationname} | filter:bedSearch">
                             <div class="md-list-item-text">
                                 <h3>{{bed.bedname}}</h3>
+                                <h4>{{bed.stationname}}</h4>
                                 <h4>{{bed.username}}</h4>
                             </div>
                             <md-button ng-click="manageBed.showEditBed(bed);" class="md-primary">edit</md-button>

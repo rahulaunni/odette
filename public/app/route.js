@@ -46,8 +46,10 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		permission:['admin']
 	})
 	.when('/admin/home',{
-		templateUrl:'app/views/adminpages/home.html',
+		templateUrl:'app/views/adminpages/adminhome.html',
 		authenticated:true,
+		controller: 'adminHomeCntrl',
+		controllerAs: 'adminHome',
 		permission:['admin']
 	})
 	.when('/admin/manageusers',{
@@ -71,9 +73,23 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'manageBed',
 		permission:['admin']
 	})
+	.when('/admin/manageivsets',{
+		templateUrl:'app/views/adminpages/manageivset.html',
+		authenticated:true,
+		controller: 'manageIvsetCntrl',
+		controllerAs: 'manageIvset',
+		permission:['admin']
+	})
 	.when('/logout',{
 		templateUrl:'app/views/pages/logout.html',
 		authenticated:true
+	})
+	.when('/admin/managedripos',{
+		templateUrl:'app/views/adminpages/managedripo.html',
+		authenticated:true,
+		controller: 'manageDripoCntrl',
+		controllerAs: 'manageDripo',
+		permission:['admin']
 	})
 	.otherwise({redirectTo:'/'});
 //function to remove defualut /#/ thing
