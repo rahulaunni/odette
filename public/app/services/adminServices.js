@@ -48,6 +48,9 @@ angular.module('adminServices',[])
 	}
 	adminFactory.editDripo = function (editdripo) {
 		return $http.put('/api/admin/editdripo',editdripo);
-	}    
+	}
+	adminFactory.getDetails = function () {
+		return $http.post('/api/admin/getdetails');
+	}     
 	return adminFactory;
 });

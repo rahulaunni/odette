@@ -309,6 +309,10 @@ router.put('/activate/:token', function(req, res) {
 	
 });
 
+
+
+
+//middleware to get all the details decoded from the token
 router.use(function (req,res,next) {
 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
 	if(token){
@@ -319,7 +323,10 @@ router.use(function (req,res,next) {
 			}
 			else{
 				req.decoded=decoded;
-				next();
+				User.find({userName:req.decoded.username}).exec(function (err,user) {
+					req.decoded.admin = user[0]._admin;
+					next();
+				});
 			}
 		});
 	}
@@ -711,5 +718,63 @@ router.put('/admin/editdripo',function (req,res) {
 
 	});
 });
+
+//route to provide all the details needed for admin home page
+router.post('/admin/getdetails', function(req,res){
+	User.find({_admin:req.decoded.username}).exec(function (err,alluser) {
+		if (err)	throw err;
+		var totaluser = alluser.length;
+		User.find({_admin:req.decoded.username,permission:'nurse'}).exec(function (err,nurseuser) {
+			if(err) throw err;
+			var totalnurse = nurseuser.length;
+			User.find({_admin:req.decoded.username,permission:'doctor'}).exec(function (err,doctoruser) {
+				var totaldoctor = doctoruser.length;
+				Station.find({username: req.decoded.username}).exec(function(err, station) {
+					if (err)	throw err;
+					totalstation = station.length;
+					Bed.find({username: req.decoded.username}).exec(function(err, bed) {
+						totalbed = bed.length;
+						Ivset.find({username: req.decoded.username}).exec(function(err, ivset) {
+							totalivset = ivset.length;
+							Dripo.find({username: req.decoded.username}).exec(function(err, dripo) {
+								totaldripo = dripo.length;
+								res.json({success:true,totaluser:totaluser,totalnurse:totalnurse,totaldoctor:totaldoctor,
+								totalstation:totalstation,totalbed:totalbed,totalivset:totalivset,totaldripo:totaldripo});
+							});
+						});
+
+						
+					});
+					
+				});
+			});
+
+		});
+
+	});
+
+});
+
+//***routes for nurse starts from here***
+//route for fetching all the station details to the admin view
+router.post('/nurse/viewstation', function(req,res){
+	Station.find({username: req.decoded.admin}).exec(function(err, station) {	
+			if (err) throw err;
+			if(!station.length){
+				res.json({success:false,message:'No stations found, Contact admin'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Station found',stations:station});
+			}
+	});
+});
+//route to set new token including the user selected station
+router.post('/nurse/setstation', function(req,res){
+	var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname},secret);
+	res.json({success:true,message:"token updated",token:token});
+});
+
 return router;
 }

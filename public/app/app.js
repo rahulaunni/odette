@@ -1,6 +1,6 @@
 
 //files holds the angular app configuratin every dependencies, services and controllers are passed to myApp
-angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','authServices','adminServices','appRoutes','userControllers','mainController','emailController','adminController'])
+angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','authServices','adminServices','nurseServices','appRoutes','userControllers','mainController','emailController','adminController','nurseController'])
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('altTheme')
     .primaryPalette('purple')

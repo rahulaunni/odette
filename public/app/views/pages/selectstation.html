@@ -1,0 +1,30 @@
+
+<md-content flex="100" layout="row" layout-align="center center">
+	<md-card flex="30" flex-xs="90" style="padding:2%" ng-hide="nostation">
+	    <form name="selectstationForm" ng-submit='nurse.selectStation(selectstationData);' layout="column">
+	     	<md-input-container class="md-icon-float md-block">
+	     	    <label>Select Station</label>
+	     	    <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+	     	    <md-select type="text" aria-label="filter" ng-model="nurse.selectstationData.stationname" name="station" required>
+	     	        <md-optgroup label="station">
+	     	            <md-option ng-value="station.stationname" ng-repeat="station in stations">Stations {{station.stationname}}</md-option>
+	     	            </md-optgroup>
+	     	    </md-select>
+	     	    <div ng-messages="selectstationForm.station.$error" role="alert" multiple>
+	     	        <div ng-message="required" class="my-message">This field is required</div>
+	     	    </div>
+	     	</md-input-container>
+	     	<div md-theme="altTheme" layout="row" ng-hide="main.loader">
+	     		<md-button type="submit" class="md-raised md-warn" flex="100">Continue</md-button>
+	     	</div>
+	    </form>
+	</md-card>
+	<div class="show-hide-message" ng-show="nostation">
+	   <div>No stations found, Contact Admin</div>
+	   <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+	</div>
+	<div class="show-hide-message" ng-show="password.successMsg">
+	   <div>{{password.successMsg}}</div>
+	   <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+	</div>
+</md-content>

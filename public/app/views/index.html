@@ -2,181 +2,236 @@
 <html lang="en">
 <head>
   <base href="/">
-	<title>Evelabs Care</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evelabs Care</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Cascaded Style Sheets -->
-	<link rel = "stylesheet" href = "assets/css/angular-material.css">
-	<link rel = "stylesheet" href = "assets/css/bootstrap.css">
-	<link rel = "stylesheet" href = "assets/css/style.css">
+  <link rel = "stylesheet" href = "assets/css/angular-material.css">
+  <link rel = "stylesheet" href = "assets/css/bootstrap.css">
+  <link rel = "stylesheet" href = "assets/css/style.css">
 
   <!-- Angular scripts -->
-	<script src="assets/js/angular.js"></script>
-	<script src="assets/js/angular-animate.js"></script>
-	<script src="assets/js/angular-aria.js"></script>
-	<script src="assets/js/angular-messages.js"></script>
-	<script src="assets/js/angular-route.js"></script>
-	<script src="assets/js/angular-material.js"></script> 
+  <script src="assets/js/angular.js"></script>
+  <script src="assets/js/angular-animate.js"></script>
+  <script src="assets/js/angular-aria.js"></script>
+  <script src="assets/js/angular-messages.js"></script>
+  <script src="assets/js/angular-route.js"></script>
+  <script src="assets/js/angular-material.js"></script> 
 
   <!-- Angular config/routes -->
-	<script src="app/route.js"></script> 
-	<script src="app/app.js"></script>
+  <script src="app/route.js"></script> 
+  <script src="app/app.js"></script>
 
   <!-- Angular controllers  -->
   <script src="app/controllers/userCntrl.js"></script> 
   <script src="app/controllers/mainCntrl.js"></script> 
   <script src="app/controllers/emailCntrl.js"></script> 
   <script src="app/controllers/adminCntrl.js"></script> 
+  <script src="app/controllers/nurseCntrl.js"></script> 
   <!-- Angular Servies -->
   <script src="app/services/userServices.js"></script> 
   <script src="app/services/authServices.js"></script>
-  <script src="app/services/adminServices.js"></script>  
+  <script src="app/services/adminServices.js"></script>
+  <script src="app/services/nurseServices.js"></script>    
 
 </head>
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
-<!-- when login as admin -->
-<div ng-show="main.adminaccess" layout="row" layout-xs="column" layout-fill>
-  <div flex="none"  hide-lg hide-xl>
-  <md-toolbar class = "md-default"   hide-lg  hide-xl>
-    <div class = "md-toolbar-tools" layout="row" layout-align="start center">
-      <div flex="none" ng-show="main.isLoggedIn"> 
-        <md-button class="md-icon-button" ng-click="openSideNavPanel()">
-          <md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
-        </md-button>
-      </div>
+    <!-- when login as admin -->
+    <div ng-show="main.adminaccess" layout="row" layout-xs="column" layout-fill>
+        <div flex="none"  hide-lg hide-xl>
+            <md-toolbar class = "md-default"   hide-lg  hide-xl>
+                <div class = "md-toolbar-tools" layout="row" layout-align="start center">
+                    <div flex="none" ng-show="main.isLoggedIn"> 
+                        <md-button class="md-icon-button" ng-click="openSideNavPanel()">
+                            <md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-toolbar>
+            <!-- Sidenav for xs (mobile) and sm (raspberry pi touch) -->
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" >
+            <md-toolbar layout="row">
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span>Admin Toolbar</span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanel()">
+                        <md-tooltip>Close Side Panel</md-tooltip>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar> 
+            <md-content layout-padding="">
+                <md-list>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
+                        <p><a href="/admin/home" ng-click="closeSideNavPanel()">Home</a></p>
+                    </md-list-item>
+                     <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                        <p><a href="/admin/manageusers" ng-click="closeSideNavPanel()">Manage Users</a></p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                        <p><a href="/admin/managestations" ng-click="closeSideNavPanel()">Manage Nursing Station</a></p>
+                        </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons" >&#xE869;</md-icon>
+                        <p><a ng-href="/admin/managebeds" ng-click="closeSideNavPanel()">Manage Bed</a></p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                        <p><a ng-href="/admin/manageivsets" ng-click="closeSideNavPanel()" >Manage IV-Set</a></p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                        <p><a ng-href="/admin/managedripos" ng-click="closeSideNavPanel()">Manage Dripo</a></p>
+                    </md-list-item>
+                    <md-divider></md-divider>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE923;</md-icon>
+                        <p>Update</p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
+                        <p>About</p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
+                        <p>Help</p>
+                    </md-list-item>
+                    <md-list-item>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE8AC;</md-icon>
+                        <p><a href="/logout" ng-click="main.logout()">Logout</a></p>
+                    </md-list-item>
+                </md-list>        
+            </md-content> 
+        </md-sidenav>
+    </div>  
+    <!-- Side Nav for laptops and tabs which is always open -->
+    <div flex="20" hide-xs hide-sm hide-md class="lap-side-nav">
+        <md-toolbar layout="row">
+            <div class="md-toolbar-tools">
+                <h2>
+                    <span>Admin Toolbar</span>
+                </h2>
+                <span flex></span>
+            </div>
+        </md-toolbar> 
+        <md-content layout-padding="" style="background: #ffffff" md-whiteframe-4dp>
+            <md-list>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
+                    <p><a href="/admin/home">Home</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                    <p><a href="/admin/manageusers">Manage Users</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                  <p><a href="/admin/managestations">Manage Nursing Station</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                    <p><a ng-href="/admin/managebeds" >Manage Bed</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                    <p><a ng-href="/admin/manageivsets" >Manage IV-Set</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                    <p><a ng-href="/admin/managedripos" >Manage Dripo</a></p>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE923;</md-icon>
+                    <p>Update</p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
+                    <p>About</p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
+                    <p>Help</p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE8AC;</md-icon>
+                    <p><a href="/logout" ng-click="main.logout()">Logout</a></p>
+                </md-list-item>
+            </md-list>
+        </md-content>
     </div>
-  </md-toolbar>
-  <!-- Sidenav for xs (mobile) and sm (raspberry pi touch) -->
-  <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" >
-    <md-toolbar layout="row">
-      <div class="md-toolbar-tools">
-        <h2>
-          <span>Admin Toolbar</span>
-        </h2>
-        <span flex></span>
-        <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanel()">
-          <md-tooltip>Close Side Panel</md-tooltip>
-          <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
-        </md-button>
-      </div>
-    </md-toolbar> 
-      <md-content layout-padding="">
-        <md-list>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
-            <p><a href="/admin/home">Home</a></p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-            <p><a href="/admin/manageusers">Manage Users</a></p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-            <p><a href="/admin/managestations">Manage Nursing Station</a></p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons" >&#xE869;</md-icon>
-            <p><a ng-href="/admin/managebeds" >Manage Bed</a></p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-            <p><a ng-href="/admin/manageivsets" >Manage IV-Set</a></p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-            <p><a ng-href="/admin/managedripos" >Manage Dripo</a></p>
-          </md-list-item>
-          <md-divider></md-divider>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE923;</md-icon>
-            <p>Update</p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
-            <p>About</p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
-            <p>Help</p>
-          </md-list-item>
-          <md-list-item>
-            <md-icon class="md-default-theme" class="material-icons">&#xE8AC;</md-icon>
-            <p><a href="/logout" ng-click="main.logout()">Logout</a></p>
-          </md-list-item>
-        </md-list>        
-        </md-content> 
-      </md-sidenav>
-  </div>  
-<!-- Side Nav for laptops and tabs which is always open -->
-<div flex="20" hide-xs hide-sm hide-md class="lap-side-nav">
-  <md-toolbar layout="row">
-    <div class="md-toolbar-tools">
-      <h2>
-        <span>Admin Toolbar</span>
-      </h2>
-        <span flex></span>
+    <!-- this div is used to inject pages for admin -->
+    <div flex="80" flex-xs="100" flex-sm="100" flex-md="95">
+        <md-content ng-show="main.adminaccess" layout="column"  layout-fill>
+            <div flex="100" ng-view layout="row" layout-align="center center"></div>
+        </md-content>
     </div>
-  </md-toolbar> 
-  <md-content layout-padding="" style="background: #ffffff" md-whiteframe-4dp>
-    <md-list>
-      <md-list-item>
-        <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
-        <p><a href="/admin/home">Home</a></p>
-      </md-list-item>
-      <md-list-item>
-        <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-        <p><a href="/admin/manageusers">Manage Users</a></p>
-      </md-list-item>
-        <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-          <p><a href="/admin/managestations">Manage Nursing Station</a></p>
-      </md-list-item>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-          <p><a ng-href="/admin/managebeds" >Manage Bed</a></p>
-      </md-list-item>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-          <p><a ng-href="/admin/manageivsets" >Manage IV-Set</a></p>
-      </md-list-item>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-          <p><a ng-href="/admin/managedripos" >Manage Dripo</a></p>
-      </md-list-item>
-      <md-divider></md-divider>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE923;</md-icon>
-          <p>Update</p>
-      </md-list-item>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
-          <p>About</p>
-      </md-list-item>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
-          <p>Help</p>
-      </md-list-item>
-      <md-list-item>
-          <md-icon class="md-default-theme" class="material-icons">&#xE8AC;</md-icon>
-          <p><a href="/logout" ng-click="main.logout()">Logout</a></p>
-      </md-list-item>
-    </md-list>
-  </md-content>
-<!-- this div is used to inject pages for admin -->
-</div>
-<div flex="80" flex-xs="100" flex-sm="100" flex-md="95">
-<md-content ng-show="main.adminaccess" layout="column"  layout-fill>
-  <div flex="100" ng-view layout="row" layout-align="center center"></div>
-</md-content>
-</div>
-</div>
+    </div>
 
 <!-- when login as nurse -->
-<div ng-show="main.nurseaccess">
-  <p>You login as nurse</p>
-</div>
-<md-content layout="column"  layout-fill ng-show="main.nurseaccess">
-  <div flex="100" ng-view layout="row" layout-align="center center"></div>
-</md-content>
+<div ng-show="main.nurseaccess" layout="row" layout-xs="column" layout-fill>
+    <!-- Side Nav for laptops and tabs which is always open -->
+    <div flex="none" class="lap-side-nav" ng-hide="isActive('/selectstation')==true">
+       <md-toolbar class = "md-default">
+           <div class = "md-toolbar-tools" layout="row" layout-align="start center">
+               <div flex="none" ng-show="main.isLoggedIn"> 
+                   <md-button class="md-icon-button" ng-click="openSideNavPanelNurse()">
+                       <md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
+                   </md-button>
+               </div>
+           </div>
+       </md-toolbar>
+    </div>
+    <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="nurseleft" md-disable-backdrop ng-hide="isActive('/selectstation')==true">
+        <md-toolbar layout="row">
+            <div class="md-toolbar-tools">
+                <h2>
+                    <span>{{main.hospitalname}}</span>
+                    <span>{{main.station}}</span>
+                </h2>
+                <span flex></span>
+                <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanelNurse()">
+                    <md-tooltip>Close Side Panel</md-tooltip>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar> 
+        <md-content layout-padding="" style="background: #ffffff" md-whiteframe-4dp>
+            <md-list>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
+                    <p><a href="/">Home</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                    <p><a href="/admin/manageusers">Manage Users</a></p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
+                    <p>Help</p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
+                    <p>About</p>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon class="md-default-theme" class="material-icons">&#xE8AC;</md-icon>
+                    <p><a href="/logout" ng-click="main.logout()">Logout</a></p>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </md-sidenav>
+<!-- this div is used to inject pages for admin -->
+        <div flex>
+            <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
+                <div flex="100" ng-view layout="row" layout-align="center center"></div>
+            </md-content>
+        </div>
+    </div>
 <!-- for injecting page before login -->
 <md-content layout="column"  layout-fill ng-hide="main.isLoggedIn">
   <div flex="100" ng-view layout="row" layout-align="center center"></div>

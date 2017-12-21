@@ -1,4 +1,4 @@
-angular.module('adminController',['userServices'])
+angular.module('adminController',['userServices','adminServices'])
 .controller('manageStationCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin) {
 	var app = this;
 	$scope.stations = [];
@@ -459,7 +459,17 @@ angular.module('adminController',['userServices'])
 
 .controller('adminHomeCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
 	var app=this;
-	
+	Admin.getDetails().then(function(data) {
+		if(data.data.success){
+			$scope.totaluser = data.data.totaluser;
+			$scope.totalnurse = data.data.totalnurse;
+			$scope.totaldoctor = data.data.totaldoctor;
+			$scope.totalstation = data.data.totalstation;
+			$scope.totalbed= data.data.totalbed;
+			$scope.totalivset = data.data.totalivset;
+			$scope.totaldripo = data.data.totaldripo;
+		}
+	});
 
 });
 

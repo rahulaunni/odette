@@ -9,16 +9,17 @@
                         <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                             <md-card-title>
                                 <md-card-title-text>
-                                    <span class="md-headline">Card with image</span>
-                                    <span class="md-subhead">Medium</span>
+                                    <span class="md-headline">All users</span>
+                                    <span class="md-subhead">Total Users: {{totaluser}}</span>
                                 </md-card-title-text>
                                 <md-card-title-media>
                                     <div class="md-media-md card-media"></div>
                                 </md-card-title-media>
                             </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                                <md-button>Action 1</md-button>
-                                <md-button>Action 2</md-button>
+                            <md-card-actions layout="row" layout-align="end center" >
+                              <md-button href="/admin/manageusers" class="md-fab md-primary" aria-label="Use Android">
+                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                              </md-button>                              
                             </md-card-actions>
                         </md-card>
                     </div>
@@ -26,16 +27,17 @@
                         <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                             <md-card-title>
                                 <md-card-title-text>
-                                    <span class="md-headline">Card with image</span>
-                                    <span class="md-subhead">Medium</span>
+                                    <span class="md-headline">Nurse Account</span>
+                                    <span class="md-subhead">Total accounts: {{totalnurse}}</span>
                                 </md-card-title-text>
                                 <md-card-title-media>
                                     <div class="md-media-md card-media"></div>
                                 </md-card-title-media>
                             </md-card-title>
                             <md-card-actions layout="row" layout-align="end center">
-                                <md-button>Action 1</md-button>
-                                <md-button>Action 2</md-button>
+                               <md-button href="/admin/manageusers" class="md-fab md-primary" aria-label="Use Android">
+                                 <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                               </md-button> 
                             </md-card-actions>
                         </md-card>
                     </div>
@@ -43,16 +45,17 @@
                         <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                             <md-card-title>
                                 <md-card-title-text>
-                                    <span class="md-headline">Card with image</span>
-                                    <span class="md-subhead">Medium</span>
+                                    <span class="md-headline">Doctor Account</span>
+                                    <span class="md-subhead">Total accounts: {{totaldoctor}}</span>
                                 </md-card-title-text>
                                 <md-card-title-media>
                                     <div class="md-media-md card-media"></div>
                                 </md-card-title-media>
                             </md-card-title>
                             <md-card-actions layout="row" layout-align="end center">
-                                <md-button>Action 1</md-button>
-                                <md-button>Action 2</md-button>
+                               <md-button href="/admin/manageusers" class="md-fab md-primary" aria-label="Use Android">
+                                 <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                               </md-button> 
                             </md-card-actions>
                         </md-card>
                     </div>
@@ -66,16 +69,17 @@
                         <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                             <md-card-title>
                                 <md-card-title-text>
-                                    <span class="md-headline">Card with image</span>
-                                    <span class="md-subhead">Medium</span>
+                                    <span class="md-headline">Nursing Stations</span>
+                                    <span class="md-subhead">Total Stations: {{totalstation}}</span>
                                 </md-card-title-text>
                                 <md-card-title-media>
                                     <div class="md-media-md card-media"></div>
                                 </md-card-title-media>
                             </md-card-title>
                             <md-card-actions layout="row" layout-align="end center">
-                                <md-button>Action 1</md-button>
-                                <md-button>Action 2</md-button>
+                              <md-button href="/admin/managestations" class="md-fab md-primary" aria-label="Use Android">
+                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                              </md-button>  
                             </md-card-actions>
                         </md-card>
                     </div>
@@ -83,19 +87,38 @@
                         <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                             <md-card-title>
                                 <md-card-title-text>
-                                    <span class="md-headline">Card with image</span>
-                                    <span class="md-subhead">Medium</span>
+                                    <span class="md-headline">Beds</span>
+                                    <span class="md-subhead">Total Beds:{{totalbed}}</span>
                                 </md-card-title-text>
                                 <md-card-title-media>
                                     <div class="md-media-md card-media"></div>
                                 </md-card-title-media>
                             </md-card-title>
                             <md-card-actions layout="row" layout-align="end center">
-                                <md-button>Action 1</md-button>
-                                <md-button>Action 2</md-button>
+                              <md-button href="/admin/managebeds" class="md-fab md-primary" aria-label="Use Android">
+                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                              </md-button> 
                             </md-card-actions>
                         </md-card>
                     </div>
+                    <div flex layout="column">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">Ivsets</span>
+                                    <span class="md-subhead">Models: {{totalivset}}</span>
+                                </md-card-title-text>
+                                <md-card-title-media>
+                                    <div class="md-media-md card-media"></div>
+                                </md-card-title-media>
+                            </md-card-title>
+                            <md-card-actions layout="row" layout-align="end center">
+                              <md-button href="/admin/manageivsets" class="md-fab md-primary" aria-label="Use Android">
+                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                              </md-button> 
+                            </md-card-actions>
+                        </md-card>
+                    </div>  
                 </div>
                 <md-divider ng-if="!$last"></md-divider>
             </md-list-item>
@@ -106,16 +129,17 @@
                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                            <md-card-title>
                                <md-card-title-text>
-                                   <span class="md-headline">Card with image</span>
-                                   <span class="md-subhead">Medium</span>
+                                   <span class="md-headline">Dripo</span>
+                                   <span class="md-subhead">Total Dripo: {{totaldripo}}</span>
                                </md-card-title-text>
                                <md-card-title-media>
                                    <div class="md-media-md card-media"></div>
                                </md-card-title-media>
                            </md-card-title>
                            <md-card-actions layout="row" layout-align="end center">
-                               <md-button>Action 1</md-button>
-                               <md-button>Action 2</md-button>
+                            <md-button href="/admin/managedripos" class="md-fab md-primary" aria-label="Use Android">
+                              <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
+                            </md-button> 
                            </md-card-actions>
                        </md-card>
                    </div>
@@ -123,19 +147,20 @@
                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
                            <md-card-title>
                                <md-card-title-text>
-                                   <span class="md-headline">Card with image</span>
-                                   <span class="md-subhead">Medium</span>
+                                   <span class="md-headline">The Button</span>
+                                   <span class="md-subhead">Coming Soon</span>
                                </md-card-title-text>
                                <md-card-title-media>
                                    <div class="md-media-md card-media"></div>
                                </md-card-title-media>
                            </md-card-title>
                            <md-card-actions layout="row" layout-align="end center">
-                               <md-button>Action 1</md-button>
-                               <md-button>Action 2</md-button>
+                            <md-button href="http://evelabs.co" target="_blank" class="md-fab md-primary" aria-label="Use Android">
+                              <md-icon class="md-default-theme" class="material-icons">&#xE80E;</md-icon>
+                            </md-button> 
                            </md-card-actions>
                        </md-card>
-                   </div>  
+                   </div>
                 </div>
                 </div>
                 <md-divider></md-divider>

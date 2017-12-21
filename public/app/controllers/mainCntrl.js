@@ -1,11 +1,17 @@
-angular.module('mainController',['authServices','userServices'])
-.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$location,$timeout,$rootScope,$route) {
+angular.module('mainController',['authServices','userServices','nurseServices'])
+.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$location,$timeout,$rootScope,$route,Admin,Nurse) {
 	$scope.showMobileMainHeader = true;
 	$scope.openSideNavPanel = function() {
 		$mdSidenav('left').open();
 	};
+	$scope.openSideNavPanelNurse = function() {
+		$mdSidenav('nurseleft').open();
+	};
 	$scope.closeSideNavPanel = function() {
 		$mdSidenav('left').close();
+	};
+	$scope.closeSideNavPanelNurse = function() {
+		$mdSidenav('nurseleft').close();
 	};
 	var app=this;
 	app.loadMe=false;
@@ -15,6 +21,7 @@ angular.module('mainController',['authServices','userServices'])
 			Auth.getUser().then(function (data) {
 				app.hospitalname = data.data.hospitalname;
 				app.username = data.data.username;
+				app.station = data.data.station
 				User.getPermission().then(function (data) {
 					if(data.data.permission === 'admin'){
 						app.adminaccess = true;
@@ -35,6 +42,7 @@ angular.module('mainController',['authServices','userServices'])
 				});
 
 			});
+
 		}
 		else{
 			app.isLoggedIn = false;
@@ -62,7 +70,7 @@ angular.module('mainController',['authServices','userServices'])
 				}
 				else if(data.data.permission === "nurse"){
 					$timeout(function () {
-						$location.path('/')
+						$location.path('/selectstation')
 					},3000);
 				}
 				
@@ -95,8 +103,12 @@ angular.module('mainController',['authServices','userServices'])
 		app.nurseaccess = false;
 		app.doctoraccess = false;
 		Auth.logout();
-		$route.reload('/login')
+		$window.location.reload('/login');
 
+	};
+	//function to hide nurse toolbar whiile selection a station
+	$scope.isActive = function(viewLocation) {
+	    return viewLocation === $location.path();
 	};
 
 

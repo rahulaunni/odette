@@ -4,7 +4,10 @@ var app = angular.module('appRoutes', ['ngRoute'])
 	$routeProvider
 	.when('/',{
 		templateUrl:'app/views/pages/home.html',
-		authenticated:true
+		authenticated:true,
+		controller : 'nurseCntrl',
+		controllerAs : 'nurse',
+		permission:['nurse']
 	})
 	.when('/login',{
 		templateUrl:'app/views/pages/login.html',
@@ -40,10 +43,12 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs : 'passwordrst',
 		authenticated:false
 	})
-	.when('/admin/managebed',{
-		templateUrl:'app/views/adminpages/addbed.html',
+	.when('/selectstation',{
+		templateUrl:'app/views/pages/selectstation.html',
 		authenticated:true,
-		permission:['admin']
+		controller : 'nurseCntrl',
+		controllerAs : 'nurse',
+		permission:['nurse']
 	})
 	.when('/admin/home',{
 		templateUrl:'app/views/adminpages/adminhome.html',
@@ -117,7 +122,12 @@ app.run(['$rootScope','Auth','User','$location',function ($rootScope,Auth,User,$
 			        if (next.$$route.permission[0] !== data.data.permission) {
 			            if (next.$$route.permission[1] !== data.data.permission) {
 			                event.preventDefault(); // If at least one role does not match, prevent accessing route
-			                $location.path('/'); // Redirect to home instead
+			                if(data.data.permission == 'admin'){
+			                	$location.path('/admin/home')
+			                }
+			                else{
+			                	$location.path('/'); // Redirect to home instead
+			                }
 			            }
 			        }
 			    });
