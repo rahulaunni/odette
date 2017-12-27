@@ -91,7 +91,7 @@
                                     </div>
                                 </md-input-container>
                                 <div layout="row" md-theme="altTheme">
-                                    <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+                                    <md-button type="submit" ng-disabled="userForm.$invalid" class="md-raised md-warn">Submit</md-button>
                                 </div>
                             </form>
                             <div layout="column" layout-fill layout-align="center center" ng-show="manageBed.loader">

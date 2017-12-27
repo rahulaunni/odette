@@ -6,6 +6,7 @@ var Bed = new Schema({
 	bedname:String,
 	username: String,
 	stationname: String,
+	status:String,
 	_user:{ type: Schema.ObjectId, ref: 'User' },
 });
 

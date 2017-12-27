@@ -1,5 +1,5 @@
 angular.module('mainController',['authServices','userServices','nurseServices'])
-.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$location,$timeout,$rootScope,$route,Admin,Nurse) {
+.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$location,$timeout,$window,$rootScope,$route,Admin,Nurse) {
 	$scope.showMobileMainHeader = true;
 	$scope.openSideNavPanel = function() {
 		$mdSidenav('left').open();

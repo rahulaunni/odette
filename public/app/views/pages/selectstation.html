@@ -15,7 +15,7 @@
 	     	    </div>
 	     	</md-input-container>
 	     	<div md-theme="altTheme" layout="row" ng-hide="main.loader">
-	     		<md-button type="submit" class="md-raised md-warn" flex="100">Continue</md-button>
+	     		<md-button type="submit" ng-disabled="selectstationForm.$invalid" class="md-raised md-warn" flex="100">Continue</md-button>
 	     	</div>
 	    </form>
 	</md-card>

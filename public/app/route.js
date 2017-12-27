@@ -96,6 +96,13 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'manageDripo',
 		permission:['admin']
 	})
+	.when('/managepatients',{
+		templateUrl:'app/views/pages/managepatient.html',
+		authenticated:true,
+		controller: 'managePatientCntrl',
+		controllerAs: 'managePatient',
+		permission:['nurse']
+	})
 	.otherwise({redirectTo:'/'});
 //function to remove defualut /#/ thing
 	$locationProvider

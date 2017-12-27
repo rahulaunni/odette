@@ -15,7 +15,7 @@
   <script src="assets/js/angular-aria.js"></script>
   <script src="assets/js/angular-messages.js"></script>
   <script src="assets/js/angular-route.js"></script>
-  <script src="assets/js/angular-material.js"></script> 
+  <script src="assets/js/angular-material.js"></script>
 
   <!-- Angular config/routes -->
   <script src="app/route.js"></script> 
@@ -191,7 +191,6 @@
             <div class="md-toolbar-tools">
                 <h2>
                     <span>{{main.hospitalname}}</span>
-                    <span>{{main.station}}</span>
                 </h2>
                 <span flex></span>
                 <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanelNurse()">
@@ -201,6 +200,7 @@
             </div>
         </md-toolbar> 
         <md-content layout-padding="" style="background: #ffffff" md-whiteframe-4dp>
+            <span>{{main.station}}</span>
             <md-list>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
@@ -208,7 +208,7 @@
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                    <p><a href="/admin/manageusers">Manage Users</a></p>
+                    <p><a href="/managepatients">Manage Patients</a></p>
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>

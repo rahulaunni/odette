@@ -4,6 +4,7 @@ var Station = require('../models/stations');
 var Bed = require('../models/beds');
 var Ivset = require('../models/ivsets');
 var Dripo = require('../models/dripos');
+var Patient = require('../models/patients');
 var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
@@ -510,6 +511,7 @@ router.post('/admin/addbed',function (req,res) {
 		bedObj.username=req.decoded.username;
 		bedObj.stationname=req.body.stationname;
 		bedObj._user = ObjectId(req.decoded.uid);
+		bedObj.status = 'unoccupied'
 		bedObjArray[key] = bedObj;
 	}
 
@@ -756,7 +758,7 @@ router.post('/admin/getdetails', function(req,res){
 });
 
 //***routes for nurse starts from here***
-//route for fetching all the station details to the admin view
+//route for fetching all the station details for nurse to select station
 router.post('/nurse/viewstation', function(req,res){
 	Station.find({username: req.decoded.admin}).exec(function(err, station) {	
 			if (err) throw err;
@@ -773,8 +775,76 @@ router.post('/nurse/viewstation', function(req,res){
 //route to set new token including the user selected station
 router.post('/nurse/setstation', function(req,res){
 	var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname},secret);
-	res.json({success:true,message:"token updated",token:token});
+	res.json({success:true,message:"token updated",token:token});	
 });
+
+//route for fetching all the bed details to nurse while adding patient
+router.post('/nurse/viewbed', function(req,res){
+	Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'unoccupied'}).exec(function(err,bed) {	
+		if (err) throw err;
+		if(!bed.length){
+			res.json({success:false,message:'No bed found, Contact admin'});
+		}
+			
+		else{
+
+			res.json({success:true,message:'Station found',beds:bed});
+		}
+	});
+});
+
+//route for fetching all the doctor accout details to nurse while adding patient
+router.post('/nurse/viewdoctor', function(req,res){
+	User.find({_admin: req.decoded.admin,permission:'doctor'}).exec(function(err,doctor) {	
+		if (err) throw err;
+		if(!doctor.length){
+			res.json({success:false,message:'No doctor found, Contact admin'});
+		}
+			
+		else{
+
+			res.json({success:true,message:'Doctor found',doctors:doctor});
+		}
+	});
+});
+
+//route for saving patient personal and other detaills, also change the bed status to occupied
+router.post('/nurse/addpatient', function(req,res){
+	var patient = new Patient();
+	patient.patientname= req.body.patientname;
+	patient.patientage= req.body.patientage;
+	patient.patientweight= req.body.patientweight;
+	patient.patientstatus = 'active';
+	patient.bedname = req.body.bedname;
+	patient.doctor = req.body.doctor;
+	patient.admittedon = req.body.admittedon;
+	patient.stationname = req.decoded.station;
+	patient._admin = req.decoded.admin;
+	// saving user to database
+	patient.save(function(err){
+		if (err) {
+			console.log(err);
+			//responding error back to frontend
+			res.json({success:false,message:'Database error'});
+		}
+		else{
+			Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
+				if (err) return handleError(err);
+				console.log(bed);
+				bed.status = 'occupied';
+				bed.save(function (err) {
+					if(err) throw err;
+					else{
+						res.json({success:true,message:'Patient added and bed status updated'});
+					}
+				});
+
+			});
+		}
+});
+
+});
+
 
 return router;
 }
