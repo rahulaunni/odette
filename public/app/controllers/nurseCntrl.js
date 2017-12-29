@@ -108,4 +108,82 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		});
 		
 	};
+
+
+
+	//function to get time details
+	// this.getTime = function (choice,button) {
+	// 	console.log(button);
+	// 	choice.time.push(button);
+		// if(button == 0){
+		// 	$scope.variable = !$scope.variable;
+		// 	// $scope.variable = !$scope.variable;
+		// 	// if($scope.variable0){
+		// 	// 	choice.time.push(button);
+
+		// 	// }
+		// 	// else{
+		// 	// 	var index = choice.time.indexOf(ambutton);
+		// 	// 	choice.time.splice(index, 1);
+
+		// 	// }
+		// }
+		// else if(button == 1){
+		// 	$scope.variable1 = !$scope.variable1;
+		// 	if($scope.variable1){
+		// 		choice.time.push(button);
+
+		// 	}
+		// 	else{
+		// 		var index = choice.time.indexOf(ambutton);
+		// 		choice.time.splice(index, 1);
+
+		// 	}
+		// }
+		
+	//};
+	  $scope.variables=[];
+	  this.getTime = function (choice, ambutton, index,i) {
+	  			$scope.variables[i][index] = !$scope.variables[i][index];
+	           // $scope.variables[index] = !$scope.variables[index];
+	           if(!$scope.variables[i][index]){
+	           	choice.time.push(ambutton);
+	           }
+	           else{
+	           	var index = choice.time.indexOf(ambutton);
+	           	choice.time.splice(index, 1);
+	            }
+	       };
+	$scope.variablesPM=[];
+	this.getTimePM = function (choice, ambutton, index) {
+	         $scope.variablesPM[index] = !$scope.variablesPM[index];
+	         if($scope.variablesPM[index]){
+	             //save the value to an array;
+	         }
+	         else{
+	           //remove the value from array
+	          }
+	     };
+
+	//function and variable to add more medicines
+
+	$scope.ambuttons = [0,1,2,3,4,5,6,7,8,9,10,11];
+	$scope.pmbuttons = [12,13,14,15,16,17,18,19,20,21,22,23];
+	$scope.choices = [{id: 'choice1',time:[]}];	 
+	$scope.addNewChoice = function() {
+	   var newItemNo = $scope.choices.length+1;
+	   $scope.choices.push({'id':'choice'+newItemNo,'time':[]});
+	};
+	   
+	$scope.removeChoice = function() {
+	   var lastItem = $scope.choices.length-1;
+	   $scope.choices.splice(lastItem);
+	};
+
+	this.addMedication = function () {
+		console.log($scope.choices);
+	};
+
+
+
 });
