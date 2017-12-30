@@ -91,11 +91,13 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		});
 
 	};
-
+	app.patient = false;
 	app.showOnAddMedication = false;
 	this.showAddMedication = function (patientData) {
 		Nurse.addPatient(this.patientData).then(function (data) {
 			if(data.data.success){
+				app.patient=data.data.patient;
+				$scope.choices.patientid=data.data.patient._id;
 				app.successMsg = data.data.message;
 				app.loader = true;
 				app.showOnAddMedication = true;
@@ -112,56 +114,27 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 
 	//function to get time details
-	// this.getTime = function (choice,button) {
-	// 	console.log(button);
-	// 	choice.time.push(button);
-		// if(button == 0){
-		// 	$scope.variable = !$scope.variable;
-		// 	// $scope.variable = !$scope.variable;
-		// 	// if($scope.variable0){
-		// 	// 	choice.time.push(button);
-
-		// 	// }
-		// 	// else{
-		// 	// 	var index = choice.time.indexOf(ambutton);
-		// 	// 	choice.time.splice(index, 1);
-
-		// 	// }
-		// }
-		// else if(button == 1){
-		// 	$scope.variable1 = !$scope.variable1;
-		// 	if($scope.variable1){
-		// 		choice.time.push(button);
-
-		// 	}
-		// 	else{
-		// 		var index = choice.time.indexOf(ambutton);
-		// 		choice.time.splice(index, 1);
-
-		// 	}
-		// }
-		
-	//};
 	  $scope.variables=[];
 	  this.getTime = function (choice, ambutton, index,i) {
-	  			$scope.variables[i][index] = !$scope.variables[i][index];
-	           // $scope.variables[index] = !$scope.variables[index];
-	           if(!$scope.variables[i][index]){
-	           	choice.time.push(ambutton);
+	  			$scope.variables[i][index] = !$scope.variables[i][index];//to toggle button action
+	           if(!$scope.variables[i][index]){//checking whether button is sctive
+	           	choice.time.push(ambutton);//save that time
 	           }
 	           else{
-	           	var index = choice.time.indexOf(ambutton);
+	           	var index = choice.time.indexOf(ambutton);//if button pressed again delete the time
 	           	choice.time.splice(index, 1);
 	            }
 	       };
-	$scope.variablesPM=[];
-	this.getTimePM = function (choice, ambutton, index) {
-	         $scope.variablesPM[index] = !$scope.variablesPM[index];
-	         if($scope.variablesPM[index]){
+	$scope.variabless=[];
+	this.getTimePM = function (choice, pmbutton, index,i) {
+	         $scope.variabless[i][index] = !$scope.variabless[i][index];
+	         if(!$scope.variabless[i][index]){
+	         	choice.time.push(pmbutton);
 	             //save the value to an array;
 	         }
 	         else{
-	           //remove the value from array
+	         	var index = choice.time.indexOf(pmbutton);
+	         	choice.time.splice(index, 1);
 	          }
 	     };
 
@@ -180,8 +153,15 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	   $scope.choices.splice(lastItem);
 	};
 
-	this.addMedication = function () {
-		console.log($scope.choices);
+	this.addMedication = function (patientId) {
+		for(var key in $scope.choices){
+			$scope.choices[key].patientid = patientId;
+		}
+		Nurse.addMedication($scope.choices).then(function (data) {
+			console.log(data.data);
+		});
+
+
 	};
 
 

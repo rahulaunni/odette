@@ -5,6 +5,8 @@ var Bed = require('../models/beds');
 var Ivset = require('../models/ivsets');
 var Dripo = require('../models/dripos');
 var Patient = require('../models/patients');
+var Medication = require('../models/medications');
+var Task = require('../models/tasks');
 var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
@@ -821,7 +823,7 @@ router.post('/nurse/addpatient', function(req,res){
 	patient.stationname = req.decoded.station;
 	patient._admin = req.decoded.admin;
 	// saving user to database
-	patient.save(function(err){
+	patient.save(function(err,patient){
 		if (err) {
 			console.log(err);
 			//responding error back to frontend
@@ -832,10 +834,11 @@ router.post('/nurse/addpatient', function(req,res){
 				if (err) return handleError(err);
 				console.log(bed);
 				bed.status = 'occupied';
+				bed._patient = patient._id;
 				bed.save(function (err) {
 					if(err) throw err;
 					else{
-						res.json({success:true,message:'Patient added and bed status updated'});
+						res.json({success:true,message:'Patient added and bed status updated',patient:patient});
 					}
 				});
 
@@ -844,6 +847,68 @@ router.post('/nurse/addpatient', function(req,res){
 });
 
 });
+
+router.post('/nurse/addmedication', function(req,res){
+	console.log(req.body);
+	var medicationObjArray=[{}];
+	var patientid;
+	for (var key in req.body) {
+		var medicationObj={};
+		medicationObj.medicinename = req.body[key].medicinename;
+		medicationObj.medicinerate = req.body[key].medicinerate;
+		medicationObj.medicinevolume = req.body[key].medicinevolume;
+		medicationObj.stationname = req.decoded.station;
+		medicationObj._admin = req.decoded.admin;
+		medicationObjArray[key] = medicationObj;
+		patientid = req.body[key].patientid;
+
+	}
+	//created an array of object med with all details and inserting it into the database  
+	Medication.collection.insert(medicationObjArray, onInsert);
+	function onInsert(err,docs){
+		if(err) throw err;
+		else{
+			//update patient collection and insert thr refernce of medicine id
+			for (var key in medicationObjArray){
+				console.log(patientid);
+				Patient.collection.update({_id:patientid},{$push:{_medication:medicationObjArray[key]._id}},{upsert:false});
+			}
+			//docs.ops has the data available and req.body.medications[].time has all the time associated with that medicine
+			timeObjArray=[{}];
+			var counter=0;
+			docs.ops.forEach(function callback(currentValue, index, array) {
+			    var timeArray=req.body[index].time;
+			    //creating an array of object based on the time data
+			    for(var j=0;j<timeArray.length;j++)
+			    {
+			         var timeObj={};
+			         timeObj._medication=currentValue._id;
+			         timeObj.time=timeArray[j];
+			         timeObjArray[counter]=timeObj;
+			         counter++;
+			    }
+			                            
+			});
+			Task.collection.insert(timeObjArray, onInsert);
+			function onInsert(err,times) {
+				if(err) throw err;
+				else{
+					for (var key in medicationObjArray) 
+					{
+					    for (var key2 in timeObjArray)
+					    if(medicationObjArray[key]._id===timeObjArray[key2]._medication)
+					    Medication.collection.update({_id:medicationObjArray[key]._id},{$push:{_timetable:timeObjArray[key2]._id}},{upsert:false});
+					}
+
+				}
+			}
+
+		}//end of adding medication success
+	}//end of medication insert function
+
+
+});
+
 
 
 return router;

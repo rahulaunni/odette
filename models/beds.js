@@ -7,6 +7,7 @@ var Bed = new Schema({
 	username: String,
 	stationname: String,
 	status:String,
+	_patient:{ type: Schema.ObjectId, ref: 'Patient' },
 	_user:{ type: Schema.ObjectId, ref: 'User' },
 });
 

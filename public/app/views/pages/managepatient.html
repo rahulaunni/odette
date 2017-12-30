@@ -88,11 +88,11 @@
                     </div>
                 </md-content>
             </md-tab>
-            <md-tab label="Add Medication" ng-if="managePatient.showOnAddMedication == false">
+            <md-tab label="Add Medication" ng-if="managePatient.showOnAddMedication == true">
                 <md-content class="md-padding">
                     <div layout="column">
                         <md-content class="md-no-momentum">
-                            <form name="medForm" ng-submit='managePatient.addMedication();'  ng-hide="managePatient.loader">
+                            <form name="medForm" ng-submit='managePatient.addMedication(managePatient.patient._id);'  ng-hide="managePatient.medloader">
                                 <md-subheader class="md-no-sticky">Medication Details</md-subheader>
                                 <filedset data-ng-repeat="choice in choices" ng-init="outerIndex=$index">
                                     <div layout="row" layout-fill layout-xs="column">
@@ -121,18 +121,16 @@
                                             </div>
                                         </md-input-container>
                                     </div>
-                                    ({{outerIndex}})
                                     <md-divider></md-divider>
                                     <md-subheader class="md-no-sticky">Time Details</md-subheader>
                                     <div layout="row" layout-fill layout-align="center center" layout-wrap flex>
                                        <md-button  ng-repeat="ambutton in ambuttons" ng-init="variables[outerIndex][$index] = []" ng-click="managePatient.getTime(choice, ambutton, $index,outerIndex);" class="md-fab  md-primary" ng-class="{'active md-warn': !variables[outerIndex][$index],'disable md-primary': variables[outerIndex][$index]}">{{ambutton}}</md-button>
-                                       ({{$index}})
                                     </div>
                                     <div layout="row" layout-fill layout-align="center center" layout-wrap flex>
-                                     <!--    <md-button  ng-repeat="pmbutton in pmbuttons track by $index" ng-click="managePatient.getTimePM(choice, pmbutton, $index);" class="md-fab  md-primary" ng-class="{'active md-warn': variablePM,'disable md-primary': !variablesPM[$index]}">{{pmbutton}}</md-button> -->
+                                        <md-button  ng-repeat="pmbutton in pmbuttons" ng-init="variabless[outerIndex][$index] = []" ng-click="managePatient.getTimePM(choice, pmbutton, $index,outerIndex);" class="md-fab  md-primary" ng-class="{'active md-warn': !variabless[outerIndex][$index],'disable md-primary': variabless[outerIndex][$index]}">{{pmbutton}}</md-button>
                                     </div>
                                     <md-divider></md-divider>
-                                    <md-button class="md-fab md-mini md-warn remove" ng-show="$last" ng-hide="$first" ng-click="removeChoice();">
+                                    <md-button class="md-fab md-mini md-warn remove" ng-show="$last" ng-if="outerIndex!==0" ng-click="removeChoice();">
                                         <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
                                     </md-button>
                                 </filedset>
@@ -141,7 +139,7 @@
                                     <md-button type="submit" ng-disabled="medForm.$invalid" class="md-raised md-warn">Submit</md-button>
                                 </div>
                             </form>
-                            <div layout="column" layout-fill layout-align="center center" ng-show="managePatient.loader">
+                            <div layout="column" layout-fill layout-align="center center" ng-show="managePatient.medloader">
                                 <div>Form Submitted</div>
                                 <md-progress-linear md-mode="indeterminate"></md-progress-linear>
                             </div>
