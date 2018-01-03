@@ -15,6 +15,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		}
 	});
 
+
 	//user select a station and in service call a setstation route 
 	this.selectStation = function (selectstationData) {
 		console.log(this.selectstationData);
@@ -41,6 +42,26 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 })
 .controller('managePatientCntrl',function ($http,$route,$scope,$rootScope,$window,$location,$timeout,$mdDialog,$scope,Auth,Admin,Nurse) {
 	var app = this;
+	$scope.nopatient = false;
+	//function to pass patient details to frontend
+	Nurse.viewPatient().then(function (data) {
+		if(data.data.success){
+			app.patient=data.data.patient;
+			$scope.patients=data.data.patients;
+			for(var key in $scope.patients){
+				if(!$scope.patients[key]._medication.length){
+					$scope.patients[key].add=true;
+				}
+				else{
+					$scope.patients[key].add=false;
+				}
+			}
+		}
+		else{
+			$scope.nopatient = true;
+		}
+	});
+
 	$scope.beds = [];
 	$scope.nobed=false;
 	//function called on page load gives all the stations associated with the user to frontend
@@ -97,6 +118,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		Nurse.addPatient(this.patientData).then(function (data) {
 			if(data.data.success){
 				app.patient=data.data.patient;
+				app.bed = data.data.bed;
 				$scope.choices.patientid=data.data.patient._id;
 				app.successMsg = data.data.message;
 				app.loader = true;
@@ -152,17 +174,97 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	   var lastItem = $scope.choices.length-1;
 	   $scope.choices.splice(lastItem);
 	};
-
-	this.addMedication = function (patientId) {
+	app.medloader = false;
+	this.addMedication = function (patientId,bedId) {
 		for(var key in $scope.choices){
 			$scope.choices[key].patientid = patientId;
+			$scope.choices[key].bedid = bedId;
 		}
 		Nurse.addMedication($scope.choices).then(function (data) {
-			console.log(data.data);
+			if(data.data.success){
+				app.medloader = true;
+				$timeout(function () {
+					app.medloader = false;
+					app.loader = false;
+					$window.location.reload('/nurse/managepatients');
+				},3000);
+			}
+			else{
+				app.medloader = false;
+
+			}
 		});
 
 
 	};
+	this.showfromlistAddMedication = function (patient) {
+		app.patient = patient;
+		app.showOnAddMedication = true;
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+
+	}
+	app.showOnEditPatient = false;
+	//function to provide edit patient tab and hide add ivset tab
+	this.showEditPatient = function (patient) {
+		app.oldbed = patient.bedname;
+		app.showOnEditPatient = true;
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.editpatient = patient;
+	};
+	app.editpatloader = false;
+	//form submission after edit
+	this.editPatient = function (editpatient) {
+		this.editpatient.oldbed = app.oldbed;
+		console.log(this.editpatient);
+		Nurse.editPatient(this.editpatient).then(function(data) {
+			console.log(data);
+			if(data.data.success){
+				app.editpatloader = true;
+				app.editsuccessMsg = data.data.message;
+				$timeout(function () {
+					app.editpatloader = false;
+					$window.location.reload('/admin/managedripos');
+				},3000);
+			}
+			else{
+				app.editerrorMsg=data.data.message;
+				app.editloader = false;
+			}
+		});
+		
+	};
+
+		//function for dischargin a patient by nurse show a dialog box and delte on confirm
+		this.showConfirmdischargePatient = function(ev,patient) {
+		  // Appending dialog to document.body to cover sidenav in docs app
+		  var confirm = $mdDialog.confirm({
+		  	onComplete: function afterShowAnimation() {
+		  		var $dialog = angular.element(document.querySelector('md-dialog'));
+		  		var $actionsSection = $dialog.find('md-dialog-actions');
+		  		var $cancelButton = $actionsSection.children()[0];
+		  		var $confirmButton = $actionsSection.children()[1];
+		  		angular.element($confirmButton).addClass('md-raised md-warn');
+		  		angular.element($cancelButton).addClass('md-raised');
+		  	}
+		  })
+		  .title('Would you like to discharge '+patient.patientname)
+		  .textContent('This will remove '+patient.patientname+' permanantly from database')
+		  .ariaLabel('Lucky day')
+		  .targetEvent(ev)
+		  .ok('Yes, Discharge!')
+		  .cancel('No, Keep Patient');
+
+		  $mdDialog.show(confirm).then(function() {
+		  	Nurse.dischargePatient(patient).then(function (data) {
+		  		if(data.data.success){
+		  			$window.location.reload('/nurse/managepatients');
+		  		}
+		  	});
+
+		  }, function() {
+
+		  });
+		};
 
 
 

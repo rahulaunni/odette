@@ -1,16 +1,191 @@
 <div layout="column" layout-padding="" layout-fill>
     <md-content>
         <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
-            <md-tab label="Patients">
-                <md-content>
-                    list of patients
-                </md-content>
-            </md-tab>
-            <md-tab label="Add Patient">
+           <md-tab label="Patients">
+               <md-content>
+                   <div layout=row  ng-hide="nopatient">
+                       <md-input-container class="md-icon-float md-block" flex="50">
+                           <label>Select Patient Status</label>
+                           <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+                           <md-select type="text" aria-label="filter" ng-model="patientstatus" name="patient">
+                               <md-optgroup label="patient">
+                                   <md-option ng-value="">All Patients</md-option>
+                                    <md-option value="active" ng-selected="true">Active Patients</md-option>
+                                    <md-option value="discharged">Discharged Patients</md-option>
+                           </md-select>
+                       </md-input-container>
+                       <md-input-container class="md-icon-float md-block" flex="50">
+                           <label>Search Patient</label>
+                           <md-icon class="md-default-theme" class="material-icons">&#xE8B6;</md-icon>
+                           <input ng-model="patientSearch" type="text">
+                       </md-input-container>
+                   </div>
+                   <div ng-show="nopatient" layout="row" layout-fill layout-align="center center">
+                       Add Patient and Start Managing
+                   </div>
+                   <md-list>
+                       <md-list-item class="md-3-line" ng-repeat="patient in patients | filter:{patientstatus: patientstatus} | filter:patientSearch">
+                           <div class="md-list-item-text">
+                               <h3>{{patient.patientname}}</h3>
+                               <h4>Age: {{patient.patientage}}</h4>
+                               <h4>Weight: {{patient.patientweight}}</h4>
+                               <h4>Status: {{patient.patientstatus}}</h4>
+                           </div>
+                           <md-button ng-click="managePatient.showfromlistAddMedication(patient);" ng-show="patient.add" class="md-primary">Add Medication</md-button>
+                           <md-button ng-click="managePatient.showEditPatient(patient);" class="md-primary">Edit</md-button>
+                           <md-button ng-click="managePatient.showConfirmdischargePatient($event,patient);" class="md-warn">Discharge</md-button>
+                           <md-divider ng-if="!$last"></md-divider>
+                       </md-list-item>
+                     </md-list>
+               </md-content>
+           </md-tab>
+           <md-tab label="Edit Patient" ng-if="managePatient.showOnEditPatient == true && managePatient.showOnAddMedication == false">
+               <md-content class="md-padding">
+                <div layout="column">
+                    <md-content class="md-no-momentum">
+                        <form name="patientForm" ng-submit='managePatient.editPatient(editpatient);'  ng-hide="managePatient.editpatloader">
+                            <md-subheader class="md-no-sticky">Personal Details</md-subheader>
+                            <div layout="row" layout-fill layout-xs="column">
+                                <md-input-container class="md-icon-float md-block" flex>
+                                    <label>Patient Name</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE87C;</md-icon>
+                                    <input ng-model="managePatient.editpatient.patientname" type="text" name="patientname" required>
+                                    <div ng-messages="patientForm.patientname.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block" flex>
+                                    <label>Age</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
+                                    <input ng-model="managePatient.editpatient.patientage" type="number" name="patientage" required>
+                                    <div ng-messages="patientForm.patientage.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block" flex>
+                                    <label>Weight</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
+                                    <input ng-model="managePatient.editpatient.patientweight" type="text" name="patientweight" required>
+                                    <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <md-divider></md-divider>
+                            <md-subheader class="md-no-sticky">Other Details</md-subheader>
+                            <div layout="row" layout-fill layout-xs="column">
+                                <md-input-container class="md-icon-float md-block" flex>
+                                    <label>Select Bed</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
+                                    <md-select type="text" aria-label="filter" ng-model="managePatient.editpatient.bedname" name="bed" required>
+                                        <md-optgroup label="bed">
+                                            <md-option ng-value="managePatient.editpatient.bedname" ng-selected="true"> {{managePatient.editpatient.bedname}}</md-option>
+                                            <md-option ng-value="bed.bedname"  ng-repeat="bed in beds"> {{bed.bedname}}</md-option>
+                                        </md-optgroup>
+                                    </md-select>
+                                    <div ng-messages="patientForm.bed.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                        <div ng-show="nobed" ng-messages="nobed" role="alert">
+                                            <p>No bed found, Contact admin</p>
+                                        </div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block" flex>
+                                    <label>Select Doctor</label>
+                                    <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
+                                    <md-select type="text" aria-label="filter" ng-model="managePatient.editpatient.doctorname" name="doctor" required>
+                                        <md-optgroup label="doctor">
+                                            <md-option ng-value="doctor.userName" ng-selected="true" ng-repeat="doctor in doctors"> {{doctor.userName}}</md-option>
+                                        </md-optgroup>
+                                        <md-option ng-value="null">Don't assign doctor</md-option>
+                                    </md-select>
+                                    <div ng-messages="patientForm.doctor.$error" role="alert" multiple>
+                                        <div ng-message="required" class="my-message">This field is required</div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container flex>
+                                    <label>Admitted On</label>
+                                    <md-datepicker required ng-model="managePatient.editpatient.admittedon"></md-datepicker>
+                                </md-input-container>
+                            </div>
+                            <md-divider></md-divider>
+                            <div layout="row" md-theme="altTheme">
+                                <md-button ng-click="managePatient.showEditMedication(editpatient);" md-theme="default" class="md-raised md-primary">Edit Medicine</md-button>
+                                <md-button type="submit" ng-disabled="patientForm.$invalid" class="md-raised md-warn">Save and Exit</md-button>
+                            </div>
+                        </form>
+                        <div layout="column" layout-fill layout-align="center center" ng-show="managePatient.editpatloader">
+                            <div>Form Submitted</div>
+                            <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                        </div>
+                    </md-content>
+                </div>
+               </md-content>
+           </md-tab>
+           <md-tab label="Add Medication" ng-if="managePatient.showOnAddMedication == true && managePatient.showOnEditPatient == false">
+               <md-content class="md-padding">
+                   <div layout="column">
+                       <md-content class="md-no-momentum">
+                           <form name="medForm" ng-submit='managePatient.addMedication(managePatient.patient._id,managePatient.bed._id);'  ng-hide="managePatient.medloader">
+                               <md-subheader class="md-no-sticky">Medication Details</md-subheader>
+                               <filedset data-ng-repeat="choice in choices" ng-init="outerIndex=$index">
+                                   <div layout="row" layout-fill layout-xs="column">
+                                       <md-input-container class="md-icon-float md-block" flex>
+                                           <label>Medication Name</label>
+                                           <md-icon class="md-default-theme" class="material-icons">&#xE87C;</md-icon>
+                                           <input ng-model="choice.medicinename" type="text" name="medicinename" required>
+                                           <div ng-messages="medForm.medicinename.$error" role="alert" multiple>
+                                               <div ng-message="required" class="my-message">This field is required</div>
+                                           </div>
+                                       </md-input-container>
+                                       <md-input-container class="md-icon-float md-block" flex>
+                                           <label>Rate(ml/hr)</label>
+                                           <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
+                                           <input ng-model="choice.medicinerate" type="number" name="medicinerate" required>
+                                           <div ng-messages="medForm.medicinerate.$error" role="alert" multiple>
+                                               <div ng-message="required" class="my-message">This field is required</div>
+                                           </div>
+                                       </md-input-container>
+                                       <md-input-container class="md-icon-float md-block" flex>
+                                           <label>Volume(ml)</label>
+                                           <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
+                                           <input ng-model="choice.medicinevolume" type="number" name="medicinevolume" required>
+                                           <div ng-messages="medForm.medicinevolume.$error" role="alert" multiple>
+                                               <div ng-message="required" class="my-message">This field is required</div>
+                                           </div>
+                                       </md-input-container>
+                                   </div>
+                                   <md-divider></md-divider>
+                                   <md-subheader class="md-no-sticky">Time Details</md-subheader>
+                                   <div layout="row" layout-fill layout-align="center center" layout-wrap flex>
+                                      <md-button  ng-repeat="ambutton in ambuttons" ng-init="variables[outerIndex][$index] = []" ng-click="managePatient.getTime(choice, ambutton, $index,outerIndex);" class="md-fab  md-primary" ng-class="{'active md-warn': !variables[outerIndex][$index],'disable md-primary': variables[outerIndex][$index]}">{{ambutton}}</md-button>
+                                   </div>
+                                   <div layout="row" layout-fill layout-align="center center" layout-wrap flex>
+                                       <md-button  ng-repeat="pmbutton in pmbuttons" ng-init="variabless[outerIndex][$index] = []" ng-click="managePatient.getTimePM(choice, pmbutton, $index,outerIndex);" class="md-fab  md-primary" ng-class="{'active md-warn': !variabless[outerIndex][$index],'disable md-primary': variabless[outerIndex][$index]}">{{pmbutton}}</md-button>
+                                   </div>
+                                   <md-divider></md-divider>
+                                   <md-button class="md-fab md-mini md-warn remove" ng-show="$last" ng-if="outerIndex!==0" ng-click="removeChoice();">
+                                       <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
+                                   </md-button>
+                               </filedset>
+                               <div layout="row" md-theme="altTheme">
+                                   <md-button ng-click="addNewChoice();" md-theme="default" class="md-raised md-primary addfields">Add More</md-button>
+                                   <md-button type="submit" ng-disabled="medForm.$invalid" class="md-raised md-warn">Submit</md-button>
+                               </div>
+                           </form>
+                           <div layout="column" layout-fill layout-align="center center" ng-show="managePatient.medloader">
+                               <div>Form Submitted</div>
+                               <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+                           </div>
+                       </md-content>
+                   </div>
+               </md-content>
+           </md-tab>
+            <md-tab label="Add Patient" ng-if="managePatient.showOnAddMedication == false  && managePatient.showOnEditPatient == false">
                 <md-content class="md-padding">
                     <div layout="column">
                         <md-content class="md-no-momentum">
-                            <form name="patientForm" ng-submit='managePatient.addPatient(patientData);'  ng-hide="managePatient.loader">
+                            <form name="patientForm" ng-submit='managePatient.addPatient(patientData,managePatient.bed._id);'  ng-hide="managePatient.loader">
                             	<md-subheader class="md-no-sticky">Personal Details</md-subheader>
                             		<div layout="row" layout-fill layout-xs="column">
                             			<md-input-container class="md-icon-float md-block" flex>
@@ -81,65 +256,6 @@
     	                        </div>
                             </form>
                             <div layout="column" layout-fill layout-align="center center" ng-show="managePatient.loader">
-                                <div>Form Submitted</div>
-                                <md-progress-linear md-mode="indeterminate"></md-progress-linear>
-                            </div>
-                        </md-content>
-                    </div>
-                </md-content>
-            </md-tab>
-            <md-tab label="Add Medication" ng-if="managePatient.showOnAddMedication == true">
-                <md-content class="md-padding">
-                    <div layout="column">
-                        <md-content class="md-no-momentum">
-                            <form name="medForm" ng-submit='managePatient.addMedication(managePatient.patient._id);'  ng-hide="managePatient.medloader">
-                                <md-subheader class="md-no-sticky">Medication Details</md-subheader>
-                                <filedset data-ng-repeat="choice in choices" ng-init="outerIndex=$index">
-                                    <div layout="row" layout-fill layout-xs="column">
-                                        <md-input-container class="md-icon-float md-block" flex>
-                                            <label>Medication Name</label>
-                                            <md-icon class="md-default-theme" class="material-icons">&#xE87C;</md-icon>
-                                            <input ng-model="choice.medicinename" type="text" name="medicinename" required>
-                                            <div ng-messages="medForm.medicinename.$error" role="alert" multiple>
-                                                <div ng-message="required" class="my-message">This field is required</div>
-                                            </div>
-                                        </md-input-container>
-                                        <md-input-container class="md-icon-float md-block" flex>
-                                            <label>Rate(ml/hr)</label>
-                                            <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                            <input ng-model="choice.medicinerate" type="number" name="medicinerate" required>
-                                            <div ng-messages="medForm.medicinerate.$error" role="alert" multiple>
-                                                <div ng-message="required" class="my-message">This field is required</div>
-                                            </div>
-                                        </md-input-container>
-                                        <md-input-container class="md-icon-float md-block" flex>
-                                            <label>Volume(ml)</label>
-                                            <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                            <input ng-model="choice.medicinevolume" type="number" name="medicinevolume" required>
-                                            <div ng-messages="medForm.medicinevolume.$error" role="alert" multiple>
-                                                <div ng-message="required" class="my-message">This field is required</div>
-                                            </div>
-                                        </md-input-container>
-                                    </div>
-                                    <md-divider></md-divider>
-                                    <md-subheader class="md-no-sticky">Time Details</md-subheader>
-                                    <div layout="row" layout-fill layout-align="center center" layout-wrap flex>
-                                       <md-button  ng-repeat="ambutton in ambuttons" ng-init="variables[outerIndex][$index] = []" ng-click="managePatient.getTime(choice, ambutton, $index,outerIndex);" class="md-fab  md-primary" ng-class="{'active md-warn': !variables[outerIndex][$index],'disable md-primary': variables[outerIndex][$index]}">{{ambutton}}</md-button>
-                                    </div>
-                                    <div layout="row" layout-fill layout-align="center center" layout-wrap flex>
-                                        <md-button  ng-repeat="pmbutton in pmbuttons" ng-init="variabless[outerIndex][$index] = []" ng-click="managePatient.getTimePM(choice, pmbutton, $index,outerIndex);" class="md-fab  md-primary" ng-class="{'active md-warn': !variabless[outerIndex][$index],'disable md-primary': variabless[outerIndex][$index]}">{{pmbutton}}</md-button>
-                                    </div>
-                                    <md-divider></md-divider>
-                                    <md-button class="md-fab md-mini md-warn remove" ng-show="$last" ng-if="outerIndex!==0" ng-click="removeChoice();">
-                                        <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
-                                    </md-button>
-                                </filedset>
-                                <div layout="row" md-theme="altTheme">
-                                    <md-button ng-click="addNewChoice();" md-theme="default" class="md-raised md-primary addfields">Add More</md-button>
-                                    <md-button type="submit" ng-disabled="medForm.$invalid" class="md-raised md-warn">Submit</md-button>
-                                </div>
-                            </form>
-                            <div layout="column" layout-fill layout-align="center center" ng-show="managePatient.medloader">
                                 <div>Form Submitted</div>
                                 <md-progress-linear md-mode="indeterminate"></md-progress-linear>
                             </div>

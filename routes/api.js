@@ -628,7 +628,6 @@ router.post('/admin/deleteivset', function(req,res){
 router.put('/admin/editivset',function (req,res) {
 	console.log(req.body);
 	Ivset.findOne({_id:req.body._id}).select('ivsetname ivsetdpf').exec(function(err,ivset) {
-		console.log(ivset);
 		if (err) throw err; // Throw error if cannot connect
 		ivset.ivsetname= req.body.ivsetname;
 		ivset.ivsetdpf= req.body.ivsetdpf;
@@ -818,7 +817,7 @@ router.post('/nurse/addpatient', function(req,res){
 	patient.patientweight= req.body.patientweight;
 	patient.patientstatus = 'active';
 	patient.bedname = req.body.bedname;
-	patient.doctor = req.body.doctor;
+	patient.doctorname = req.body.doctorname;
 	patient.admittedon = req.body.admittedon;
 	patient.stationname = req.decoded.station;
 	patient._admin = req.decoded.admin;
@@ -838,7 +837,7 @@ router.post('/nurse/addpatient', function(req,res){
 				bed.save(function (err) {
 					if(err) throw err;
 					else{
-						res.json({success:true,message:'Patient added and bed status updated',patient:patient});
+						res.json({success:true,message:'Patient added and bed status updated',patient:patient,bed:bed});
 					}
 				});
 
@@ -849,7 +848,6 @@ router.post('/nurse/addpatient', function(req,res){
 });
 
 router.post('/nurse/addmedication', function(req,res){
-	console.log(req.body);
 	var medicationObjArray=[{}];
 	var patientid;
 	for (var key in req.body) {
@@ -859,8 +857,9 @@ router.post('/nurse/addmedication', function(req,res){
 		medicationObj.medicinevolume = req.body[key].medicinevolume;
 		medicationObj.stationname = req.decoded.station;
 		medicationObj._admin = req.decoded.admin;
+		medicationObj._bed = ObjectId(req.body[key].bedid);
 		medicationObjArray[key] = medicationObj;
-		patientid = req.body[key].patientid;
+		patientid = ObjectId(req.body[key].patientid);
 
 	}
 	//created an array of object med with all details and inserting it into the database  
@@ -870,7 +869,6 @@ router.post('/nurse/addmedication', function(req,res){
 		else{
 			//update patient collection and insert thr refernce of medicine id
 			for (var key in medicationObjArray){
-				console.log(patientid);
 				Patient.collection.update({_id:patientid},{$push:{_medication:medicationObjArray[key]._id}},{upsert:false});
 			}
 			//docs.ops has the data available and req.body.medications[].time has all the time associated with that medicine
@@ -902,13 +900,87 @@ router.post('/nurse/addmedication', function(req,res){
 
 				}
 			}
+		res.json({success:true,message:"medication added successfully"})
 
 		}//end of adding medication success
 	}//end of medication insert function
 
+});
+
+//route for fetching all the patient details to nurse 
+router.post('/nurse/viewpatient', function(req,res){
+	Patient.find({_admin: req.decoded.admin,stationname:req.decoded.station}).exec(function(err,patient) {	
+		if (err) throw err;
+		if(!patient.length){
+			res.json({success:false,message:'No patient found'});
+		}
+		else{
+			res.json({success:true,message:'Patients found',patients:patient});
+		}
+	});
+});
+
+//route for discharging a patient
+router.post('/nurse/dischargepatient', function(req,res){
+	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged'}},{upsert:false});
+	res.json({success:true,message:'Patients found'});
 
 });
 
+//route for edit patient 
+router.put('/nurse/editpatient',function (req,res) {
+	//save updated patient info
+	Patient.findOne({_id: req.body._id}).exec(function(err,patient) {
+		if (err) throw err; // Throw error if cannot connect
+		patient.patientname= req.body.patientname;
+		patient.patientage= req.body.patientage;
+		patient.patientweight= req.body.patientweight;
+		patient.bedname= req.body.bedname;
+		patient.doctorname= req.body.doctorname;
+		patient.admittedon= req.body.admittedon;
+		patient.save(function(err) {
+			if (err) {
+					console.log(err);
+					res.json({success:false,message:'Failed to connect to database'})
+				} 
+			else {	
+					//update bed and medication if there is an bed chanege
+					if(req.body.oldbed !== req.body.bedname){
+						Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
+							if (err) return handleError(err);
+							bed.status = 'occupied';
+							bed._patient = patient._id;
+							bed.save(function (err) {
+								if(err) throw err;
+								else{
+									Bed.findOne({username: req.decoded.admin,bedname: req.body.oldbed,stationname:req.decoded.station}).exec(function(err, oldbed) {
+										oldbed.status='unoccupied';
+										oldbed._patient = null;
+										oldbed.save(function (err) {
+											if(err) throw err;
+											else{
+												console.log(oldbed._id);
+												console.log(bed._id);
+												Medication.collection.update({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}});
+												res.json({success:true,message:'Patient details updated'})
+
+											}
+										});
+				
+									});
+
+									}
+							});
+						});
+					}
+					else{
+						res.json({success:true,message:'Patient details updated with no bed change'})
+					}
+				
+				}
+			});
+		});
+});
 
 
 return router;

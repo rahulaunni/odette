@@ -9,7 +9,7 @@ var medication= new Schema({
 	stationname: String,
 	_admin:String,
 	_tasks:[{ type: Schema.ObjectId, ref: 'Task'}],
-
+	_bed:{ type: Schema.ObjectId, ref: 'Bed'},
 });
 
 
