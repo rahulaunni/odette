@@ -164,6 +164,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	$scope.ambuttons = [0,1,2,3,4,5,6,7,8,9,10,11];
 	$scope.pmbuttons = [12,13,14,15,16,17,18,19,20,21,22,23];
+	$scope.buttons = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 	$scope.choices = [{id: 'choice1',time:[]}];	 
 	$scope.addNewChoice = function() {
 	   var newItemNo = $scope.choices.length+1;
@@ -197,6 +198,77 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 
 	};
+
+	//show edit medication
+
+
+	app.showOnEditMedication = false;
+	this.showEditMedication = function (editpatient) {
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.showOnEditMedication = true;
+		Nurse.editMedication(this.editpatient).then(function(data) {
+			$scope.selected=[];
+			for (i=0;i<20;i++) {
+			 $scope.selected[i]=new Array();
+			 for (j=0;j<24;j++) {
+			  $scope.selected[i][j] = false ;
+			 }
+			}
+			$scope.oldchoiceslength= data.data.medication.length;
+			$scope.oldchoices = data.data.medication;
+			$scope.editchoices = data.data.medication;
+			for(var key in $scope.editchoices){
+				var newItemNo = key;
+				$scope.editchoices[key].id=newItemNo;
+				for(var key2 in $scope.editchoices[key].time){
+					$scope.selected[key][$scope.editchoices[key].time[key2]]= true;
+				}
+			}
+		});
+	};
+
+	this.editgetTime = function (editchoice, button, index,i) {
+				$scope.selected[i][index] = !$scope.selected[i][index];//to toggle button action
+				if($scope.selected[i][index]){
+					console.log(button);
+					editchoice.time.push(button);
+				    //save the value to an array;
+				}
+				else{
+					var index = editchoice.time.indexOf(button);
+					editchoice.time.splice(index, 1);
+					// var index = choice.time.indexOf(pmbutton);
+					// choice.time.splice(index, 1);
+				 }
+	     };
+
+	$scope.editremoveChoice = function(index) {
+	   $scope.editchoices.splice(index,1);  //removing the object
+	   for(var key in $scope.editchoices){   //shift the id for 1st to 0th and so on
+	   	var newItemNo = key;
+	   	$scope.editchoices[key].id=newItemNo;
+	   }
+	};
+
+	$scope.editaddNewChoice = function() {
+	   var newItemNo = $scope.editchoices.length;
+	   if(newItemNo == 0){
+	   	for (i=0;i<20;i++) {
+	   	 for (j=0;j<24;j++) {
+	   	  $scope.selected[i][j] = false ;
+	   	 }
+	   	}
+	   }
+	   $scope.editchoices.push({'id':newItemNo,time:[]});
+	};
+	this.editMedication = function () {
+		console.log($scope.editchoices);
+	};
+
+
+
+
+
 	this.showfromlistAddMedication = function (patient) {
 		app.patient = patient;
 		app.showOnAddMedication = true;
@@ -204,7 +276,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	}
 	app.showOnEditPatient = false;
-	//function to provide edit patient tab and hide add ivset tab
+	//function to provide edit patient tab and hide add patient
 	this.showEditPatient = function (patient) {
 		app.oldbed = patient.bedname;
 		app.showOnEditPatient = true;
@@ -233,6 +305,8 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		});
 		
 	};
+	
+
 
 		//function for dischargin a patient by nurse show a dialog box and delte on confirm
 		this.showConfirmdischargePatient = function(ev,patient) {

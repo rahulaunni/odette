@@ -837,6 +837,7 @@ router.post('/nurse/addpatient', function(req,res){
 				bed.save(function (err) {
 					if(err) throw err;
 					else{
+						Patient.collection.update({_id:patient._id},{$set:{_bed:bed._id}},{upsert:false});
 						res.json({success:true,message:'Patient added and bed status updated',patient:patient,bed:bed});
 					}
 				});
@@ -858,8 +859,10 @@ router.post('/nurse/addmedication', function(req,res){
 		medicationObj.stationname = req.decoded.station;
 		medicationObj._admin = req.decoded.admin;
 		medicationObj._bed = ObjectId(req.body[key].bedid);
+		medicationObj._patient = ObjectId(req.body[key].patientid);
 		medicationObjArray[key] = medicationObj;
 		patientid = ObjectId(req.body[key].patientid);
+		bedid = ObjectId(req.body[key].bedid);
 
 	}
 	//created an array of object med with all details and inserting it into the database  
@@ -880,8 +883,14 @@ router.post('/nurse/addmedication', function(req,res){
 			    for(var j=0;j<timeArray.length;j++)
 			    {
 			         var timeObj={};
-			         timeObj._medication=currentValue._id;
 			         timeObj.time=timeArray[j];
+			         timeObj.type='infusion';
+			         timeObj.priority = 0;
+			         timeObj.status='upcoming';
+			         timeObj.createdat=new Date();
+			         timeObj._patient=patientid;
+			         timeObj._bed=bedid;
+			         timeObj._medication=currentValue._id;
 			         timeObjArray[counter]=timeObj;
 			         counter++;
 			    }
@@ -895,7 +904,7 @@ router.post('/nurse/addmedication', function(req,res){
 					{
 					    for (var key2 in timeObjArray)
 					    if(medicationObjArray[key]._id===timeObjArray[key2]._medication)
-					    Medication.collection.update({_id:medicationObjArray[key]._id},{$push:{_timetable:timeObjArray[key2]._id}},{upsert:false});
+					    Medication.collection.update({_id:medicationObjArray[key]._id},{$push:{_task:timeObjArray[key2]._id}},{upsert:false});
 					}
 
 				}
@@ -923,7 +932,7 @@ router.post('/nurse/viewpatient', function(req,res){
 //route for discharging a patient
 router.post('/nurse/dischargepatient', function(req,res){
 	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged'}},{upsert:false});
-	res.json({success:true,message:'Patients found'});
+	res.json({success:true,message:'Patient discharged'});
 
 });
 
@@ -959,10 +968,10 @@ router.put('/nurse/editpatient',function (req,res) {
 										oldbed.save(function (err) {
 											if(err) throw err;
 											else{
-												console.log(oldbed._id);
-												console.log(bed._id);
-												Medication.collection.update({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}});
-												res.json({success:true,message:'Patient details updated'})
+												Task.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+												Patient.collection.update({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+												Medication.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+												res.json({success:true,message:'Patient details updated'});
 
 											}
 										});
@@ -980,6 +989,28 @@ router.put('/nurse/editpatient',function (req,res) {
 				}
 			});
 		});
+});
+
+//route for retrieve medication data and serve to edit medication page
+router.post('/nurse/editmedication', function(req,res){
+	var editchoices=[{}];
+	Medication.find({_patient:req.body._id}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
+		for (var key in medication) {
+			var editchoicesObj={};
+			editchoicesObj.medicinename = medication[key].medicinename;
+			editchoicesObj.medicinerate = medication[key].medicinerate;
+			editchoicesObj.medicinevolume = medication[key].medicinevolume;
+			editchoicesObj.time=[];
+			for(var key2 in medication[key]._task){
+				if(medication[key]._task[key2].time){
+					editchoicesObj.time.push(medication[key]._task[key2].time);
+				}
+			}
+			editchoices[key] = editchoicesObj;
+		}
+		res.json({success:true,message:'medication details retrieved',medication:editchoices})
+
+	});
 });
 
 
