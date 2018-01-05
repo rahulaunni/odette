@@ -18,7 +18,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	//user select a station and in service call a setstation route 
 	this.selectStation = function (selectstationData) {
-		console.log(this.selectstationData);
 		Nurse.setStation(this.selectstationData).then(function (data) {
 			if(data.data.success){
 				app.selected=true;
@@ -201,12 +200,14 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	//show edit medication
 
-
 	app.showOnEditMedication = false;
+	app.patientid = false;
 	this.showEditMedication = function (editpatient) {
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.showOnEditMedication = true;
 		Nurse.editMedication(this.editpatient).then(function(data) {
+			app.patientid=data.data.medication[0].patientid;
+			app.bedid=data.data.medication[0].bedid;
 			$scope.selected=[];
 			for (i=0;i<20;i++) {
 			 $scope.selected[i]=new Array();
@@ -214,8 +215,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 			  $scope.selected[i][j] = false ;
 			 }
 			}
-			$scope.oldchoiceslength= data.data.medication.length;
-			$scope.oldchoices = data.data.medication;
 			$scope.editchoices = data.data.medication;
 			for(var key in $scope.editchoices){
 				var newItemNo = key;
@@ -259,10 +258,15 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	   	 }
 	   	}
 	   }
-	   $scope.editchoices.push({'id':newItemNo,time:[]});
+	   $scope.editchoices.push({'id':newItemNo,patientid:app.patientid,bedid:app.bedid,medicineid:'new',time:[],timeid:[]});
 	};
+	//form submission after edit medication
 	this.editMedication = function () {
 		console.log($scope.editchoices);
+		Nurse.editMedicationSave($scope.editchoices).then(function(data) {
+			console.log(data);
+		});
+
 	};
 
 

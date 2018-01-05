@@ -997,6 +997,9 @@ router.post('/nurse/editmedication', function(req,res){
 	Medication.find({_patient:req.body._id}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
 		for (var key in medication) {
 			var editchoicesObj={};
+			editchoicesObj.medicineid = medication[key]._id;
+			editchoicesObj.patientid = medication[key]._patient;
+			editchoicesObj.bedid = medication[key]._bed;
 			editchoicesObj.medicinename = medication[key].medicinename;
 			editchoicesObj.medicinerate = medication[key].medicinerate;
 			editchoicesObj.medicinevolume = medication[key].medicinevolume;
@@ -1011,6 +1014,102 @@ router.post('/nurse/editmedication', function(req,res){
 		res.json({success:true,message:'medication details retrieved',medication:editchoices})
 
 	});
+});
+//route to update medication edits
+router.put('/nurse/editmedication', function(req,res){
+	var patientid = ObjectId(req.body[0].patientid);
+	var bedid = ObjectId(req.body[0].bedid);
+	Medication.find({_patient:req.body[0].patientid}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
+		newmedicine = [];  //add medicines
+		oldmedicine = [];
+		for(var key1 in req.body){
+			if(req.body[key1].medicineid == 'new'){
+				newmedicine.push(req.body[key1]);
+			}
+			else{
+				oldmedicine.push(req.body[key1]);
+			}
+
+		}
+
+		//find medicine ids for delete
+		editmedicineids = [];
+		editmedication = [];
+		deletemedicineids = [];
+		for(lp1=0;lp1<medication.length;lp1++){
+			for(lp2=0;lp2<oldmedicine.length;lp2++){
+				if(medication[lp1]._id.toString() == oldmedicine[lp2].medicineid){
+					editmedicineids.push(medication[lp1]._id)
+					editmedication.push(medication[lp1])
+					break;
+				}
+				if(lp2==(oldmedicine.length-1))
+				{
+				    deletemedicineids.push(medication[lp1]._id);
+				}
+
+			}
+		}//end of find medicine ids for deletion
+
+		//edit existing medicines
+		console.log(oldmedicine);
+		console.log(editmedication);
+		for(lp1=0;lp1<oldmedicine.length;lp1++){
+			Medication.collection.update({_id:ObjectId(oldmedicine[lp1].medicineid)},{$set:
+				{medicinename:oldmedicine[lp1].medicinename,
+				medicinerate:oldmedicine[lp1].medicinerate,medicinevolume:oldmedicine[lp1].medicinevolume}},{upsert:false});
+			for(lp2=0;lp2<oldmedicine[lp1].time.length;lp2++){
+				for(lp3=0;lp3<editmedication[lp1]._task.length;lp3++){
+					if(oldmedicine[lp1].time[lp2] == editmedication[lp1]._task[lp3].time){
+						break;
+					}
+					if(lp3 == (editmedication[lp1]._task.length -1)){		
+						//add as new task push to medication
+						var task = new Task();
+						task.time=oldmedicine[lp1].time[lp2];
+						task.type='infusion';
+						task.priority = 0;
+						task.status='upcoming';
+						task.createdat=new Date();
+						task._patient=patientid;
+						task._bed=bedid;
+						task._medication=ObjectId(editmedication[lp1]._id);
+						task.save(function(err,task){
+							if(err)	throw err;
+							else{
+								Medication.collection.update({_id:task._medication},{$push:{_task:task._id}},{upsert:false});
+
+							}
+						});
+		
+					}//end of onInsert task
+
+				}
+			}
+			for(lp2=0;lp2<editmedication[lp1]._task.length;lp2++){
+				for(lp3=0;lp3<oldmedicine[lp1].time.length;lp3++){
+					if(editmedication[lp1]._task[lp2].time == oldmedicine[lp1].time[lp3]) {
+						console.log("time found");
+						break;
+					}
+					if(lp3 == (oldmedicine[lp1].time.length -1)){
+						console.log(editmedication[lp1]._id);
+						timeid = ObjectId(editmedication[lp1]._task[lp2]._id)
+						medid = ObjectId(editmedication[lp1]._id)
+						Task.collection.update({_id:timeid},{$set:{status:'inactive'}},{upsert:false});
+						Medication.collection.update({_id:medid},{$pull:{_task:timeid}},{upsert:false});
+
+						
+					}
+
+				}
+			}
+
+		}//end of edit old medicine details
+
+		
+	});//end of find medication
+
 });
 
 
