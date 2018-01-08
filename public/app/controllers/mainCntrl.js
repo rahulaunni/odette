@@ -21,7 +21,8 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 			Auth.getUser().then(function (data) {
 				app.hospitalname = data.data.hospitalname;
 				app.username = data.data.username;
-				app.station = data.data.station
+				app.station = data.data.station;
+				app.stationid = data.data.stationid;
 				User.getPermission().then(function (data) {
 					if(data.data.permission === 'admin'){
 						app.adminaccess = true;

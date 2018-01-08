@@ -5,8 +5,8 @@ var app = angular.module('appRoutes', ['ngRoute'])
 	.when('/',{
 		templateUrl:'app/views/pages/home.html',
 		authenticated:true,
-		controller : 'nurseCntrl',
-		controllerAs : 'nurse',
+		controller : 'homeCntrl',
+		controllerAs : 'home',
 		permission:['nurse']
 	})
 	.when('/login',{

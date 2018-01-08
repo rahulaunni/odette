@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-   <title>Evelabs Care</title>
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-</head>
-<body>
-	<p>Hi from home Page</p>
-	<div flex="none" flex-xs="25" ng-show="main.nurseaccess">
-	  <div md-theme="altTheme">
-	    <md-button  class="md-accent" href="#" ng-click="main.logout()">Logout</md-button>
-	  </div>
-	</div>
-</body>
+<md-content layout-padding>
+    <md-grid-list
+        md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6"
+        md-row-height-gt-md="1:1" md-row-height="4:3"
+        md-gutter="8px" md-gutter-gt-sm="4px" >
+        <md-grid-tile ng-repeat="task in tasks" ng-style="{'background': '#0091ea'}">
+            {{task.type}}
+            Medicine: {{task._medication.medicinename}}
+            Rate: {{task._medication.medicinerate}}
+            Volume: {{task._medication.medicinevolume}}
+            Next Infusion at {{task.time}}
+            <md-grid-tile-footer>
+                <h1>Bed:{{task._bed.bedname}}</h1>
+            </md-grid-tile-footer>
+        </md-grid-tile>
+    </md-grid-list>
+</md-content>

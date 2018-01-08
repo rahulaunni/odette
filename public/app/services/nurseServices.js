@@ -40,6 +40,9 @@ angular.module('nurseServices',['authServices'])
 	nurseFactory.editMedicationSave = function (editpatient) {
 		return $http.put('/api/nurse/editmedication',editpatient);
 	}
+	nurseFactory.deleteMedication = function (patientid) {
+		return $http.post('/api/nurse/deletemedication',patientid);
+	}
 
 	return nurseFactory;
 });

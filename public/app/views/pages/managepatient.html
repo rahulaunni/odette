@@ -43,7 +43,7 @@
                <md-content class="md-padding">
                    <div layout="column">
                        <md-content class="md-no-momentum">
-                           <form name="medForm" ng-submit='managePatient.editMedication();' ng-hide="managePatient.mededitloader">
+                           <form name="medForm" ng-submit='managePatient.editMedication();' ng-hide="managePatient.editmedloader">
                                <md-subheader class="md-no-sticky">Medication Details</md-subheader>
                                <filedset data-ng-repeat="editchoice in editchoices" ng-init="editouterIndex=$index">
                                    <div layout="row" layout-fill layout-xs="column">
@@ -79,7 +79,6 @@
                                        ng-class="{'active md-warn': editvariables[editouterIndex][$index],'disable md-primary': !editvariables[editouterIndex][$index],'active md-warn': selected[editouterIndex][$index],'disable md-primary': !selected[editouterIndex][$index]}">{{button}}</md-button>
                                    </div>
                                    <md-divider></md-divider>
-                                   {{editouterIndex}}
                                    <md-button  class="md-fab md-mini md-warn remove" ng-click="editremoveChoice(editchoice.id);">
                                        <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
                                    </md-button>

@@ -775,8 +775,12 @@ router.post('/nurse/viewstation', function(req,res){
 });
 //route to set new token including the user selected station
 router.post('/nurse/setstation', function(req,res){
-	var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname},secret);
-	res.json({success:true,message:"token updated",token:token});	
+	Station.find({username: req.decoded.admin,stationname:req.body.stationname}).exec(function(err, station) {
+		console.log(station);
+		var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname,stationid:station[0]._id},secret);
+		res.json({success:true,message:"token updated",token:token});
+	});	
+		
 });
 
 //route for fetching all the bed details to nurse while adding patient
@@ -886,11 +890,12 @@ router.post('/nurse/addmedication', function(req,res){
 			         timeObj.time=timeArray[j];
 			         timeObj.type='infusion';
 			         timeObj.priority = 0;
-			         timeObj.status='upcoming';
+			         timeObj.status='opened';
 			         timeObj.createdat=new Date();
 			         timeObj._patient=patientid;
 			         timeObj._bed=bedid;
 			         timeObj._medication=currentValue._id;
+			         timeObj._station=ObjectId(req.decoded.stationid);
 			         timeObjArray[counter]=timeObj;
 			         counter++;
 			    }
@@ -1017,6 +1022,7 @@ router.post('/nurse/editmedication', function(req,res){
 });
 //route to update medication edits
 router.put('/nurse/editmedication', function(req,res){
+	console.log(req.body);
 	var patientid = ObjectId(req.body[0].patientid);
 	var bedid = ObjectId(req.body[0].bedid);
 	Medication.find({_patient:req.body[0].patientid}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
@@ -1031,7 +1037,7 @@ router.put('/nurse/editmedication', function(req,res){
 			}
 
 		}
-
+		console.log(newmedicine);
 		//find medicine ids for delete
 		editmedicineids = [];
 		editmedication = [];
@@ -1052,8 +1058,6 @@ router.put('/nurse/editmedication', function(req,res){
 		}//end of find medicine ids for deletion
 
 		//edit existing medicines
-		console.log(oldmedicine);
-		console.log(editmedication);
 		for(lp1=0;lp1<oldmedicine.length;lp1++){
 			Medication.collection.update({_id:ObjectId(oldmedicine[lp1].medicineid)},{$set:
 				{medicinename:oldmedicine[lp1].medicinename,
@@ -1069,10 +1073,11 @@ router.put('/nurse/editmedication', function(req,res){
 						task.time=oldmedicine[lp1].time[lp2];
 						task.type='infusion';
 						task.priority = 0;
-						task.status='upcoming';
+						task.status='opened';
 						task.createdat=new Date();
 						task._patient=patientid;
 						task._bed=bedid;
+						task._station=ObjectId(req.decoded.stationid);
 						task._medication=ObjectId(editmedication[lp1]._id);
 						task.save(function(err,task){
 							if(err)	throw err;
@@ -1089,14 +1094,12 @@ router.put('/nurse/editmedication', function(req,res){
 			for(lp2=0;lp2<editmedication[lp1]._task.length;lp2++){
 				for(lp3=0;lp3<oldmedicine[lp1].time.length;lp3++){
 					if(editmedication[lp1]._task[lp2].time == oldmedicine[lp1].time[lp3]) {
-						console.log("time found");
 						break;
 					}
 					if(lp3 == (oldmedicine[lp1].time.length -1)){
-						console.log(editmedication[lp1]._id);
 						timeid = ObjectId(editmedication[lp1]._task[lp2]._id)
 						medid = ObjectId(editmedication[lp1]._id)
-						Task.collection.update({_id:timeid},{$set:{status:'inactive'}},{upsert:false});
+						Task.collection.update({_id:timeid},{$set:{status:'closed'}},{upsert:false});
 						Medication.collection.update({_id:medid},{$pull:{_task:timeid}},{upsert:false});
 
 						
@@ -1107,10 +1110,121 @@ router.put('/nurse/editmedication', function(req,res){
 
 		}//end of edit old medicine details
 
+		//deleteing the medicines
+		if(deletemedicineids.length >0){
+			for(lp1=0;lp1<deletemedicineids.length;lp1++){
+				var medicineid = ObjectId(deletemedicineids[lp1]);
+				Patient.collection.update({_id:patientid},{$pull:{_medication:medicineid}},{upsert:false});
+				Medication.collection.remove({_id:medicineid},{upsert:false});
+				Task.collection.updateMany({_medication:medicineid},{$set:{status:'closed'}},{upsert:false});
+
+			}
+		}
 		
+
+		//adding new medicines
+		if(newmedicine.length >0){
+			var medicationObjArray =[{}];
+			for (var key in newmedicine) {
+				var medicationObj={};
+				medicationObj.medicinename = newmedicine[key].medicinename;
+				medicationObj.medicinerate = newmedicine[key].medicinerate;
+				medicationObj.medicinevolume = newmedicine[key].medicinevolume;
+				medicationObj.stationname = req.decoded.station;
+				medicationObj._admin = req.decoded.admin;
+				medicationObj._bed = ObjectId(newmedicine[key].bedid);
+				medicationObj._patient = ObjectId(newmedicine[key].patientid);
+				medicationObjArray[key] = medicationObj;
+
+			}
+			//created an array of object med with all details and inserting it into the database  
+			Medication.collection.insert(medicationObjArray, onInsert);
+			function onInsert(err,docs){
+				if(err) throw err;
+				else{
+					//update patient collection and insert thr refernce of medicine id
+					for (var key in medicationObjArray){
+						Patient.collection.update({_id:patientid},{$push:{_medication:medicationObjArray[key]._id}},{upsert:false});
+					}
+					//docs.ops has the data available and req.body.medications[].time has all the time associated with that medicine
+					timeObjArray=[{}];
+					var counter=0;
+					docs.ops.forEach(function callback(currentValue, index, array) {
+					    var timeArray=newmedicine[index].time;
+					    //creating an array of object based on the time data
+					    for(var j=0;j<timeArray.length;j++)
+					    {
+					         var timeObj={};
+					         timeObj.time=timeArray[j];
+					         timeObj.type='infusion';
+					         timeObj.priority = 0;
+					         timeObj.status='opened';
+					         timeObj.createdat=new Date();
+					         timeObj._patient=patientid;
+					         timeObj._bed=bedid;
+					         timeObj._station=ObjectId(req.decoded.stationid);
+					         timeObj._medication=currentValue._id;
+					         timeObjArray[counter]=timeObj;
+					         counter++;
+					    }
+					                            
+					});
+					Task.collection.insert(timeObjArray, onInsert);
+					function onInsert(err,times) {
+						if(err) throw err;
+						else{
+							for (var key in medicationObjArray) 
+							{
+							    for (var key2 in timeObjArray)
+							    if(medicationObjArray[key]._id===timeObjArray[key2]._medication)
+							    Medication.collection.update({_id:medicationObjArray[key]._id},{$push:{_task:timeObjArray[key2]._id}},{upsert:false});
+							}
+
+						}
+					}
+
+				}//end of adding medication success
+
+			}//end of medication insert function
+
+
+		}
+		
+
+	res.json({success:true,message:"medication details updated"})	
 	});//end of find medication
 
 });
+
+//route to remove all medicines while edit medication
+router.post('/nurse/deletemedication', function(req,res){
+	var patientid = ObjectId(req.body.patientid);
+	Patient.collection.update({_id:patientid},{$unset:{_medication:""}});
+	Medication.collection.remove({_patient:patientid});
+	Task.collection.updateMany({_patient:patientid},{$set:{status:'closed'}},{upsert:false});
+	res.json({success:true,message:"deleted all medicine associated with patient"})
+});
+
+
+/***routes for nurse home page starts here ***/
+// route to provide all the tasks associated with a station
+router.post('/nurse/gettask', function(req,res){
+	// var stationid = ObjectId(req.decoded.stationid);
+	Task.find({_station:ObjectId(req.decoded.stationid)}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,task) {
+		console.log(task);
+		if(err){
+			res.json({success:false,message:"no tasks found"});
+
+		}
+		else{
+			res.json({success:true,tasks:task})
+		}
+	});	
+
+
+});
+
+
 
 
 return router;

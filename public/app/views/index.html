@@ -28,11 +28,13 @@
   <script src="app/controllers/emailCntrl.js"></script> 
   <script src="app/controllers/adminCntrl.js"></script> 
   <script src="app/controllers/nurseCntrl.js"></script> 
+  <script src="app/controllers/homeCntrl.js"></script> 
   <!-- Angular Servies -->
   <script src="app/services/userServices.js"></script> 
   <script src="app/services/authServices.js"></script>
   <script src="app/services/adminServices.js"></script>
-  <script src="app/services/nurseServices.js"></script>    
+  <script src="app/services/nurseServices.js"></script> 
+  <script src="app/services/homeServices.js"></script>       
 
 </head>
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
@@ -226,11 +228,9 @@
             </md-list>
         </md-content>
     </md-sidenav>
-<!-- this div is used to inject pages for admin -->
-        <div flex>
-            <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
-                <div flex="100" ng-view layout="row" layout-align="center center"></div>
-            </md-content>
+<!-- this div is used to inject pages for nurse -->
+        <div flex="100" ng-show="main.nurseaccess" layout-fill ng-view>
+    
         </div>
     </div>
 <!-- for injecting page before login -->

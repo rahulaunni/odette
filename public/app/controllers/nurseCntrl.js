@@ -18,6 +18,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	//user select a station and in service call a setstation route 
 	this.selectStation = function (selectstationData) {
+		console.log(this.selectstationData);
 		Nurse.setStation(this.selectstationData).then(function (data) {
 			if(data.data.success){
 				app.selected=true;
@@ -199,7 +200,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	};
 
 	//show edit medication
-
 	app.showOnEditMedication = false;
 	app.patientid = false;
 	this.showEditMedication = function (editpatient) {
@@ -229,7 +229,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	this.editgetTime = function (editchoice, button, index,i) {
 				$scope.selected[i][index] = !$scope.selected[i][index];//to toggle button action
 				if($scope.selected[i][index]){
-					console.log(button);
 					editchoice.time.push(button);
 				    //save the value to an array;
 				}
@@ -261,12 +260,46 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	   $scope.editchoices.push({'id':newItemNo,patientid:app.patientid,bedid:app.bedid,medicineid:'new',time:[],timeid:[]});
 	};
 	//form submission after edit medication
+	app.editmedloader = false;
 	this.editMedication = function () {
-		console.log($scope.editchoices);
-		Nurse.editMedicationSave($scope.editchoices).then(function(data) {
-			console.log(data);
-		});
+		if($scope.editchoices.length > 0){
+			Nurse.editMedicationSave($scope.editchoices).then(function(data) {
+				if(data.data.success){
+					app.editmedloader = true;
+					$timeout(function () {
+						app.medloader = false;
+						app.loader = false;
+						$window.location.reload('/nurse/managepatients');
+					},3000);
 
+				}
+				else{
+					app.editmedloader = false;
+
+				}
+			});
+		}
+		//if user delete all medicine call deletemedicine route
+		else{
+			$scope.patid={patientid:app.patientid};
+			Nurse.deleteMedication($scope.patid).then(function(data) {
+				if(data.data.success){
+					app.editmedloader = true;
+					$timeout(function () {
+						app.medloader = false;
+						app.loader = false;
+						$window.location.reload('/nurse/managepatients');
+					},3000);
+
+				}
+				else{
+					app.editmedloader = false;
+
+				}
+			});
+
+		}
+		
 	};
 
 
@@ -274,7 +307,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 
 	this.showfromlistAddMedication = function (patient) {
+		console.log(patient);
 		app.patient = patient;
+		app.bed = {_id:patient._bed};
 		app.showOnAddMedication = true;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 
@@ -291,9 +326,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	//form submission after edit
 	this.editPatient = function (editpatient) {
 		this.editpatient.oldbed = app.oldbed;
-		console.log(this.editpatient);
 		Nurse.editPatient(this.editpatient).then(function(data) {
-			console.log(data);
 			if(data.data.success){
 				app.editpatloader = true;
 				app.editsuccessMsg = data.data.message;
