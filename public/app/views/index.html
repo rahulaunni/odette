@@ -229,8 +229,10 @@
         </md-content>
     </md-sidenav>
 <!-- this div is used to inject pages for nurse -->
-        <div flex="100" ng-show="main.nurseaccess" layout-fill ng-view>
-    
+        <div flex>
+            <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
+                <div flex="100" ng-view layout="row" layout-align="center center"></div>
+            </md-content>
         </div>
     </div>
 <!-- for injecting page before login -->

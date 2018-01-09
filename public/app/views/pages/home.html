@@ -1,17 +1,54 @@
-<md-content layout-padding>
-    <md-grid-list
-        md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6"
+<!-- <div masonry='{ "transitionDuration" : "0.4s" , "itemSelector" : ".tile"}'>
+    <md-content class="md-padding" layout="row" layout-wrap> 
+       <div ng-repeat="task in tasks">
+
+<md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+
+        <md-card-header>
+          <md-card-header-text layout-align="center center">
+            <div class="md-title">{{task.type}}</div>
+          </md-card-header-text>
+        </md-card-header>
+<md-card-content layout-align="center center" style="text-align: center;" >
+        {{task.__v}}
+</md-card-content>
+        <md-card-footer ng-style="setbgColor(task.status)">
+          <md-card-header-text>
+            <div class="md-headline" style="text-align: center;">{{task._bed.bedname}}</div>
+        </md-card-header-text>
+        </md-card-footer>
+      </md-card> 
+</div> -->
+               
+
+    <!-- <md-grid-list ng-repeat="time in times"
+        md-cols="1" md-cols-sm="4" md-cols-md="5" md-cols-gt-md="4" md-cols-lg="4" md-cols-gt-lg="6"
         md-row-height-gt-md="1:1" md-row-height="4:3"
         md-gutter="8px" md-gutter-gt-sm="4px" >
-        <md-grid-tile ng-repeat="task in tasks" ng-style="{'background': '#0091ea'}">
-            {{task.type}}
-            Medicine: {{task._medication.medicinename}}
-            Rate: {{task._medication.medicinerate}}
-            Volume: {{task._medication.medicinevolume}}
-            Next Infusion at {{task.time}}
-            <md-grid-tile-footer>
-                <h1>Bed:{{task._bed.bedname}}</h1>
-            </md-grid-tile-footer>
-        </md-grid-tile>
-    </md-grid-list>
-</md-content>
+        Time:{{time}}
+            <md-grid-tile ng-repeat="task in tasks" ng-if="task.time==time " ng-style="{'background': '#0091ea'}" md-colspan-lg="1" md-rowspan-lg="1" md-rowspan-md="1" md-rowspan-sm="1">
+                {{task.type}}
+                <br>
+                Medicine: {{task._medication.medicinename}}
+                <br>
+                Rate: {{task._medication.medicinerate}}
+                <br>
+                Volume: {{task._medication.medicinevolume}}
+                <br>
+                Next Infusion at {{task.time}}
+                <br>
+                <md-grid-tile-footer>
+                    <h1>Bed:{{task._bed.bedname}}</h1>
+                </md-grid-tile-footer>
+            </md-grid-tile>
+            <md-divider></md-divider>
+    </md-grid-list> -->
+<!-- </md-content>
+</div>
+ -->
+ <div data-masonry data-masonry-options='{ "columnWidth": 200 }'>
+     <div data-masonry-item data-ng-repeat="task in tasks">
+         {{ task.time }}
+         {{ task.type }}
+     </div>
+ </div>

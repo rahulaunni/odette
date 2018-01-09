@@ -937,8 +937,9 @@ router.post('/nurse/viewpatient', function(req,res){
 //route for discharging a patient
 router.post('/nurse/dischargepatient', function(req,res){
 	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged'}},{upsert:false});
+	Task.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{status:'closed'}},{upsert:false});
+	Medication.collection.remove({_patient:ObjectId(req.body._id)});
 	res.json({success:true,message:'Patient discharged'});
-
 });
 
 //route for edit patient 
@@ -1209,21 +1210,86 @@ router.post('/nurse/deletemedication', function(req,res){
 /***routes for nurse home page starts here ***/
 // route to provide all the tasks associated with a station
 router.post('/nurse/gettask', function(req,res){
+	var date=new Date();
+	var hour=date.getHours();
+	var index =false;
+	var skippedtaskArray =[];
 	// var stationid = ObjectId(req.decoded.stationid);
-	Task.find({_station:ObjectId(req.decoded.stationid)}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,task) {
-		console.log(task);
+	Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,task) {
 		if(err){
 			res.json({success:false,message:"no tasks found"});
 
 		}
+		//reorder returned task array of object based on present time
 		else{
-			res.json({success:true,tasks:task})
+			var nexthour = hour;
+			while(nexthour<24){
+				for(lp1=0;lp1<task.length;lp1++){
+					if(task[lp1].time == nexthour){
+						index = lp1;
+						break;
+					}
+					
+				}
+				if(index==false){
+					if(nexthour == 23){
+						nexthour = 0;
+					}
+					else{
+						nexthour=nexthour+1;
+					}
+				}
+				else{
+					break;
+				}
+			}
+			for(var key in task){
+				if(task[key].status == 'skipped'){
+					skippedtaskArray.push(task[key]);
+				}
+			}
+		var prevtaskArray = task.slice(0,index);
+		var nexttaskArray = task.slice(index,(task.length -1));
+		var taskArray = nexttaskArray.concat(prevtaskArray);
+		var times = [];
+		for(var key in taskArray){
+			times.push(taskArray[key].time);
+		}
+		var timesArray=[];
+		var n=times.length;
+		var count=0;
+		for(var c=0;c<n;c++)
+		    { 
+		        for(var d=0;d<count;d++) 
+		        { 
+		            if(times[c]==timesArray[d]) 
+		                break; 
+		        } 
+		        if(d==count) 
+		        { 
+		            timesArray[count] = times[c]; 
+		            count++; 
+		        } 
+		    }
+
+		console.log(timesArray);
+
+			res.json({success:true,tasks:taskArray,times:timesArray})
 		}
 	});	
 
 
 });
 
+router.post('/nurse/getactivetask', function(req,res){
+	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,inprogresstask) {
+		Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,alertedtask) {
+			var task = inprogresstask.concat(alertedtask);
+			res.json({success:true,activetasks:task})
+		});
+	});
+
+});
 
 
 
