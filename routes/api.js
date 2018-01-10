@@ -1215,7 +1215,7 @@ router.post('/nurse/gettask', function(req,res){
 	var index =false;
 	var skippedtaskArray =[];
 	// var stationid = ObjectId(req.decoded.stationid);
-	Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,task) {
+	Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
 		if(err){
 			res.json({success:false,message:"no tasks found"});
 
@@ -1282,8 +1282,8 @@ router.post('/nurse/gettask', function(req,res){
 });
 
 router.post('/nurse/getactivetask', function(req,res){
-	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,inprogresstask) {
-		Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).exec(function(err,alertedtask) {
+	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,inprogresstask) {
+		Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
 			var task = inprogresstask.concat(alertedtask);
 			res.json({success:true,activetasks:task})
 		});

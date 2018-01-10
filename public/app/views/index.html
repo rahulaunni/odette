@@ -6,17 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Cascaded Style Sheets -->
   <link rel = "stylesheet" href = "assets/css/angular-material.css">
+  <link rel = "stylesheet" href = "assets/css/slick.css">
+  <link rel = "stylesheet" href = "assets/css/slick-theme.css">
   <link rel = "stylesheet" href = "assets/css/bootstrap.css">
   <link rel = "stylesheet" href = "assets/css/style.css">
 
 
   <!-- Angular scripts -->
+  <script src="assets/js/jquery.js"></script>
   <script src="assets/js/angular.js"></script>
   <script src="assets/js/angular-animate.js"></script>
   <script src="assets/js/angular-aria.js"></script>
   <script src="assets/js/angular-messages.js"></script>
   <script src="assets/js/angular-route.js"></script>
   <script src="assets/js/angular-material.js"></script>
+  <script src="assets/js/angulargrid.js"></script>
+  <script src="assets/js/slick.js"></script>
+  <script src="assets/js/angular-slick.js"></script>
+
+
+
 
   <!-- Angular config/routes -->
   <script src="app/route.js"></script> 
@@ -34,7 +43,8 @@
   <script src="app/services/authServices.js"></script>
   <script src="app/services/adminServices.js"></script>
   <script src="app/services/nurseServices.js"></script> 
-  <script src="app/services/homeServices.js"></script>       
+  <script src="app/services/homeServices.js"></script>      
+
 
 </head>
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
@@ -231,7 +241,7 @@
 <!-- this div is used to inject pages for nurse -->
         <div flex>
             <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
-                <div flex="100" ng-view layout="row" layout-align="center center"></div>
+                <div ng-view ></div>
             </md-content>
         </div>
     </div>
