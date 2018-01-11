@@ -16,4 +16,17 @@ angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','a
 //inorder to inject token in every request header to make the user logged in
 .config(function ($httpProvider) {
     $httpProvider.interceptors.push('AuthInterceptors');
-});
+})
+//socket.io client config
+.factory('socket', ['$rootScope', function($rootScope) {
+  var socket = io.connect();
+
+  return {
+    on: function(eventName, callback){
+      socket.on(eventName, callback);
+    },
+    emit: function(eventName, data) {
+      socket.emit(eventName, data);
+    }
+  };
+}]);

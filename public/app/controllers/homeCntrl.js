@@ -1,14 +1,14 @@
 angular.module('homeController',['homeServices'])
-.controller('homeCntrl',function ($http,$route,$scope,$rootScope,$interval,$window,$location,$timeout,$mdDialog,$scope,Home) {
+.controller('homeCntrl',function ($http,$route,$scope,$rootScope,$interval,$window,$location,$timeout,$mdDialog,$scope,Home,socket) {
     var app = this;
     var index = false;
     $scope.tasks = [{}];
     $scope.times = [];
-
+    $scope.activetasks=[];
     var date=new Date();
     var hour=date.getHours();
+    var minute = date.getMinutes();
     $scope.currentHour = hour;
-    console.log($scope.currentHour);
     //on page reload get all tasks from db
     Home.getTasks().then(function (data) {
         if(data.data.success){
@@ -33,7 +33,7 @@ angular.module('homeController',['homeServices'])
             return { background: "#9AB707" }
         }
         if (status == "alerted") {
-            return { background: "#C70039" }
+            return { background: "#FAD60B"}
         }
         if (status == "opened") {
             return { background: "#CCCCCC" }
@@ -52,13 +52,68 @@ angular.module('homeController',['homeServices'])
 
      $scope.determinateValue = 30;
     $interval(function () {
-
-
             $scope.determinateValue += 1;
             if ($scope.determinateValue > 100) {
               $scope.determinateValue = 30;
             }
-    },100)
+    },300)
+
+    //function to change opened task to alerted in front end
+    $interval(function () {
+        var currentDate=new Date();
+        if(currentDate.getMinutes() == 59){
+            for(var key in $scope.tasks){
+                if($scope.tasks[key].time == (currentDate.getHours()))
+                {   
+                    $scope.tasks[key].status = 'alerted';
+                    $scope.activetasks.push($scope.tasks[key]);
+                    $scope.tasks.splice(key,1);
+                }
+            }
+        }
+        else if(currentDate.getMinutes() == 0){ //sync with database
+            $window.location.reload('/');
+        }
+
+    },60000)
+
+    //function to show a confirm dialog when user skip a task
+    $scope.showSkipConfirm = function(ev,task) {
+        console.log(task);
+      var confirm = $mdDialog.confirm({
+        onComplete: function afterShowAnimation() {
+            var $dialog = angular.element(document.querySelector('md-dialog'));
+            var $actionsSection = $dialog.find('md-dialog-actions');
+            var $cancelButton = $actionsSection.children()[0];
+            var $confirmButton = $actionsSection.children()[1];
+            angular.element($confirmButton).addClass('md-raised md-warn');
+            angular.element($cancelButton).addClass('md-raised');
+        }
+      })
+      .title('Would you like to skip this '+task.type)
+      .textContent('This will remove '+task.type+' permanantly')
+      .ariaLabel('Lucky day')
+      .targetEvent(ev)
+      .ok('Yes, Skip!')
+      .cancel('No, Later');
+
+      $mdDialog.show(confirm).then(function() {
+        Home.skipTask(task).then(function (data) {
+            if(data.data.success){
+                $window.location.reload('/');
+            }
+        });
+
+      }, function() {
+
+      });
+    };
+
+    //ssocket.io test
+    socket.on('news', function(data) {
+        console.log(data);
+        socket.emit('reply', 'hello from client');
+      });
 
 
 });

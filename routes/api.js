@@ -1,3 +1,16 @@
+/*
+___      ___    __    __   ______    ____
+| |	    / _  \  | |   } ) (      )  / __ \
+| |    / /  \ \ | |   } | | ()  /  / /  \ |
+| |___||___  | || |___} | |  |\  \ | |__| |
+|_____|||   |__||______.) |__  \__\[__  [__]
+ Version: 1.0.0 (dev)
+  Author: rahuanni@evelabs.co
+  company: evelabs.co
+ Website: http://evelabs.co
+
+ */
+
 var express = require('express');
 var User = require('../models/users');
 var Station = require('../models/stations');
@@ -645,6 +658,7 @@ router.put('/admin/editivset',function (req,res) {
 //***routes for dripo management starts here***
 //routes for adding dripos
 router.post('/admin/adddripo',function (req,res) {
+	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 	var dripoArray = [];
 	var dripos = req.body.dripoid;
 	var dripoArray = dripos.split(",");
@@ -655,6 +669,7 @@ router.post('/admin/adddripo',function (req,res) {
 		dripoObj.username=req.decoded.username;
 		dripoObj.stationname=req.body.stationname;
 		dripoObj._user = ObjectId(req.decoded.uid);
+		dripoObj._station = ObjectId(station._id);
 		dripoObjArray[key] = dripoObj;
 	}
 
@@ -669,6 +684,7 @@ router.post('/admin/adddripo',function (req,res) {
 
 	    	}
 	    }
+	});
 
 });
 
@@ -1272,7 +1288,6 @@ router.post('/nurse/gettask', function(req,res){
 		        } 
 		    }
 
-		console.log(timesArray);
 
 			res.json({success:true,tasks:taskArray,times:timesArray})
 		}
@@ -1281,6 +1296,7 @@ router.post('/nurse/gettask', function(req,res){
 
 });
 
+//route to send all active tasks that is inprogress and alerted tasks
 router.post('/nurse/getactivetask', function(req,res){
 	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,inprogresstask) {
 		Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
@@ -1289,6 +1305,12 @@ router.post('/nurse/getactivetask', function(req,res){
 		});
 	});
 
+});
+
+//route to skip a task 
+router.post('/nurse/skiptask', function(req,res){
+	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'skipped'}});
+	res.json({success:true,message:'task skipped'})
 });
 
 

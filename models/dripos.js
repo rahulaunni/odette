@@ -7,6 +7,7 @@ var Dripo = new Schema({
 	username: String,
 	stationname: String,
 	_user:{ type: Schema.ObjectId, ref: 'User' },
+	_station:{ type: Schema.ObjectId, ref: 'Station'},
 });
 
 module.exports = mongoose.model('Dripo', Dripo);

@@ -7,6 +7,22 @@ angular.module('homeServices',[])
 	homeFactory.getactiveTasks = function () {
 		return $http.post('/api/nurse/getactivetask');
 	}
+	homeFactory.skipTask = function (task) {
+		return $http.post('/api/nurse/skiptask',task);
+	}
 
 	return homeFactory;
-});
+})
+//socket.io client config
+.factory('socket', ['$rootScope', function($rootScope) {
+  var socket = io.connect();
+
+  return {
+    on: function(eventName, callback){
+      socket.on(eventName, callback);
+    },
+    emit: function(eventName, data) {
+      socket.emit(eventName, data);
+    }
+  };
+}]);
