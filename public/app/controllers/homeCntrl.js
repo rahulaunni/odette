@@ -110,9 +110,27 @@ angular.module('homeController',['homeServices'])
     };
 
     //ssocket.io test
-    socket.on('news', function(data) {
-        console.log(data);
-        socket.emit('reply', 'hello from client');
+    socket.on('dripo', function(data) {
+      var index;
+        if(data.infusionstatus == 'start'){
+          for(var key in $scope.activetasks){
+            if($scope.activetasks[key].status == 'alerted'){
+              index=key-2;
+            }
+          }
+          for(var key in $scope.tasks){
+            if($scope.tasks[key]._id == data.taskid){
+              $scope.tasks[key].status = 'inprogress';
+              $scope.tasks[key].rate = data.rate;
+              $scope.tasks[key].infusedVolume = data.infusedVolume;
+              $scope.tasks[key].timeRemaining = data.timeRemaining;
+              $scope.tasks[key].totalVolume = data.totalVolume;
+              $scope.tasks[key].percentage = data.percentage;
+              $scope.activetasks.splice(index,0,$scope.tasks[key]);
+
+            }
+          }
+        }
       });
 
 

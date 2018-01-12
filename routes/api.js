@@ -515,6 +515,7 @@ router.put('/admin/editstation',function (req,res) {
 });
 //routes for bed management starts from here
 router.post('/admin/addbed',function (req,res) {
+	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 	var bedArray = [];
 	var beds = req.body.bedname;
 	var bedArray = beds.split(",");
@@ -526,6 +527,7 @@ router.post('/admin/addbed',function (req,res) {
 		bedObj.username=req.decoded.username;
 		bedObj.stationname=req.body.stationname;
 		bedObj._user = ObjectId(req.decoded.uid);
+		bedObj._station = ObjectId(station._id);
 		bedObj.status = 'unoccupied'
 		bedObjArray[key] = bedObj;
 	}
@@ -541,6 +543,7 @@ router.post('/admin/addbed',function (req,res) {
 
 	    	}
 	    }
+	 });
 
 });
 
@@ -607,7 +610,8 @@ router.post('/admin/addivset', function(req,res){
 
 				res.json({success:true,message:'Ivset added'});
 			}
-	});
+		});
+
 });
 
 //route for fetching all the ivset details to the admin view
