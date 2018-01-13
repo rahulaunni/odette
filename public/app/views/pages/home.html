@@ -7,13 +7,39 @@
                         <div class="md-title">{{activetask.type}}</div>
                     </md-card-header-text>
                 </md-card-header> -->
-                <md-card-content layout-align="center center" style="text-align: center;" >
-                    <div layout="row" layout-sm="column" layout-align="space-around">
-                          <md-progress-circular md-mode="determinate" md-diameter="96" value="{{determinateValue}}">
-                          </md-progress-circular>
-                     </div>
-                    {{determinateValue}}%
-                </md-card-content>
+                <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
+                <div>
+                    <md-card-content layout-align="center center" style="text-align: center;" >
+                                <div layout="row" layout-sm="column" layout-align="space-around">
+                                      <md-progress-circular md-mode="determinate" md-diameter="96" value="{{activetask.percentage}}">
+                                      </md-progress-circular>
+                                 
+                                {{activetask.percentage}}%
+                                </div>
+                    </md-card-content>
+                    
+                </div>
+                <div>
+                    <md-card-content>
+                        <div>
+                            Rate:{{activetask.rate}}
+                        </div>
+                        <div>
+                            Time Remaining:{{activetask.timeRemaining}}
+                        </div>
+                        <div>
+                            Infused Volume:{{activetask.infusedVolume}}
+                        </div>
+                    </md-card-content>
+                    
+                </div>
+                </slick>
+                <div ng-if="activetask.infusionstatus == 'Block'">
+                    {{activetask.infusionstatus}}
+                </div>
+                <div ng-if="activetask.infusionstatus == 'Rate_Err'">
+                    {{activetask.infusionstatus}}
+                </div>
                 <md-card-footer ng-style="setbgColor(activetask.status)">
                     <md-card-header-text>
                         <div class="md-headline" style="text-align: center;">{{activetask._bed.bedname}}</div>
@@ -31,7 +57,8 @@
                 <md-card-content layout-align="center center" style="text-align: center;"  ng-click="showDetails($event,activetask);">
                     <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
                         <div class="md-subhead">Task Delayed :(</div>
-                        <div class="md-subhead">Delayed: {{(currentHour)-activetask.time}}hr</div>
+                        <div class="md-subhead" ng-if="activetask.time<=currentHour">Delayed: {{(currentHour)-activetask.time}}hr</div>
+                        <div class="md-subhead" ng-if="activetask.time>currentHour">Delayed: {{(activetask.time)-currentHour}}hr</div>
                         <div class="md-subhead">{{activetask._medication.medicinename}}</div>
                     </slick>
                 </md-card-content> 

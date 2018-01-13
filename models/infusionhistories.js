@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var infusionhistory= new Schema({
-_timetable:[{ type: Schema.ObjectId, ref: 'Timetable'}],
+_task:{ type: Schema.ObjectId, ref: 'Task'},
 date:String,
 infdate: Date,
 infstarttime:String,

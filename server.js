@@ -295,11 +295,107 @@ io.on('connection', function (socket) {
             var timeRemaining = messageArray[5];
             var totalVolume = messageArray[6];
             var percentage = Math.trunc(((infusedVolume/totalVolume)*100));
+            var infdate= new Date();
+            var inftime=(new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds();
+            var dateObj = new Date();
+            var month = dateObj.getUTCMonth() + 1; //months from 1-12
+            var day = dateObj.getUTCDate();
+            var year = dateObj.getUTCFullYear();
+            var newdate = day + "/" + month + "/" + year;
             if(status == 'start'){
                 socket.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':'start',
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
+                    if(inf.length==0){
+                        var inf = new Infusionhistory();
+                        inf.date= newdate;
+                        inf._task = ObjectId(taskid);
+                        inf.rate =rate;
+                        inf.infstarttime=inftime;
+                        inf.infdate=infdate;
+                        inf.infusedVolume = infusedVolume;
+                        inf.timeRemaining = timeRemaining;
+                        inf.totalVolume = totalVolume;
+                        inf.percentage = percentage;
+                        inf.save(function(err,inf){
+                            console.log(inf);
+                            if(err) throw err;
+                            Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:inf._id}},{upsert:false});
+
+                        });
+                       
+                    }
+                });
+
+            } //end of if status is start
+            else if(status == 'infusing'){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':'infusing',
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+
+
+            }//end of if status is infusing
+            else if(status == 'stop'){
+                if(percentage<90){
+                    socket.emit('dripo',{
+                        'topic':topic.toString(),
+                        'payload':payload.toString(),
+                        'infusionstatus':'stop',
+                        'status':'alerted',
+                        'taskid':taskid,
+                        'rate':rate,
+                        'infusedVolume':infusedVolume,
+                        'timeRemaining':timeRemaining,
+                        'totalVolume':totalVolume,
+                        'percentage':percentage
+                    });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+
+                }
+                else{
+                    socket.emit('dripo',{
+                        'topic':topic.toString(),
+                        'payload':payload.toString(),
+                        'infusionstatus':'Empty',
+                        'status':'inprogress',
+                        'taskid':taskid,
+                        'rate':rate,
+                        'infusedVolume':infusedVolume,
+                        'timeRemaining':timeRemaining,
+                        'totalVolume':totalVolume,
+                        'percentage':percentage
+                    });
+                    Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:'Empty'}});
+                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}});
+                }
+            }
+
+            else if(status == 'Empty'){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':'Empty',
                     'status':'inprogress',
                     'taskid':taskid,
                     'rate':rate,
@@ -315,35 +411,39 @@ io.on('connection', function (socket) {
                 var day = dateObj.getUTCDate();
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage}});
-                Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,infhistory){
-                    if(!infhistory.length){
-                        var inf = new Infusionhistory();
-                        inf.date= newdate;
-                        inf._task = ObjectId(taskid);
-                        inf.rate =rate;
-                        inf.infstarttime=inftime;
-                        inf.infdate=infdate;
-                        inf.infusedVolume = infusedVolume;
-                        inf.timeRemaining = timeRemaining;
-                        inf.totalVolume = totalVolume;
-                        inf.percentage = percentage;
-                        inf.save(function(err,inf){
-                            if(err) throw err;
-                            Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:inf._id}},{upsert:false});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:status}});
+                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}});
 
-                        });
-                       
-                    }
+            }
+            else if(status == 'Rate_Err'|| status=='Block'){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':status,
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
                 });
+                var infdate= new Date();
+                var inftime=(new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds();
+                var dateObj = new Date();
+                var month = dateObj.getUTCMonth() + 1; //months from 1-12
+                var day = dateObj.getUTCDate();
+                var year = dateObj.getUTCFullYear();
+                var newdate = day + "/" + month + "/" + year;
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}});
 
-            } //end of if status is start
+
+            }
+
+
             
-            // socket.emit('dripo',{
-            //     'topic':topic.toString(),
-            //     'payload':payload.toString(),
-            //     'status':'inprogress'
-            // });
+            
         }
     });
   });
