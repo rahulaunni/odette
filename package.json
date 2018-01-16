@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/rahulaunni/laura#readme",
   "dependencies": {
-    "bcrypt": "^1.0.3",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "crypto-js": "^3.1.9-1",
     "ejs": "^2.5.7",
