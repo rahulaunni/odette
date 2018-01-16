@@ -1260,14 +1260,8 @@ router.post('/nurse/gettask', function(req,res){
 					break;
 				}
 			}
-			console.log(index);
-			for(var key in task){
-				if(task[key].status == 'skipped'){
-					skippedtaskArray.push(task[key]);
-				}
-			}
 		var prevtaskArray = task.slice(0,index);
-		var nexttaskArray = task.slice(index,(task.length -1));
+		var nexttaskArray = task.slice(index,(task.length));
 		var taskArray = nexttaskArray.concat(prevtaskArray);
 		var times = [];
 		for(var key in taskArray){
