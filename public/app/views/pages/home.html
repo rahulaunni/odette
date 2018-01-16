@@ -2,11 +2,6 @@
     <div data-ng-repeat="activetask in activetasks" class="grid" ng-if="task.time==time">
         <div ng-if="activetask.status =='inprogress'" ng-click="showDetails($event,activetask);">
             <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
-                <!-- <md-card-header>
-                    <md-card-header-text layout-align="center center">
-                        <div class="md-title">{{activetask.type}}</div>
-                    </md-card-header-text>
-                </md-card-header> -->
                 <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
                 <div>
                     <md-card-content layout-align="center center" style="text-align: center;" >
@@ -49,11 +44,6 @@
         </div>
         <div ng-if="activetask.status =='alerted'">
             <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch>
-               <!-- <md-card-header ng-click="showDetails($event,activetask);">
-                   <md-card-header-text layout-align="center center">
-                       <div class="md-title">{{activetask.type}}</div>
-                   </md-card-header-text>
-               </md-card-header> -->
                 <md-card-content layout-align="center center" style="text-align: center;"  ng-click="showDetails($event,activetask);">
                     <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
                         <div class="md-subhead">Task Delayed :(</div>
@@ -123,11 +113,6 @@
  <div class="dynamic-grid" angular-grid="tasks" ag-grid-width="150" ag-gutter-size="10" ag-id="gallery" ag-refresh-on-img-load="false" ng-repeat="time in times" >
     <div data-ng-repeat="task in tasks" class="grid" ng-if="task.time==time" ng-click="showDetails($event,task);">
         <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
-            <!-- <md-card-header>
-                <md-card-header-text layout-align="center center">
-                    <div class="md-title">{{task.type}}</div>
-                </md-card-header-text>
-            </md-card-header> -->
             <md-card-content layout-align="center center" style="text-align: center;" >
                 <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
                     <div>{{task.type}} of {{task._medication.medicinename}}<br>at {{task.time}}:00</div>

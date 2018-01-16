@@ -18,11 +18,10 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	//user select a station and in service call a setstation route 
 	this.selectStation = function (selectstationData) {
-		console.log(this.selectstationData);
 		Nurse.setStation(this.selectstationData).then(function (data) {
 			if(data.data.success){
 				app.selected=true;
-				$location.path('/');
+				$location.url('/');
 			}
 			else{
 				$location.path('/selectstation')

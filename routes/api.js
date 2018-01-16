@@ -182,7 +182,6 @@ router.put('/forgotpassword', function(req, res) {
 			user.resetToken = jwt.sign({username:user.userName,hospitalname:user.hospitalName},secret,{expiresIn:'24h'}); // Create a token for activating account through e-mail
 			// Save token to user in database
 			user.save(function(err) {
-				console.log(user);
 				if (err) {
 					res.json({ success: false, message: err }); // Return error if cannot connect
 				} else {
@@ -238,7 +237,6 @@ router.put('/savepassword', function(req, res) {
 	User.findOne({userName: req.body.username}).select('userName password resetToken').exec(function(err, user) {
 		if (err) throw err; // Throw error if cannot connect
 		console.log(req.body);
-		console.log(user);
 		user.password = req.body.password;
 		user.resetToken = false;
 		user.save(function(err) {
@@ -361,7 +359,7 @@ router.get('/permission',function (req,res) {
 	User.findOne({userName:req.decoded.username}).exec(function (err,user) {
 		if(err) throw err;
 		//if no user found resond with no user found error message
-		if(!user){
+		if(user.length == 0){
 			res.json({success:false,message:"No user found"});
 		}
 		else{
@@ -528,7 +526,7 @@ router.post('/admin/addbed',function (req,res) {
 		bedObj.stationname=req.body.stationname;
 		bedObj._user = ObjectId(req.decoded.uid);
 		bedObj._station = ObjectId(station._id);
-		bedObj.status = 'occupied'
+		bedObj.status = 'unoccupied'
 		bedObjArray[key] = bedObj;
 	}
 
@@ -796,7 +794,6 @@ router.post('/nurse/viewstation', function(req,res){
 //route to set new token including the user selected station
 router.post('/nurse/setstation', function(req,res){
 	Station.find({username: req.decoded.admin,stationname:req.body.stationname}).exec(function(err, station) {
-		console.log(station);
 		var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname,stationid:station[0]._id},secret);
 		res.json({success:true,message:"token updated",token:token});
 	});	
@@ -1236,14 +1233,14 @@ router.post('/nurse/gettask', function(req,res){
 	var skippedtaskArray =[];
 	// var stationid = ObjectId(req.decoded.stationid);
 	Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
-		if(err){
+		if(task.length==0){
 			res.json({success:false,message:"no tasks found"});
 
 		}
 		//reorder returned task array of object based on present time
 		else{
 			var nexthour = hour;
-			while(nexthour<24){
+			while(nexthour<24){  //loop to find 
 				for(lp1=0;lp1<task.length;lp1++){
 					if(task[lp1].time == nexthour){
 						index = lp1;
@@ -1263,6 +1260,7 @@ router.post('/nurse/gettask', function(req,res){
 					break;
 				}
 			}
+			console.log(index);
 			for(var key in task){
 				if(task[key].status == 'skipped'){
 					skippedtaskArray.push(task[key]);
@@ -1305,7 +1303,13 @@ router.post('/nurse/getactivetask', function(req,res){
 	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,inprogresstask) {
 		Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
 			var task = inprogresstask.concat(alertedtask);
-			res.json({success:true,activetasks:task})
+			if(task.length==0){
+				res.json({success:false,message:"no tasks found"});
+			}
+			else{
+				res.json({success:true,activetasks:task})
+
+			}
 		});
 	});
 

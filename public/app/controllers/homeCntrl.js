@@ -16,6 +16,10 @@ angular.module('homeController',['homeServices'])
             $scope.times = data.data.times;
 
         }
+        else{
+          $scope.tasks = [{}];
+
+        }
        
     });
 
@@ -24,6 +28,8 @@ angular.module('homeController',['homeServices'])
         if(data.data.success){
             $scope.activetasks = data.data.activetasks;
 
+        }else{
+           $scope.activetasks=[];
         }
     });
 
