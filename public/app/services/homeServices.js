@@ -10,6 +10,9 @@ angular.module('homeServices',[])
 	homeFactory.skipTask = function (task) {
 		return $http.post('/api/nurse/skiptask',task);
 	}
+	homeFactory.closeTask = function (task) {
+		return $http.post('/api/nurse/closetask',task);
+	}
 
 	return homeFactory;
 });

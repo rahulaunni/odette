@@ -79,7 +79,6 @@ angular.module('homeController',['homeServices'])
 
     //function to show a confirm dialog when user skip a task
     $scope.showSkipConfirm = function(ev,task) {
-        console.log(task);
       var confirm = $mdDialog.confirm({
         onComplete: function afterShowAnimation() {
             var $dialog = angular.element(document.querySelector('md-dialog'));
@@ -99,6 +98,36 @@ angular.module('homeController',['homeServices'])
 
       $mdDialog.show(confirm).then(function() {
         Home.skipTask(task).then(function (data) {
+            if(data.data.success){
+                $window.location.reload('/');
+            }
+        });
+
+      }, function() {
+
+      });
+    };
+    //function to show a confirm dialog when user skip a task
+    $scope.showCloseConfirm = function(ev,task) {
+      var confirm = $mdDialog.confirm({
+        onComplete: function afterShowAnimation() {
+            var $dialog = angular.element(document.querySelector('md-dialog'));
+            var $actionsSection = $dialog.find('md-dialog-actions');
+            var $cancelButton = $actionsSection.children()[0];
+            var $confirmButton = $actionsSection.children()[1];
+            angular.element($confirmButton).addClass('md-raised md-warn');
+            angular.element($cancelButton).addClass('md-raised');
+        }
+      })
+      .title('Done this task manually ')
+      .textContent('Are you sure you want to close this task?')
+      .ariaLabel('Lucky day')
+      .targetEvent(ev)
+      .ok('Yes, Close!')
+      .cancel('No, Later');
+
+      $mdDialog.show(confirm).then(function() {
+        Home.closeTask(task).then(function (data) {
             if(data.data.success){
                 $window.location.reload('/');
             }

@@ -23,6 +23,7 @@ var api = require('./routes/api')(router);
 var port=3000;
 var cron = require('node-cron');
 var ObjectId = require('mongodb').ObjectID;
+var CryptoJS = require("crypto-js");
 
 //Models 
 var Task = require('./models/tasks');
@@ -76,10 +77,15 @@ server.listen(process.env.PORT || port, function(){
 cron.schedule('59 * * * *', function(){
 	var date = new Date();
 	var hour = date.getHours();
-    console.log("executed at",date);
  	Task.collection.updateMany({'time':hour,'status':'opened'},{$set:{status:'alerted'}});
 });
-
+//Task 2: Change status of task from closed/skipped to opened in 59th minute
+cron.schedule('59 * * * *', function(){
+    var date = new Date();
+    var hour = date.getHours();
+    var time = Math.abs(hour-12);
+    Task.collection.updateMany({'time':time,'status':{ $in:['closed','skipped']}},{$set:{status:'opened'}});
+});
 //MQTT Configuration
 var mqtt = require('mqtt')
 var client = mqtt.connect('mqtt://localhost:1883');
@@ -96,12 +102,12 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            client.publish('error/' + dripoid ,'Access Denied',function (err) {
+            client.publish('error/' + dripoid ,'Access&Denied',function (err) {
                 if(err){
                     console.log(err);
                 }
             });
-            console.log("access denied");
+            console.log("Access&Denied");
         }
         else{
             var stationid = ObjectId(dripo[0]._station);
@@ -110,7 +116,7 @@ client.on('message', function (topic, message) {
                 Bed.find({_station:stationid,status:'occupied'}).exec(function(err,bed){
                     if(err) throw err;
                     if(!bed.length){
-                        client.publish('error/' + dripoid ,'No bed found',function (err) {
+                        client.publish('error/' + dripoid ,'No&bed&found',function (err) {
                             if(err){
                                 console.log(err);
                             }
@@ -127,6 +133,7 @@ client.on('message', function (topic, message) {
                         }
                         var pub_bed=pubBed.join('');
                         client.publish('dripo/' + dripoid + '/bed',pub_bed,{ qos: 1, retain: false });
+                        console.log(pub_bed);
 
 
                     }
@@ -139,7 +146,7 @@ client.on('message', function (topic, message) {
                 Medication.find({_bed:bedid}).exec(function(err,medication){
                     if(err) throw err;
                     if(!medication.length){
-                        client.publish('error/' + dripoid ,'No Medication found',function (err) {
+                        client.publish('error/' + dripoid ,'No&Medicine&found',function (err) {
                             if(err){
                                 console.log(err);
                             }
@@ -168,7 +175,7 @@ client.on('message', function (topic, message) {
                     Ivset.find({_user:userid}).sort({ivsetdpf:1}).exec(function(err,ivset){
                         if(err) throw err;
                         if(!ivset.length){
-                            client.publish('error/' + dripoid ,'No ivset found',function (err) {
+                            client.publish('error/' + dripoid ,'No&ivset&found',function (err) {
                                 if(err){
                                     console.log(err);
                                 }
@@ -249,6 +256,8 @@ client.on('message', function (topic, message) {
                 });
 
             }//end of rate_req
+           
+
 
 
         }//end of if access granted for dripo
@@ -256,6 +265,22 @@ client.on('message', function (topic, message) {
     });
 
 })
+//test encryption
+// var AESKey = 'B7EE7193E395F5ED016E48FF51FA1180';
+// var message = 'Online vannae';
+// var iv = CryptoJS.enc.Hex.parse('8F6BC245A46A1C5746D8959D20458FAA');
+// var key= CryptoJS.enc.Hex.parse(AESKey);
+// // Encrypt
+// var ciphertext = CryptoJS.AES.encrypt(message, key , { iv: iv } );
+// var ciphertext64 =ciphertext.toString(CryptoJS.enc.base64);
+// console.log("Cypher: " ,  ciphertext.toString(CryptoJS.enc.base64) );
+// var esp8266_msg  = ciphertext64;
+// // The AES encryption/decryption key to be used.
+// var bytes  = CryptoJS.AES.decrypt( esp8266_msg, key , { iv: iv} );
+// console.log(bytes);
+// var plaintext = bytes.toString(CryptoJS.enc.Base64);
+// var decoded_b64msg =  new Buffer(plaintext , 'base64').toString('ascii');
+// console.log("Decryptedage: ", decoded_b64msg);
 
 //socket.io config
 var io = require('socket.io')(server);
@@ -282,7 +307,6 @@ io.on('connection', function (socket) {
                     console.log(err);
                 }
             });
-            console.log("access denied");
         }
         else{
             var message = payload.toString();
@@ -438,11 +462,7 @@ io.on('connection', function (socket) {
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}});
 
-
             }
-
-
-            
             
         }
     });

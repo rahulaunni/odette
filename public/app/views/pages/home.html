@@ -62,8 +62,15 @@
                         <div class="md-subhead">{{activetask._medication.medicinename}}</div>
                     </slick>
                 </md-card-content> 
-                <md-card-actions layout="row" layout-align="end center">
-                    <md-button class="md-warn md-raised" ng-click="showSkipConfirm($event,activetask);">Skip</md-button>
+                <md-card-actions layout="row" layout-align="center center" style="text-align: center;" >
+                    <slick autoplay="true" autoplaySpeed="500" fade="false"  touch-move=false arrows=false>
+                   <div>
+                        <md-button class="md-warn md-raised" ng-click="showSkipConfirm($event,activetask);">Skip</md-button>
+                   </div> 
+                   <div>
+                       <md-button class="md-accent md-raised" ng-click="showCloseConfirm($event,activetask);">close</md-button>
+                   </div>
+                    </slick>
                 </md-card-actions>
                 <md-card-footer ng-style="setbgColor(activetask.status)" ng-click="showDetails($event,activetask);">
                     <md-card-header-text>

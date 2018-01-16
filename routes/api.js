@@ -528,7 +528,7 @@ router.post('/admin/addbed',function (req,res) {
 		bedObj.stationname=req.body.stationname;
 		bedObj._user = ObjectId(req.decoded.uid);
 		bedObj._station = ObjectId(station._id);
-		bedObj.status = 'unoccupied'
+		bedObj.status = 'occupied'
 		bedObjArray[key] = bedObj;
 	}
 
@@ -1317,6 +1317,11 @@ router.post('/nurse/skiptask', function(req,res){
 	res.json({success:true,message:'task skipped'})
 });
 
+//route to close a task 
+router.post('/nurse/closetask', function(req,res){
+	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed'}});
+	res.json({success:true,message:'task closed'})
+});
 
 
 return router;
