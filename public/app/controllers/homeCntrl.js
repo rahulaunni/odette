@@ -2,34 +2,44 @@ angular.module('homeController',['homeServices'])
 .controller('homeCntrl',function ($http,$route,$scope,$rootScope,$interval,$window,$location,$timeout,$mdDialog,$scope,Home,socket) {
     var app = this;
     var index = false;
-    $scope.tasks = [{}];
+    $scope.openedtasks = [{}];
     $scope.times = [];
-    $scope.activetasks=[];
+    $scope.inprogresstasks=[{}];
+    $scope.alertedtasks=[{}];
     var date=new Date();
     var hour=date.getHours();
     var minute = date.getMinutes();
     $scope.currentHour = hour;
     //on page reload get all tasks from db
-    Home.getTasks().then(function (data) {
+    Home.getopenedTasks().then(function (data) {
         if(data.data.success){
-            $scope.tasks = data.data.tasks;
+            $scope.openedtasks = data.data.openedtasks;
             $scope.times = data.data.times;
 
         }
         else{
-          $scope.tasks = [{}];
+          $scope.openedtasks = [{}];
 
         }
        
     });
 
     //on page reload get all active tasks from db
-    Home.getactiveTasks().then(function (data) {
+    Home.getinprogressTasks().then(function (data) {
         if(data.data.success){
-            $scope.activetasks = data.data.activetasks;
+            $scope.inprogresstasks = data.data.inprogresstasks;
 
         }else{
-           $scope.activetasks=[];
+           $scope.inprogresstasks=[];
+        }
+    });
+    //get alerted
+    Home.getalertedTasks().then(function (data) {
+        if(data.data.success){
+            $scope.alertedtasks = data.data.alertedtasks;
+
+        }else{
+           $scope.alertedtasks=[];
         }
     });
 
@@ -56,24 +66,16 @@ angular.module('homeController',['homeServices'])
        });
      }
 
-     $scope.determinateValue = 30;
-    $interval(function () {
-            $scope.determinateValue += 1;
-            if ($scope.determinateValue > 100) {
-              $scope.determinateValue = 30;
-            }
-    },300)
-
     //function to change opened task to alerted in front end
     $interval(function () {
         var currentDate=new Date();
         if(currentDate.getMinutes() == 59){
-            for(var key in $scope.tasks){
-                if($scope.tasks[key].time == (currentDate.getHours()))
+            for(var key in $scope.opeendtasks){
+                if($scope.openedtasks[key].time == (currentDate.getHours()))
                 {   
-                    $scope.tasks[key].status = 'alerted';
-                    $scope.activetasks.push($scope.tasks[key]);
-                    $scope.tasks.splice(key,1);
+                    $scope.openedtasks[key].status = 'alerted';
+                    $scope.alertedtasks.push($scope.openedtasks[key]);
+                    $scope.openedtasks.splice(key,1);
                 }
             }
         }
@@ -148,29 +150,29 @@ angular.module('homeController',['homeServices'])
     socket.on('dripo', function(data) {
         if(data.infusionstatus == 'start'){
           for(var key in $scope.tasks){
-            if($scope.tasks[key]._id == data.taskid){
+            if($scope.openedtasks[key]._id == data.taskid){
               console.log($scope.tasks[key]);
-              $scope.tasks[key].status = 'inprogress';
-              $scope.tasks[key].infusionstatus = data.infusionstatus;
-              $scope.tasks[key].rate = data.rate;
-              $scope.tasks[key].infusedVolume = data.infusedVolume;
-              $scope.tasks[key].timeRemaining = data.timeRemaining;
-              $scope.tasks[key].totalVolume = data.totalVolume;
-              $scope.tasks[key].percentage = data.percentage;
-              $scope.activetasks.unshift($scope.tasks[key]);
+              $scope.openedtasks[key].status = 'inprogress';
+              $scope.openedtasks[key].infusionstatus = data.infusionstatus;
+              $scope.openedtasks[key].rate = data.rate;
+              $scope.openedtasks[key].infusedVolume = data.infusedVolume;
+              $scope.openedtasks[key].timeRemaining = data.timeRemaining;
+              $scope.openedtasks[key].totalVolume = data.totalVolume;
+              $scope.openedtasks[key].percentage = data.percentage;
+              $scope.inprogresstasks.unshift($scope.openedtasks[key]);
             }
-            if(key == $scope.tasks.length -1){
-              for(var key2 in $scope.activetasks){
-                if($scope.tasks[key]._id == data.taskid){
+            if(key == $scope.openedtasks.length -1){
+              for(var key2 in $scope.alertedtasks){
+                if($scope.alertedtasks[key]._id == data.taskid){
                   console.log($scope.tasks[key2]);
-                  $scope.activetasks[key2].status = 'inprogress';
-                  $scope.activetasks[key2].infusionstatus = data.infusionstatus;
-                  $scope.activetasks[key2].rate = data.rate;
-                  $scope.activetasks[key2].infusedVolume = data.infusedVolume;
-                  $scope.activetasks[key2].timeRemaining = data.timeRemaining;
-                  $scope.activetasks[key2].totalVolume = data.totalVolume;
-                  $scope.activetasks[key2].percentage = data.percentage;
-                  $scope.activetasks.unshift($scope.activetasks[key2]);
+                  $scope.alertedtasks[key2].status = 'inprogress';
+                  $scope.alertedtasks[key2].infusionstatus = data.infusionstatus;
+                  $scope.alertedtasks[key2].rate = data.rate;
+                  $scope.alertedtasks[key2].infusedVolume = data.infusedVolume;
+                  $scope.alertedtasks[key2].timeRemaining = data.timeRemaining;
+                  $scope.alertedtasks[key2].totalVolume = data.totalVolume;
+                  $scope.alertedtasks[key2].percentage = data.percentage;
+                  $scope.inprogresstasks.unshift($scope.activetasks[key2]);
                 }
 
               }
@@ -178,52 +180,52 @@ angular.module('homeController',['homeServices'])
           }
         }//end of start
         if(data.infusionstatus == 'infusing'){
-          for(var key in $scope.activetasks){
-            if($scope.activetasks[key]._id == data.taskid){
-              $scope.activetasks[key].status = 'inprogress';
-              $scope.activetasks[key].infusionstatus = data.infusionstatus;
-              $scope.activetasks[key].rate = data.rate;
-              $scope.activetasks[key].infusedVolume = data.infusedVolume;
-              $scope.activetasks[key].timeRemaining = data.timeRemaining;
-              $scope.activetasks[key].totalVolume = data.totalVolume;
-              $scope.activetasks[key].percentage = data.percentage;
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'inprogress';
+              $scope.inprogresstasks[key].infusionstatus = data.infusionstatus;
+              $scope.inprogresstasks[key].rate = data.rate;
+              $scope.inprogresstasks[key].infusedVolume = data.infusedVolume;
+              $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
+              $scope.inprogresstasks[key].totalVolume = data.totalVolume;
+              $scope.inprogresstasks[key].percentage = data.percentage;
 
             }
           }
         }//end of infusing
         if(data.infusionstatus == 'stop'){
-          for(var key in $scope.activetasks){
-            if($scope.activetasks[key]._id == data.taskid){
-              $scope.activetasks[key].status = 'alerted';
-              $scope.activetasks[key].infusionstatus = data.infusionstatus;
-              $scope.activetasks[key].rate = data.rate;
-              $scope.activetasks[key].infusedVolume = data.infusedVolume;
-              $scope.activetasks[key].timeRemaining = data.timeRemaining;
-              $scope.activetasks[key].totalVolume = data.totalVolume;
-              $scope.activetasks[key].percentage = data.percentage;
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'alerted';
+              $scope.inprogresstasks[key].infusionstatus = data.infusionstatus;
+              $scope.inprogresstasks[key].rate = data.rate;
+              $scope.inprogresstasks[key].infusedVolume = data.infusedVolume;
+              $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
+              $scope.inprogresstasks[key].totalVolume = data.totalVolume;
+              $scope.inprogresstasks[key].percentage = data.percentage;
 
             }
           }
         }//end of stop
         if(data.infusionstatus == 'Empty'){
-          for(var key in $scope.activetasks){
-            if($scope.activetasks[key]._id == data.taskid){
-              $scope.activetasks[key].status = 'closed';
-              $scope.activetasks.splice(key,1);
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'closed';
+              $scope.inprogresstasks.splice(key,1);
 
             }
           }
         }//end of empty
         if(data.infusionstatus == 'Block'|| data.infusionstatus == 'Rate_Err'){
-          for(var key in $scope.activetasks){
-            if($scope.activetasks[key]._id == data.taskid){
-              $scope.activetasks[key].status = 'inprogress';
-              $scope.activetasks[key].infusionstatus = data.infusionstatus;
-              $scope.activetasks[key].rate = data.rate;
-              $scope.activetasks[key].infusedVolume = data.infusedVolume;
-              $scope.activetasks[key].timeRemaining = data.timeRemaining;
-              $scope.activetasks[key].totalVolume = data.totalVolume;
-              $scope.activetasks[key].percentage = data.percentage;
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'inprogress';
+              $scope.inprogresstasks[key].infusionstatus = data.infusionstatus;
+              $scope.inprogresstasks[key].rate = data.rate;
+              $scope.inprogresstasks[key].infusedVolume = data.infusedVolume;
+              $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
+              $scope.inprogresstasks[key].totalVolume = data.totalVolume;
+              $scope.inprogresstasks[key].percentage = data.percentage;
 
             }
 

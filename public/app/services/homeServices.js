@@ -1,11 +1,14 @@
 angular.module('homeServices',[])
 .factory('Home',function ($http) {
 	homeFactory={};
-	homeFactory.getTasks = function () {
-		return $http.post('/api/nurse/gettask');
+	homeFactory.getopenedTasks = function () {
+		return $http.post('/api/nurse/getopenedtask');
 	}
-	homeFactory.getactiveTasks = function () {
-		return $http.post('/api/nurse/getactivetask');
+	homeFactory.getinprogressTasks = function () {
+		return $http.post('/api/nurse/getinprogresstask');
+	}
+	homeFactory.getalertedTasks = function () {
+		return $http.post('/api/nurse/getalertedtask');
 	}
 	homeFactory.skipTask = function (task) {
 		return $http.post('/api/nurse/skiptask',task);

@@ -1,0 +1,10 @@
+<div layout="column" layout-padding="" layout-fill>
+	<p>Update
+	<md-button ng-click="update.checkUpdate();" >
+		<md-icon ng-hide="loader" class="md-default-theme" class="material-icons">&#xE923;</md-icon>
+		<md-progress-circular ng-show="loader"  md-diameter="20px" md-mode="indeterminate"></md-progress-circular>
+	</md-button>
+	</p>
+	<div ng-show="updated">{{reply}}</div>
+	<div ng-show="nochange">{{reply}}</div>
+</div>

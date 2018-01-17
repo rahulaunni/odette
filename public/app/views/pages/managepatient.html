@@ -136,16 +136,10 @@
                                     <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
                                     <md-select type="text" aria-label="filter" ng-model="managePatient.editpatient.bedname" name="bed" required>
                                         <md-optgroup label="bed">
-                                            <md-option ng-value="managePatient.editpatient.bedname" ng-selected="true"> {{managePatient.editpatient.bedname}}</md-option>
+                                            <md-option ng-value="managePatient.oldbed" ng-selected="true"> {{managePatient.oldbed}}</md-option>
                                             <md-option ng-value="bed.bedname"  ng-repeat="bed in beds"> {{bed.bedname}}</md-option>
                                         </md-optgroup>
                                     </md-select>
-                                    <div ng-messages="patientForm.bed.$error" role="alert" multiple>
-                                        <div ng-message="required" class="my-message">This field is required</div>
-                                        <div ng-show="nobed" ng-messages="nobed" role="alert">
-                                            <p>No bed found, Contact admin</p>
-                                        </div>
-                                    </div>
                                 </md-input-container>
                                 <md-input-container class="md-icon-float md-block" flex>
                                     <label>Select Doctor</label>

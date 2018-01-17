@@ -10,6 +10,8 @@ ___      ___    __    __   ______    ____
  Website: http://evelabs.co
 
  */
+var version = '1.0.0';
+const simpleGit = require('simple-git');
 var express = require('express');
 var app = require('express')();
 var server = require('http').Server(app);
@@ -37,6 +39,23 @@ var Infusionhistory = require('./models/infusionhistories');
 //for logging requests
 app.use(morgan('dev'));
 
+//for updating app
+app.post('/admin/update',function (req,res) {
+    require('simple-git')()
+    .pull((err, update) => {
+        console.log(update.summary);
+        if(update && update.summary.changes) {
+            require('child_process').exec('npm restart');
+            res.json({success:true,message:'Updated to New Version'});
+        }
+        else{
+            res.json({success:false,message:'Your system is upto date'})
+
+        }
+    })
+
+});
+
 //bodyparser
 app.use(bodyParser.json());
 app.use(bodyParser.text());
@@ -57,6 +76,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.all('/*', function(req, res, next) {
     res.sendFile(path.join(__dirname,  'public/app/views', 'index.html'));
 });
+
 
 //mongodb configuration
 mongoose.Promise = global.Promise;

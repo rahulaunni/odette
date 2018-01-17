@@ -96,6 +96,13 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'manageDripo',
 		permission:['admin']
 	})
+	.when('/admin/update',{
+		templateUrl:'app/views/adminpages/update.html',
+		authenticated:true,
+		controller: 'updateCntrl',
+		controllerAs: 'update',
+		permission:['admin']
+	})
 	.when('/managepatients',{
 		templateUrl:'app/views/pages/managepatient.html',
 		authenticated:true,

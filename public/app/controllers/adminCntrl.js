@@ -456,6 +456,31 @@ angular.module('adminController',['userServices','adminServices'])
 		};
 
 })
+.controller('updateCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
+	$scope.updated = false;
+	$scope.nochange = false;
+	$scope.reply =false;
+	$scope.loader = false;
+	this.checkUpdate = function (editdripo) {
+		$scope.loader = true;
+		Admin.checkUpdate().then(function(data) {
+			if(data.data.success){
+				$scope.updated = true;
+				$scope.nochange = false;
+				$scope.loader = false;
+				$scope.reply  = data.data.message;
+			}
+			else{
+				$scope.updated = false;
+				$scope.nochange = true;
+				$scope.loader = false;
+				$scope.reply  = data.data.message;
+			}
+		});
+
+	}
+})
+
 
 .controller('adminHomeCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
 	var app=this;

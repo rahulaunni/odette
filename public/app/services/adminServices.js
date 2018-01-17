@@ -51,6 +51,9 @@ angular.module('adminServices',[])
 	}
 	adminFactory.getDetails = function () {
 		return $http.post('/api/admin/getdetails');
-	}     
+	} 
+	adminFactory.checkUpdate = function () {
+		return $http.post('/admin/update');
+	}    
 	return adminFactory;
 });

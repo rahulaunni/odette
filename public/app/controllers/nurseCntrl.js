@@ -306,7 +306,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 
 	this.showfromlistAddMedication = function (patient) {
-		console.log(patient);
 		app.patient = patient;
 		app.bed = {_id:patient._bed};
 		app.showOnAddMedication = true;

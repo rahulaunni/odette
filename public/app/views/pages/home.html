@@ -1,6 +1,6 @@
  <div class="dynamic-grid" angular-grid="tasks" ag-grid-width="150" ag-gutter-size="5" ag-id="gallery" ag-refresh-on-img-load="false">
-    <div data-ng-repeat="activetask in activetasks" class="grid" ng-if="task.time==time">
-        <div ng-if="activetask.status =='inprogress'" ng-click="showDetails($event,activetask);">
+    <div data-ng-repeat="inprogresstask in inprogresstasks" class="grid">
+        <div ng-click="showDetails($event,inprogresstask);">
             <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
                 <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
                 <div>
@@ -9,7 +9,7 @@
                                       <md-progress-circular md-mode="determinate" md-diameter="96" value="{{activetask.percentage}}">
                                       </md-progress-circular>
                                  
-                                {{activetask.percentage}}%
+                                {{inprogresstask.percentage}}%
                                 </div>
                     </md-card-content>
                     
@@ -17,39 +17,41 @@
                 <div>
                     <md-card-content>
                         <div>
-                            Rate:{{activetask.rate}}
+                            Rate:{{inprogresstask.rate}}
                         </div>
                         <div>
-                            Time Remaining:{{activetask.timeRemaining}}
+                            Time Remaining:{{inprogresstask.timeRemaining}}
                         </div>
                         <div>
-                            Infused Volume:{{activetask.infusedVolume}}
+                            Infused Volume:{{inprogresstask.infusedVolume}}
                         </div>
                     </md-card-content>
                     
                 </div>
                 </slick>
-                <div ng-if="activetask.infusionstatus == 'Block'">
-                    {{activetask.infusionstatus}}
+                <div ng-if="inprogresstask.infusionstatus == 'Block'">
+                    {{inprogresstask.infusionstatus}}
                 </div>
-                <div ng-if="activetask.infusionstatus == 'Rate_Err'">
-                    {{activetask.infusionstatus}}
+                <div ng-if="inprogresstask.infusionstatus == 'Rate_Err'">
+                    {{inprogresstask.infusionstatus}}
                 </div>
-                <md-card-footer ng-style="setbgColor(activetask.status)">
+                <md-card-footer ng-style="setbgColor(inprogresstask.status)">
                     <md-card-header-text>
-                        <div class="md-headline" style="text-align: center;">{{activetask._bed.bedname}}</div>
+                        <div class="md-headline" style="text-align: center;">{{inprogresstask._bed.bedname}}</div>
                     </md-card-header-text>
                 </md-card-footer>
             </md-card> 
         </div>
-        <div ng-if="activetask.status =='alerted'">
+    </div>
+    <div data-ng-repeat="alertedtask in alertedtasks" class="grid">
+        <div>
             <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch>
                 <md-card-content layout-align="center center" style="text-align: center;"  ng-click="showDetails($event,activetask);">
                     <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
                         <div class="md-subhead">Task Delayed :(</div>
-                        <div class="md-subhead" ng-if="activetask.time<=currentHour">Delayed: {{(currentHour)-activetask.time}}hr</div>
-                        <div class="md-subhead" ng-if="activetask.time>currentHour">Delayed: {{(activetask.time)-currentHour}}hr</div>
-                        <div class="md-subhead">{{activetask._medication.medicinename}}</div>
+                        <div class="md-subhead" ng-if="alertedtask.time<=currentHour">Delayed: {{(currentHour)-alertedtask.time}}hr</div>
+                        <div class="md-subhead" ng-if="alertedtask.time>currentHour">Delayed: {{(alertedtask.time)-currentHour}}hr</div>
+                        <div class="md-subhead">{{alertedtask._medication.medicinename}}</div>
                     </slick>
                 </md-card-content> 
                 <md-card-actions layout="row" layout-align="center center" style="text-align: center;" >
@@ -62,9 +64,9 @@
                    </div>
                     </slick>
                 </md-card-actions>
-                <md-card-footer ng-style="setbgColor(activetask.status)" ng-click="showDetails($event,activetask);">
+                <md-card-footer ng-style="setbgColor(alertedtask.status)" ng-click="showDetails($event,alertedtask);">
                     <md-card-header-text>
-                        <div class="md-headline" style="text-align: center;">{{activetask._bed.bedname}}</div>
+                        <div class="md-headline" style="text-align: center;">{{alertedtask._bed.bedname}}</div>
                     </md-card-header-text>
                 </md-card-footer>
             </md-card>
@@ -110,19 +112,19 @@
 <md-divider></md-divider>
 
 
- <div class="dynamic-grid" angular-grid="tasks" ag-grid-width="150" ag-gutter-size="10" ag-id="gallery" ag-refresh-on-img-load="false" ng-repeat="time in times" >
-    <div data-ng-repeat="task in tasks" class="grid" ng-if="task.time==time" ng-click="showDetails($event,task);">
+ <div class="dynamic-grid" angular-grid="openedtasks" ag-grid-width="150" ag-gutter-size="10" ag-id="gallery" ag-refresh-on-img-load="false" ng-repeat="time in times" >
+    <div data-ng-repeat="openedtask in openedtasks" class="grid" ng-if="openedtask.time==time" ng-click="showDetails($event,openedtask);">
         <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
             <md-card-content layout-align="center center" style="text-align: center;" >
                 <slick autoplay="true" autoplaySpeed="500" fade="false" dots=true touch-move=false arrows=false>
-                    <div>{{task.type}} of {{task._medication.medicinename}}<br>at {{task.time}}:00</div>
-                    <div>Volume<br>{{task._medication.medicinevolume}} ml</div>
-                    <div>Rate<br>{{task._medication.medicinerate}} ml/hr</div>
+                    <div>{{openedtask.type}} of {{openedtask._medication.medicinename}}<br>at {{openedtask.time}}:00</div>
+                    <div>Volume<br>{{openedtask._medication.medicinevolume}} ml</div>
+                    <div>Rate<br>{{openedtask._medication.medicinerate}} ml/hr</div>
                 </slick>
             </md-card-content>
-            <md-card-footer ng-style="setbgColor(task.status)">
+            <md-card-footer ng-style="setbgColor(openedtask.status)">
                 <md-card-header-text>
-                    <div class="md-headline" style="text-align: center;">{{task._bed.bedname}}</div>
+                    <div class="md-headline" style="text-align: center;">{{openedtask._bed.bedname}}</div>
                 </md-card-header-text>
             </md-card-footer>
         </md-card>
