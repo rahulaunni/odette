@@ -28,9 +28,18 @@ angular.module('homeController',['homeServices'])
     Home.getinprogressTasks().then(function (data) {
         if(data.data.success){
             $scope.inprogresstasks = data.data.inprogresstasks;
+            for(var key in data.data.inprogresstasks){
+            	if(data.data.inprogresstasks[key].type == 'infusion'){
+            		$scope.inprogresstasks[key].span = 6;
+            	}
+            	else{
+            		$scope.inprogresstasks[key].span = 4;
+            	}
+            	
+            }
 
         }else{
-           $scope.inprogresstasks=[];
+           $scope.inprogresstasks=[{}];
         }
     });
     //get alerted
@@ -42,19 +51,8 @@ angular.module('homeController',['homeServices'])
            $scope.alertedtasks=[];
         }
     });
-
     //function for giving background color to footer of card
-    $scope.setbgColor = function (status) {
-        if (status == "inprogress") {
-            return { background: "#9AB707" }
-        }
-        if (status == "alerted") {
-            return { background: "#FAD60B"}
-        }
-        if (status == "opened") {
-            return { background: "#CCCCCC" }
-        }
-    }
+   
 
     //to show the card details as dialog box
     $scope.showDetails = function(ev,task) {
@@ -148,6 +146,7 @@ angular.module('homeController',['homeServices'])
    
     //ssocket.io test
     socket.on('dripo', function(data) {
+    	$scope.$apply(function () {
         if(data.infusionstatus == 'start'){
           for(var key in $scope.tasks){
             if($scope.openedtasks[key]._id == data.taskid){
@@ -179,7 +178,7 @@ angular.module('homeController',['homeServices'])
             }
           }
         }//end of start
-        if(data.infusionstatus == 'infusing'){
+        else if(data.infusionstatus == 'infusing'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
               $scope.inprogresstasks[key].status = 'inprogress';
@@ -193,7 +192,7 @@ angular.module('homeController',['homeServices'])
             }
           }
         }//end of infusing
-        if(data.infusionstatus == 'stop'){
+        else if(data.infusionstatus == 'stop'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
               $scope.inprogresstasks[key].status = 'alerted';
@@ -207,7 +206,7 @@ angular.module('homeController',['homeServices'])
             }
           }
         }//end of stop
-        if(data.infusionstatus == 'Empty'){
+        else if(data.infusionstatus == 'Empty'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
               $scope.inprogresstasks[key].status = 'closed';
@@ -216,7 +215,8 @@ angular.module('homeController',['homeServices'])
             }
           }
         }//end of empty
-        if(data.infusionstatus == 'Block'|| data.infusionstatus == 'Rate_Err'){
+        else if(data.infusionstatus == 'Block'|| data.infusionstatus == 'Rate_Err'){
+        	console.log($scope.inprogresstasks);
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
               $scope.inprogresstasks[key].status = 'inprogress';
@@ -226,6 +226,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              console.log($scope.inprogresstasks);
 
             }
 
@@ -233,6 +234,7 @@ angular.module('homeController',['homeServices'])
           }
 
         }
+    });
 
 
       });

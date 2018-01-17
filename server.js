@@ -43,7 +43,6 @@ app.use(morgan('dev'));
 app.post('/admin/update',function (req,res) {
     require('simple-git')()
     .pull((err, update) => {
-        console.log(update.summary);
         if(update && update.summary.changes) {
             require('child_process').exec('npm restart');
             res.json({success:true,message:'Updated to New Version'});

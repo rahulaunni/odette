@@ -76,3 +76,83 @@ md-input-container{
   opacity:0;
 }
 
+.gridlist{
+  text-align:center;
+}
+.gridtile{
+  background: #ffffff;
+    text-align:center;
+}
+.gridtile figure{
+     height: 100%;
+    flex: 100;
+    flex-direction: row;
+    flex-flow: column;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);
+    transition: all 1s;
+}
+.gridtile figure div{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.gridtile figure .content{
+  background: rgb(253,253,254);
+}
+.gridtile figure .title{
+  font-size: 1em;
+ color: #ffffff;
+  background: #616161;
+}
+.gridtile figure .bedname{
+  color: #FFFFFF;
+  background: #424242;
+  font-size:2em;
+}
+.gridtile figure .status{
+   background: #616161;
+   color: #ffffff;
+    font-size: 1em;
+}
+.gridtile figure .action{
+  background:#FF4081;
+  color: #FFFFFF;
+   font-size: 1em;
+ font-weight: bold;
+}
+.nursecall .title{
+  height:20%;
+}
+.nursecall .bedname{
+  height:30%;
+}
+.nursecall .status{
+  height:20%;
+}
+.nursecall .action{
+ height:30%;
+}
+.infusion .title{
+  height:15%;
+}
+.infusion  .bedname{
+  height:20%;
+}
+.infusion .status{
+  height:65%;
+}
+.infusion .action{
+display: none;
+height: 0%;
+}
+.Block .status,.Rate_Err .status{
+  height:45%;
+}
+.Block .action,.Rate_Err .status{
+    height:20%;
+    display: flex;
+}
