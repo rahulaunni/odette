@@ -1,12 +1,20 @@
+<div style="padding: 2%">
 <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
-       <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan={{::inprogresstask.span}}>
-        
-        <div class="title">Nurse Call</div>
-        <md-progress-linear md-mode="indeterminate"></md-progress-linear>
-        <div class="bedname">{{::inprogresstask._bed.bedname}}</div>
-        <div class="status">
-        {{inprogresstask.infusionstatus}}</div>
-        <div class="action">ACKNOWLEDGE</div>
-      
-    </md-grid-tile>
-</md-grid-list>
+           <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan={{::inprogresstask.span}}>
+            
+            <div class="title">Infusing</div>
+            <md-progress-linear md-mode="indeterminate"  class="md-accent md-hue-4" ></md-progress-linear>
+            <div class="bedname">{{::inprogresstask._bed.bedname}}</div>
+            <div class="status">
+            <div ng-if="::inprogresstask.type =='infusion'" >
+                <div flex class="md-display-1" style="border-right:1px solid #000000"><md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>69/80</div><div flex><div>Hello</div>Hello<div></div></div>
+            </div>
+            <div ng-if="::inprogresstask.type =='nursecall'" >
+                call
+            </div>
+               </div>
+            <div class="action">ACKNOWLEDGE</div>
+          
+        </md-grid-tile>
+    </md-grid-list>
+</div>

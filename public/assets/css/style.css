@@ -1,9 +1,5 @@
-
-
 .toolbardemoBasicUsage md-toolbar md-icon.md-default-theme {
   color: white; }
-
-
 /*for hosting material icons offline*/
   @font-face {
      font-family: 'Material Icons';
@@ -16,7 +12,6 @@
           url(../fonts/MaterialIcons-Regular.woff) format('woff'),
           url(../fonts/MaterialIcons-Regular.ttf) format('truetype');
   }
-
   .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -29,36 +24,28 @@
     word-wrap: normal;
     white-space: nowrap;
     direction: ltr;
-
     /* Support for all WebKit browsers. */
     -webkit-font-smoothing: antialiased;
     /* Support for Safari and Chrome. */
     text-rendering: optimizeLegibility;
-
     /* Support for Firefox. */
     -moz-osx-font-smoothing: grayscale;
-
     /* Support for IE. */
     font-feature-settings: 'liga';
   }
   
 /*Full screen mode for html*/
 html, body { 
-  	height: 100%; 
-  	width: 100%; 
-  	margin: 0; 
+    height: 100%; 
+    width: 100%; 
+    margin: 0; 
  }
-
 md-input-container{
   margin: 16px 0px;
 }
-
 .lap-side-nav{
       box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
 }
-
-
-
 .animate-hide {
  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
     -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s;
@@ -69,13 +56,11 @@ md-input-container{
   background:white;
   left: 0
 }
-
 .animate-hide.ng-hide {
   left: -100%;
   line-height:0;
   opacity:0;
 }
-
 .gridlist{
   text-align:center;
 }
@@ -144,6 +129,7 @@ md-input-container{
 }
 .infusion .status{
   height:65%;
+  flex-flow: row;
 }
 .infusion .action{
 display: none;
@@ -156,3 +142,17 @@ height: 0%;
     height:20%;
     display: flex;
 }
+.md-tab-item {
+  float: right;
+}
+md-pagination-wrapper {
+  left: initial;
+  right: 0;
+}
+md-tabs-content-wrapper {
+  padding: 5%;
+}
+Add Comment Collapse
+
+
+
