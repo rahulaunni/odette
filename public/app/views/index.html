@@ -30,6 +30,7 @@
 
 
 
+
   <!-- Angular config/routes -->
   <script src="app/route.js"></script> 
   <script src="app/app.js"></script>
@@ -191,8 +192,8 @@
 <!-- when login as nurse -->
 <div ng-show="main.nurseaccess" layout="row" layout-xs="column" layout-fill>
     <!-- Side Nav for laptops and tabs which is always open -->
-    <div flex="none" class="lap-side-nav" ng-hide="isActive('/selectstation')==true">
-       <md-toolbar class = "md-default">
+    <div flex="none" class="lap-side-nav" ng-hide="isActive('/selectstation')==true"} style="background: #424242">
+       <md-toolbar md-theme="dark" class = "md-accent  md-hue-2">
            <div class = "md-toolbar-tools" layout="row" layout-align="start center">
                <div flex="none" ng-show="main.isLoggedIn"> 
                    <md-button class="md-icon-button" ng-click="openSideNavPanelNurse()">
@@ -201,13 +202,44 @@
                </div>
            </div>
        </md-toolbar>
+       <div hide-xs>
+       <br>
+       <br>
+       <div flex="none" layout="row" layout-align="center center" hide-xs>
+        <md-button class="md-icon-button">
+         <a href='/'><md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE88A;</md-icon></a>
+       </md-button>
+       </div>
+       <br>
+       <div flex="none" layout="row" layout-align="center center" hide-xs>
+        <md-button class="md-icon-button">
+         <a href='/managepatients'><md-icon md-ink-ripple class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE869;</md-icon></a>
+       </md-button>
+       </div>
+       <br>
+       <div flex="none" layout="row" layout-align="center center" hide-xs>
+        <md-button class="md-icon-button">
+         <a href='/nursehelp'><md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE88E;</md-icon></a>
+       </md-button>
+       </div>
+       <br>
+       <div flex="none" layout="row" layout-align="center center" hide-xs>
+        <md-button class="md-icon-button">
+         <a href='/about'><md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE887;</md-icon></a>
+       </md-button>
+       </div>
+       <br>
+       <div flex="none" layout="row" layout-align="center center" hide-xs>
+        <md-button class="md-icon-button">
+         <a href='/logout'><md-icon  ng-click="main.logout()" style="color: rgb(244,244,244)" class="md-default-theme" class="material-icons">&#xE8AC;</md-icon></a>
+        </md-button>
+       </div>
+     </div>
     </div>
-    <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="nurseleft" md-disable-backdrop ng-hide="isActive('/selectstation')==true">
-        <md-toolbar layout="row">
+    <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="nurseleft" md-disable-backdrop ng-hide="isActive('/selectstation')==true" style="background: #424242">
+        <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2" >
             <div class="md-toolbar-tools">
-                <h2>
-                    <span>{{main.hospitalname}}</span>
-                </h2>
+                <div class="md-headline">{{main.hospitalname}}</div>
                 <span flex></span>
                 <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanelNurse()">
                     <md-tooltip>Close Side Panel</md-tooltip>
@@ -215,35 +247,35 @@
                 </md-button>
             </div>
         </md-toolbar> 
-        <md-content layout-padding="" style="background: #ffffff" md-whiteframe-4dp>
-            <span>{{main.station}}</span>
+        <md-content style="background: #424242" md-whiteframe-4dp>
+            <div flex style="padding: 5%;color:#FFFFFF;background:#616161" class="md-title" >{{main.station}}</div>
             <md-list>
                 <md-list-item>
-                    <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
-                    <p><a href="/">Home</a></p>
+                    <md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE88A;</md-icon>
+                    <p><a style="color: rgb(244,244,244)" href="/">Home</a></p>
                 </md-list-item>
                 <md-list-item>
-                    <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/managepatients">Manage Patients</a></p>
+                    <md-icon class="md-default-theme" style="color: rgb(244,244,244)"s class="material-icons">&#xE869;</md-icon>
+                    <p><a style="color: rgb(244,244,244)" ng-href="/managepatients">Manage Patients</a></p>
                 </md-list-item>
                 <md-list-item>
-                    <md-icon class="md-default-theme" class="material-icons">&#xE88E;</md-icon>
-                    <p>Help</p>
+                    <md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE88E;</md-icon>
+                    <p style="color: rgb(244,244,244)">Help</p>
                 </md-list-item>
                 <md-list-item>
-                    <md-icon class="md-default-theme" class="material-icons">&#xE887;</md-icon>
-                    <p>About</p>
+                    <md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE887;</md-icon>
+                    <p style="color: rgb(244,244,244)">About</p>
                 </md-list-item>
                 <md-list-item>
-                    <md-icon class="md-default-theme" class="material-icons">&#xE8AC;</md-icon>
-                    <p><a href="/logout" ng-click="main.logout()">Logout</a></p>
+                    <md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE8AC;</md-icon>
+                    <p><a style="color: rgb(244,244,244)" href="/logout" ng-click="main.logout()">Logout</a></p>
                 </md-list-item>
             </md-list>
         </md-content>
     </md-sidenav>
 <!-- this div is used to inject pages for nurse -->
         <div flex>
-            <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
+            <md-content ng-show="main.nurseaccess" layout="column"  style="background:rgb(230,230,230)" layout-fill>
                 <div ng-view ></div>
             </md-content>
         </div>

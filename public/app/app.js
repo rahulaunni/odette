@@ -6,10 +6,23 @@ angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','a
     .primaryPalette('purple')
     .accentPalette('grey')
     .warnPalette('green',{
-    	'default': '500', 
+    	'default': '300', 
     	'hue-1': '300', 
     	'hue-2': '200', 
     	'hue-3': '100' 
+    });
+
+})
+
+.config(function($mdThemingProvider) {
+  $mdThemingProvider.theme('dark')
+    .primaryPalette('green')
+    .accentPalette('grey')
+    .warnPalette('red',{
+      'default': '500', 
+      'hue-1': '300', 
+      'hue-2': '200', 
+      'hue-3': '100' 
     });
 
 })

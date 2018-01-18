@@ -1,20 +1,35 @@
 <div style="padding: 2%">
-<md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
-           <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan={{::inprogresstask.span}}>
-            
+	<md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
+        <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan={{::inprogresstask.span}}>
             <div class="title">Infusing</div>
-            <md-progress-linear md-mode="indeterminate"  class="md-accent md-hue-4" ></md-progress-linear>
             <div class="bedname">{{::inprogresstask._bed.bedname}}</div>
+            <md-progress-linear md-mode="indeterminate"  class="md-warn md-hue-4" ></md-progress-linear>
             <div class="status">
-            <div ng-if="::inprogresstask.type =='infusion'" >
-                <div flex class="md-display-1" style="border-right:1px solid #000000"><md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>69/80</div><div flex><div>Hello</div>Hello<div></div></div>
+	            <div style="height: 100%" ng-if="::inprogresstask.type =='infusion'" >
+	            	<slick class="carausel" style="height: 100%" autoplay="true" autoplaySpeed="500" fade="false" dots=false touch-move=true arrows=false>
+	            		<div class="slider">
+	            			<div ><md-icon style="font-size: 4em" class="material-icons">&#xE068;</md-icon></div>
+	            			<div class="md-display-1">{{inprogresstask.rate}}<br/>{{inprogresstask._medication.medicinerate}}</div>
+	            		</div>
+	            		<div class="slider">
+	            			<div><md-icon style="font-size: 8em" class="material-icons">&#xE855;</md-icon></div>
+	            			<div class="md-subhead">{{inprogresstask.timeRemaining}}</div>
+	            			
+	            		</div>
+	            		<div class="slider">
+	            			<div><md-icon style="font-size: 8em" flex="none" class="material-icons">&#xE91C;</md-icon></div>
+	            			<div class="md-subhead">{{inprogresstask.infusedVolume}} / {{inprogresstask.totalVolume}}</div>
+	            			
+	            		</div>
+		            </slick>
+	            </div>
+	            <div ng-if="::inprogresstask.type =='nursecall'" >
+	                call
+	            </div>
             </div>
-            <div ng-if="::inprogresstask.type =='nursecall'" >
-                call
-            </div>
-               </div>
             <div class="action">ACKNOWLEDGE</div>
           
         </md-grid-tile>
     </md-grid-list>
+
 </div>
