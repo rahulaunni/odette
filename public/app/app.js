@@ -6,7 +6,7 @@ angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','a
     .primaryPalette('purple')
     .accentPalette('grey')
     .warnPalette('green',{
-    	'default': '300', 
+    	'default': '500', 
     	'hue-1': '300', 
     	'hue-2': '200', 
     	'hue-3': '100' 
@@ -16,7 +16,7 @@ angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','a
 
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('dark')
-    .primaryPalette('green')
+    .primaryPalette('indigo')
     .accentPalette('grey')
     .warnPalette('red',{
       'default': '500', 

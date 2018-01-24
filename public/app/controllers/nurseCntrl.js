@@ -204,6 +204,25 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	this.showEditMedication = function (editpatient) {
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.showOnEditMedication = true;
+		Nurse.editMedication(editpatient).then(function(data) {
+			app.patientid=data.data.medication[0].patientid;
+			app.bedid=data.data.medication[0].bedid;
+			$scope.selected=[];
+			for (i=0;i<20;i++) {
+			 $scope.selected[i]=new Array();
+			 for (j=0;j<24;j++) {
+			  $scope.selected[i][j] = false ;
+			 }
+			}
+			$scope.editchoices = data.data.medication;
+			for(var key in $scope.editchoices){
+				var newItemNo = key;
+				$scope.editchoices[key].id=newItemNo;
+				for(var key2 in $scope.editchoices[key].time){
+					$scope.selected[key][$scope.editchoices[key].time[key2]]= true;
+				}
+			}
+		});
 		Nurse.editMedication(this.editpatient).then(function(data) {
 			app.patientid=data.data.medication[0].patientid;
 			app.bedid=data.data.medication[0].bedid;

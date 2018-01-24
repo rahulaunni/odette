@@ -311,6 +311,7 @@ io.on('connection', function (socket) {
   });
    // when socket connection publishes a message, forward that message the the mqtt broker
   socket.on('publish', function (data) {
+    console.log(data);
       console.log('Publishing to '+data.topic);
       client.publish(data.topic,data.payload,{ qos: 1, retain: true });
   });
@@ -318,6 +319,8 @@ io.on('connection', function (socket) {
   client.on('message', function (topic, payload, packet) {
     var topicinfoArray = topic.split("/");
     var dripoid = topicinfoArray[1];
+    var commonTopic = 'dripo/'+dripoid+'/';
+    if(topicinfoArray[2] == 'mon'){
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
@@ -358,7 +361,7 @@ io.on('connection', function (socket) {
                     'totalVolume':totalVolume,
                     'percentage':percentage
                 });
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic}});
                 Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
                     if(inf.length==0){
                         var inf = new Infusionhistory();
@@ -372,7 +375,6 @@ io.on('connection', function (socket) {
                         inf.totalVolume = totalVolume;
                         inf.percentage = percentage;
                         inf.save(function(err,inf){
-                            console.log(inf);
                             if(err) throw err;
                             Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:inf._id}},{upsert:false});
 
@@ -429,8 +431,7 @@ io.on('connection', function (socket) {
                         'totalVolume':totalVolume,
                         'percentage':percentage
                     });
-                    Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:'Empty'}});
-                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}});
+                    Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:'Empty'}});
                 }
             }
 
@@ -447,6 +448,24 @@ io.on('connection', function (socket) {
                     'totalVolume':totalVolume,
                     'percentage':percentage
                 });
+            
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+              
+
+            }
+            else if(status == 'Empty_ACK'){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':'Empty_ACK',
+                    'status':'closed',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
                 var infdate= new Date();
                 var inftime=(new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds();
                 var dateObj = new Date();
@@ -456,8 +475,8 @@ io.on('connection', function (socket) {
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:status}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}});
+            }//end of Empty_ACK
 
-            }
             else if(status == 'Rate_Err'|| status=='Block'){
                 socket.emit('dripo',{
                     'topic':topic.toString(),
@@ -481,10 +500,69 @@ io.on('connection', function (socket) {
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}});
 
-            }
+            }//end of error
+            else if(status == 'Rate_Err_ACK'|| status=='Block_ACK'){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':status,
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+
+
+            }//end of error ack
+            else if(status == 'Device_Disconnected_ACK'){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':'Connection_Lost',
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:'Connection_Lost'}});
+
+
+            }//end of error ack
+
             
         }
     });
+    }//end of if mon
+    if(topicinfoArray[2] == 'will'){
+        var message = payload.toString();
+        if(message == 'offline'){
+            Task.find({topic:commonTopic}).exec(function(err,task){
+                socket.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':'Device_Disconnected',
+                    'status':'inprogress',
+                    'taskid':task[0]._id,
+                    'rate':task[0].rate,
+                    'infusedVolume':task[0].infusedVolume,
+                    'timeRemaining':task[0].timeRemaining,
+                    'totalVolume':task[0].totalVolume,
+                    'percentage':task[0].percentage
+                });
+                Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected"}});
+
+            });
+
+        }        
+
+    }
   });
 });
 

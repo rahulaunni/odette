@@ -67,9 +67,9 @@ md-input-container{
 .gridtile{
     text-align:center;
 }
-.gridtile figure{
+figure{
      height: 100%;
-    flex: 100;
+    width: 100%;
     flex-direction: row;
     flex-flow: column;
     overflow: hidden;
@@ -88,11 +88,13 @@ md-input-container{
   font-size: 1em;
  color: #ffffff;
   background: #616161;
+    display: flex;
 }
 .gridtile figure .bedname{
   color: #FFFFFF;
   background: #424242;
   font-size:2em;
+    display: flex;
 }
 .gridtile figure .status{
    background: #616161;
@@ -108,15 +110,19 @@ md-input-container{
 }
 .nursecall .title{
   height:20%;
+    display: flex;
 }
 .nursecall .bedname{
   height:30%;
+    display: flex;
 }
 .nursecall .status{
   height:20%;
+    display: flex;
 }
 .nursecall .action{
  height:30%;
+   display: flex;
 }
 .infusion .title{
   height:15%;
@@ -133,13 +139,15 @@ md-input-container{
 display: none;
 height: 0%;
 }
-.Block .status,.Rate_Err .status{
+
+.Block .status,.Rate_Err .status,.Empty .status,.Device_Disconnected .status{
   height:45%;
 }
-.Block .action,.Rate_Err .status{
+.Block .action,.Rate_Err .action,.Empty .action,.Device_Disconnected .action{
     height:20%;
     display: flex;
 }
+
 .md-tab-item {
   float: right;
 }
@@ -156,7 +164,13 @@ md-tabs-wrapper{
     padding-bottom: 0px;
 
 }
-
+.patient div{
+  display: flex;
+  height: 20%;
+  justify-content: center;
+  flex-direction: row;
+  text-align: center;
+}
 
 .carausel{
   height: 100%;
@@ -164,6 +178,24 @@ md-tabs-wrapper{
 .carausel div{
 height: 100%;
 }
-.slider div{
-  height: 33%;
+.slider p{
+  height: 100%;
+  float:left;
 }
+.slider{
+  height: 100%;
+}
+
+/*Style for md-fab button in nurse home page*/
+.md-button.md-fab.md-fab-bottom-right {
+top: auto;
+right: 20px;
+bottom: 20px;
+left: auto;
+position: fixed;
+}
+
+/* Style for grid title in the task due section of nurse home page*/
+
+
+

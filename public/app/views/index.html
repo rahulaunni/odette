@@ -66,7 +66,7 @@
             </md-toolbar>
             <!-- Sidenav for xs (mobile) and sm (raspberry pi touch) -->
             <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" >
-            <md-toolbar layout="row">
+            <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2">
                 <div class="md-toolbar-tools">
                     <h2>
                         <span>Admin Toolbar</span>
@@ -78,7 +78,7 @@
                     </md-button>
                 </div>
             </md-toolbar> 
-            <md-content layout-padding="">
+            <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2">
                 <md-list>
                     <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
@@ -86,23 +86,23 @@
                     </md-list-item>
                      <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                        <p><a href="/admin/manageusers" ng-click="closeSideNavPanel()">Manage Users</a></p>
+                        <p><a href="/admin/manageusers" ng-click="closeSideNavPanel()">Users</a></p>
                     </md-list-item>
                     <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                        <p><a href="/admin/managestations" ng-click="closeSideNavPanel()">Manage Nursing Station</a></p>
+                        <p><a href="/admin/managestations" ng-click="closeSideNavPanel()">Nursing Stations</a></p>
                         </md-list-item>
                     <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons" >&#xE869;</md-icon>
-                        <p><a ng-href="/admin/managebeds" ng-click="closeSideNavPanel()">Manage Bed</a></p>
+                        <p><a ng-href="/admin/managebeds" ng-click="closeSideNavPanel()">Beds</a></p>
                     </md-list-item>
                     <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                        <p><a ng-href="/admin/manageivsets" ng-click="closeSideNavPanel()" >Manage IV-Set</a></p>
+                        <p><a ng-href="/admin/manageivsets" ng-click="closeSideNavPanel()" >IV-Sets</a></p>
                     </md-list-item>
                     <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                        <p><a ng-href="/admin/managedripos" ng-click="closeSideNavPanel()">Manage Dripo</a></p>
+                        <p><a ng-href="/admin/managedripos" ng-click="closeSideNavPanel()">Devices</a></p>
                     </md-list-item>
                     <md-divider></md-divider>
                     <md-list-item>
@@ -143,23 +143,23 @@
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                    <p><a href="/admin/manageusers">Manage Users</a></p>
+                    <p><a href="/admin/manageusers">Users</a></p>
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                  <p><a href="/admin/managestations">Manage Nursing Station</a></p>
+                  <p><a href="/admin/managestations">Nursing Stations</a></p>
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/admin/managebeds" >Manage Bed</a></p>
+                    <p><a ng-href="/admin/managebeds" >Beds</a></p>
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/admin/manageivsets" >Manage IV-Set</a></p>
+                    <p><a ng-href="/admin/manageivsets" >IV-Sets</a></p>
                 </md-list-item>
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/admin/managedripos" >Manage Dripo</a></p>
+                    <p><a ng-href="/admin/managedripos" >Devices</a></p>
                 </md-list-item>
                 <md-divider></md-divider>
                 <md-list-item>
@@ -275,7 +275,7 @@
     </md-sidenav>
 <!-- this div is used to inject pages for nurse -->
         <div flex>
-            <md-content ng-show="main.nurseaccess" layout="column"  style="background:rgb(230,230,230)" layout-fill>
+            <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
                 <div ng-view ></div>
             </md-content>
         </div>
