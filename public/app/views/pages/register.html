@@ -1,6 +1,6 @@
 
 <md-content flex="100" layout="row" layout-align="center center">
-	<md-card ng-hide="main.successMsg" flex="30" flex-xs="90" style="padding:2%">
+	<md-card ng-hide="register.hider" flex="30" flex-xs="90" style="padding:2%">
 		<form name="userForm" ng-submit='register.registerUser(userData);' layout="column">
 			<md-input-container>
 				<label>Hospital Name</label>
@@ -44,7 +44,7 @@
 				</div>
 			</md-input-container>
 			<div md-theme="altTheme" layout="row" ng-hide="register.loader">
-				<md-button type="submit" class="md-raised md-warn" flex="100">Register</md-button>
+				<md-button type="submit" class="md-raised md-warn" ng-disabled="userForm.$invalid" flex="100">Register</md-button>
 			</div>
 			<div layout="row" layout-align="center center" style="margin-top:20px">
 				<p><a ng-href="/login" >Login</a></p>
@@ -54,7 +54,7 @@
 			</div>
 		</form>
 	</md-card>
-	<div class="show-hide-message" ng-show="register.successMsg">
+	<div class="show-hide-message" ng-show="register.hider">
 		<div>{{register.successMsg}}</div>
 		<div>Redirecting...</div>
 		<md-progress-linear md-mode="indeterminate"></md-progress-linear>

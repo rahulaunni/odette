@@ -1,6 +1,6 @@
 <div style=background:#f1f1f1;" ng-cloak>
 <!-- grid for inprogress tasks -->
-<div style="padding: 2%">
+<div style="padding: 2%"  ng-hide="noinprogresstask">
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Ongoing Tasks</div>
 	<md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
         <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan="{{inprogresstask.span}}">
@@ -41,7 +41,7 @@
     </md-grid-list>
 </div>
 
-<div style="padding: 2%">
+<div style="padding: 2%"  ng-hide="noalertedtask">
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Tasks Due</div>
 
 <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
@@ -83,7 +83,7 @@
 </div>
 
 <!-- upcoming tasks -->
-<div style="padding: 2%">
+<div style="padding: 2%" ng-hide="noopenedtask">
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Upcoming Tasks</div>
 
 <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" ng-repeat="time in times" >

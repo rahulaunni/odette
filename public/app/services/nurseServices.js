@@ -31,7 +31,6 @@ angular.module('nurseServices',['authServices'])
 		return $http.post('/api/nurse/dischargepatient',patient);
 	}
 	nurseFactory.editPatient = function (editpatient) {
-		console.log("called");
 		return $http.put('/api/nurse/editpatient',editpatient);
 	}
 	nurseFactory.editMedication = function (editpatient) {

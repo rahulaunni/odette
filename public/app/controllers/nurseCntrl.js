@@ -205,6 +205,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.showOnEditMedication = true;
 		Nurse.editMedication(editpatient).then(function(data) {
+			console.log(data);
 			app.patientid=data.data.medication[0].patientid;
 			app.bedid=data.data.medication[0].bedid;
 			$scope.selected=[];

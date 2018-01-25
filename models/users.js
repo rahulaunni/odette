@@ -18,11 +18,11 @@ var userSchema = new Schema({
 userSchema.pre('save', function (next) {
 	var user = this;
 	if (!user.isModified('password')) return next(); // If password was not changed or is new, ignore middleware
-	bcrypt.hash(user.password,10,function (err,hash) {
+	bcrypt.hash(user.password,null,null,function (err,hash) {
 		if(err) return next(err);
 		user.password = hash;
 		next();
-	})
+	});
 })
 
 //comparing encrypted password for authentication

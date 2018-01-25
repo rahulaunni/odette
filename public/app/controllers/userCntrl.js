@@ -6,10 +6,13 @@ angular.module('userControllers',['userServices'])
 		app.loader = true;
 		app.errorMsg = false;
 		app.successMsg = false;
+		app.hider = false;
 		User.create(this.userData).then(function (data) {
+			console.log(data.data);
 			if(data.data.success){
 				app.successMsg = data.data.message;
 				app.loader = false;
+				app.hider = true;
 				$timeout(function () {
 					$location.path('/login')
 				},3000);
@@ -17,6 +20,8 @@ angular.module('userControllers',['userServices'])
 			else{
 				app.errorMsg=data.data.message;
 				app.loader = false;
+				app.hider = false;
+
 			}
 		});
 	}

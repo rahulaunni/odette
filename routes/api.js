@@ -1016,8 +1016,9 @@ router.put('/nurse/editpatient',function (req,res) {
 
 //route for retrieve medication data and serve to edit medication page
 router.post('/nurse/editmedication', function(req,res){
+	console.log(req.body);
 	var editchoices=[{}];
-	Medication.find({_patient:req.body._id}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
+	Medication.find({_bed:req.body._bed}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
 		for (var key in medication) {
 			var editchoicesObj={};
 			editchoicesObj.medicineid = medication[key]._id;
@@ -1140,7 +1141,8 @@ router.put('/nurse/editmedication', function(req,res){
 						if(lp3 == (oldmedicine[lp1].time.length -1)){
 							timeid = ObjectId(editmedication[lp1]._task[lp2]._id)
 							medid = ObjectId(editmedication[lp1]._id)
-							Task.collection.update({_id:timeid},{$set:{status:'deleted'}},{upsert:false});
+							// Task.collection.update({_id:timeid},{$set:{status:'deleted'}},{upsert:false});
+							Task.collection.remove({_id:timeid},{upsert:false});
 							Medication.collection.update({_id:medid},{$pull:{_task:timeid}},{upsert:false});
 
 							
@@ -1153,7 +1155,7 @@ router.put('/nurse/editmedication', function(req,res){
 				for(lp2=0;lp2<editmedication[lp1]._task.length;lp2++){
 					timeid = ObjectId(editmedication[lp1]._task[lp2]._id);
 					medid = ObjectId(editmedication[lp1]._id);
-					Task.collection.update({_id:timeid},{$set:{status:'deleted'}},{upsert:false});
+					Task.collection.remove({_id:timeid},{upsert:false});
 					Medication.collection.update({_id:medid},{$pull:{_task:timeid}},{upsert:false});
 
 				}
@@ -1168,7 +1170,10 @@ router.put('/nurse/editmedication', function(req,res){
 			for(lp1=0;lp1<deletemedicineids.length;lp1++){
 				var medicineid = ObjectId(deletemedicineids[lp1]);
 				Patient.collection.update({_id:patientid},{$pull:{_medication:medicineid}},{upsert:false});
-				Task.collection.updateMany({_medication:medicineid},{$set:{status:'deleted'}},{upsert:false});
+				Medication.collection.updateMany({_id:medicineid},{$unset:{_bed:""}},{upsert:false});
+				Medication.collection.updateMany({_id:medicineid},{$unset:{_task:""}},{upsert:false});
+				// Task.collection.updateMany({_medication:medicineid},{$set:{status:'deleted'}},{upsert:false});
+				Task.collection.remove({_medication:medicineid},{upsert:false});
 
 			}
 		}
@@ -1263,7 +1268,7 @@ router.post('/nurse/deletemedication', function(req,res){
 router.post('/nurse/getopenedtask', function(req,res){
 	var date=new Date();
 	var hour=date.getHours();
-	var index =false;
+	var index =-1;
 	var skippedtaskArray =[];
 	// var stationid = ObjectId(req.decoded.stationid);
 	Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
@@ -1271,18 +1276,20 @@ router.post('/nurse/getopenedtask', function(req,res){
 			res.json({success:false,message:"no tasks found"});
 
 		}
+		else if(task.length == 1){
+			res.json({success:true,openedtasks:task,times:[task[0].time]})
+		}
 		//reorder returned task array of object based on present time
 		else{
 			var nexthour = hour;
-			while(nexthour<24){  //loop to find 
+			while(nexthour<24){ 
 				for(lp1=0;lp1<task.length;lp1++){
 					if(task[lp1].time == nexthour){
 						index = lp1;
-						break;
 					}
-					
 				}
-				if(index==false){
+
+				if(index==-1){
 					if(nexthour == 23){
 						nexthour = 0;
 					}

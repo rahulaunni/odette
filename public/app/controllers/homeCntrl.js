@@ -11,6 +11,9 @@ angular.module('homeController',['homeServices'])
     var minute = date.getMinutes();
     $scope.currentHour = hour;
     $scope.trunc =Math.floor;
+    $scope.noopenedtask = false;
+    $scope.noinprogresstask = false;
+    $scope.noalertedtask = false;
     //on page reload get all tasks from db
     Home.getopenedTasks().then(function (data) {
         if(data.data.success){
@@ -20,6 +23,7 @@ angular.module('homeController',['homeServices'])
         }
         else{
           $scope.openedtasks = [{}];
+          $scope.noopenedtask = true;
 
         }
        
@@ -41,6 +45,8 @@ angular.module('homeController',['homeServices'])
 
         }else{
            $scope.inprogresstasks=[{}];
+           $scope.noinprogresstask = true;
+
         }
     });
     //get alerted
@@ -50,6 +56,8 @@ angular.module('homeController',['homeServices'])
 
         }else{
            $scope.alertedtasks=[];
+           $scope.noalertedtask = true;
+
         }
     });
     //function for giving background color to footer of card
