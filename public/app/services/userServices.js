@@ -39,5 +39,8 @@ angular.module('userServices',[])
 	userFactory.savelocalPassword = function (edituser) {
 		return $http.put('/api/admin/savelocalpassword/',edituser);
 	}
+	userFactory.getIp = function () {
+		return $http.post('/api/admin/getip/');
+	}
 	return userFactory;
 });

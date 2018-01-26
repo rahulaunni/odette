@@ -24,6 +24,7 @@ var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
 var ObjectId = require('mongodb').ObjectID;
+var ip = require('ip');
 
 module.exports = function(router) {
 
@@ -321,6 +322,13 @@ router.put('/activate/:token', function(req, res) {
 		});
 	});
 	
+});
+
+//route to get ip adress to admin panel
+router.post('/admin/getip', function(req, res) {
+	var ipaddress= ip.address();
+	res.json({success:true,ip:ipaddress})
+
 });
 
 
@@ -1369,6 +1377,7 @@ router.post('/nurse/skiptask', function(req,res){
 
 //route to close a task 
 router.post('/nurse/closetask', function(req,res){
+	console.log(req.body);
 	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed'}});
 	res.json({success:true,message:'task closed'})
 });
