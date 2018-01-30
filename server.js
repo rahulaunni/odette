@@ -291,6 +291,7 @@ client.on('message', function (topic, message) {
                                     var pub_rate=timeid+'&'+pname+'&'+mname+'&'+vol+'&'+rate+'&'+alert+'&';
                                     client.publish('dripo/' + dripoid + '/rate2set',pub_rate,{ qos: 1, retain: false });
 
+
                                 }
                                 else{
                                     client.publish('error/' + dripoid ,'No&task&found',function (err) {
@@ -519,7 +520,7 @@ io.on('connection', function (socket) {
                 var day = dateObj.getUTCDate();
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:status}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:status,topic:""}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}});
             }//end of Empty_ACK
 
@@ -590,20 +591,22 @@ io.on('connection', function (socket) {
         var message = payload.toString();
         if(message == 'offline'){
             Task.find({topic:commonTopic}).exec(function(err,task){
-                socket.emit('dripo',{
-                    'topic':topic.toString(),
-                    'payload':payload.toString(),
-                    'infusionstatus':'Device_Disconnected',
-                    'status':'inprogress',
-                    'taskid':task[0]._id,
-                    'rate':task[0].rate,
-                    'infusedVolume':task[0].infusedVolume,
-                    'timeRemaining':task[0].timeRemaining,
-                    'totalVolume':task[0].totalVolume,
-                    'percentage':task[0].percentage
-                });
-                Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted'}});
-
+                if(task.length != 0){
+                    socket.emit('dripo',{
+                        'topic':topic.toString(),
+                        'payload':payload.toString(),
+                        'infusionstatus':'Device_Disconnected',
+                        'status':'inprogress',
+                        'taskid':task[0]._id,
+                        'rate':task[0].rate,
+                        'infusedVolume':task[0].infusedVolume,
+                        'timeRemaining':task[0].timeRemaining,
+                        'totalVolume':task[0].totalVolume,
+                        'percentage':task[0].percentage
+                    });
+                    Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted'}});
+                }
+               
             });
 
         }        
