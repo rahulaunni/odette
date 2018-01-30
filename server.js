@@ -286,7 +286,7 @@ client.on('message', function (topic, message) {
                                     var rate=medication[0].medicinerate;
                                     var mname=medication[0].medicinename;
                                     var pname=medication[0]._bed._patient.patientname;
-                                    var vol=medication[0].medicinevolume;
+                                    var vol=medication[0].medicinevolume - time[0].infusedVolume;
                                     var alert=30;
                                     var pub_rate=timeid+'&'+pname+'&'+mname+'&'+vol+'&'+rate+'&'+alert+'&';
                                     client.publish('dripo/' + dripoid + '/rate2set',pub_rate,{ qos: 1, retain: false });
@@ -310,7 +310,7 @@ client.on('message', function (topic, message) {
                             var rate=medication[0].medicinerate;
                             var mname=medication[0].medicinename;
                             var pname=medication[0]._bed._patient.patientname;
-                            var vol=medication[0].medicinevolume;
+                            var vol=medication[0].medicinevolume - alertedtime[0].infusedVolume;
                             var alert=30;
                             var pub_rate=timeid+'&'+pname+'&'+mname+'&'+vol+'&'+rate+'&'+alert+'&';
                             client.publish('dripo/' + dripoid + '/rate2set',pub_rate,{ qos: 1, retain: false });
@@ -602,7 +602,7 @@ io.on('connection', function (socket) {
                     'totalVolume':task[0].totalVolume,
                     'percentage':task[0].percentage
                 });
-                Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected"}});
+                Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted'}});
 
             });
 

@@ -918,6 +918,7 @@ router.post('/nurse/addmedication', function(req,res){
 			         timeObj.priority = 0;
 			         timeObj.status='opened';
 			         timeObj.createdat=new Date();
+			         timeObj.infusedVolume =0;
 			         timeObj._patient=patientid;
 			         timeObj._bed=bedid;
 			         timeObj._medication=currentValue._id;
@@ -1102,6 +1103,7 @@ router.put('/nurse/editmedication', function(req,res){
 							task.priority = 0;
 							task.status='opened';
 							task.createdat=new Date();
+							task.infusedVolume =0;
 							task._patient=patientid;
 							task._bed=bedid;
 							task._station=ObjectId(req.decoded.stationid);
@@ -1128,6 +1130,7 @@ router.put('/nurse/editmedication', function(req,res){
 					task.priority = 0;
 					task.status='opened';
 					task.createdat=new Date();
+					task.infusedVolume =0;
 					task._patient=patientid;
 					task._bed=bedid;
 					task._station=ObjectId(req.decoded.stationid);
@@ -1227,6 +1230,7 @@ router.put('/nurse/editmedication', function(req,res){
 					         timeObj.status='opened';
 					         timeObj.createdat=new Date();
 					         timeObj._patient=patientid;
+					         timeObj.infusedVolume =0;
 					         timeObj._bed=bedid;
 					         timeObj._station=ObjectId(req.decoded.stationid);
 					         timeObj._medication=currentValue._id;
