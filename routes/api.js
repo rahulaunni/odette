@@ -25,6 +25,7 @@ var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
 var ObjectId = require('mongodb').ObjectID;
 var ip = require('ip');
+var request = require('request');
 
 module.exports = function(router) {
 
@@ -1377,10 +1378,11 @@ router.post('/nurse/skiptask', function(req,res){
 
 //route to close a task 
 router.post('/nurse/closetask', function(req,res){
-	console.log(req.body);
 	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed'}});
 	res.json({success:true,message:'task closed'})
 });
+
+
 
 
 return router;

@@ -26,6 +26,7 @@ var port=3000;
 var cron = require('node-cron');
 var ObjectId = require('mongodb').ObjectID;
 var CryptoJS = require("crypto-js");
+var request = require('request');
 
 //Models 
 var Task = require('./models/tasks');
@@ -54,6 +55,39 @@ app.post('/admin/update',function (req,res) {
     })
 
 });
+
+//route to return number of connected devices
+app.post('/admin/getconnecteddripos', function(req,res){
+    var counter = 0;
+    request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (req,response) {
+        if(response){
+            var recObj=JSON.parse(response.body);
+            var clients=recObj.result.objects;
+            for(var key in clients){
+                var index = clients[key].client_id.search("DRIPO")
+                if(index != -1){
+                    counter = counter +1;
+                }
+
+            }
+            res.json({success:true,clients:counter});
+
+        }
+        else{
+            res.json({success:false,clients:counter,message:"mqtt server stopped"});
+
+        }
+       
+    });
+});
+
+//route for updating device
+ app.get('/update_dripo',function(req,res){
+     console.log(req.headers);
+     res.status(200);
+     res.sendFile('test.bin',{root:path.join(__dirname,'/public')});
+
+ });
 
 //bodyparser
 app.use(bodyParser.json());
@@ -107,7 +141,7 @@ cron.schedule('59 * * * *', function(){
 });
 //MQTT Configuration
 var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://localhost:1883');
+var client = mqtt.connect('mqtt://localhost:11883');
 //subscribing to topic dripo/ on connect
 client.on('connect', function() {
     client.subscribe('dripo/#',{ qos: 1 });
@@ -121,7 +155,7 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            client.publish('error/' + dripoid ,'Access&Denied',function (err) {
+            client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
                 if(err){
                     console.log(err);
                 }
@@ -243,18 +277,30 @@ client.on('message', function (topic, message) {
                     if(err) throw err;
                     Task.find({'_medication':message,'status':'alerted'}).sort({time:1}).exec(function(err,alertedtime){
                         if(err) throw err;
-                        if(!alertedtime.length){
+                        if(alertedtime.length == 0){
                             Task.find({'_medication':message,'status':'opened'}).sort({time:1}).exec(function(err,time){
                                 if(err) throw err;
-                                timeid = time[0]._id;
-                                //formating the messages to publish to device
-                                var rate=medication[0].medicinerate;
-                                var mname=medication[0].medicinename;
-                                var pname=medication[0]._bed._patient.patientname;
-                                var vol=medication[0].medicinevolume;
-                                var alert=30;
-                                var pub_rate=timeid+'&'+pname+'&'+mname+'&'+vol+'&'+rate+'&'+alert+'&';
-                                client.publish('dripo/' + dripoid + '/rate2set',pub_rate,{ qos: 1, retain: false });
+                                if(time.length != 0){
+                                    timeid = time[0]._id;
+                                    //formating the messages to publish to device
+                                    var rate=medication[0].medicinerate;
+                                    var mname=medication[0].medicinename;
+                                    var pname=medication[0]._bed._patient.patientname;
+                                    var vol=medication[0].medicinevolume;
+                                    var alert=30;
+                                    var pub_rate=timeid+'&'+pname+'&'+mname+'&'+vol+'&'+rate+'&'+alert+'&';
+                                    client.publish('dripo/' + dripoid + '/rate2set',pub_rate,{ qos: 1, retain: false });
+
+                                }
+                                else{
+                                    client.publish('error/' + dripoid ,'No&task&found',function (err) {
+                                        if(err){
+                                            console.log(err);
+                                        }
+                                    });
+
+                                }
+                              
 
                             });
                         }

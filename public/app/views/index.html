@@ -80,6 +80,10 @@
             </md-toolbar> 
             <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2">
               ip:{{ipaddress}}
+              <br>
+              Connected Devices:{{connecteddripo}}
+              <br>
+              mqtt Server Status : {{mqttserverstatus}}
                 <md-list>
                     <md-list-item>
                         <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
@@ -139,6 +143,10 @@
         <md-content layout-padding="" style="background: #ffffff" md-whiteframe-4dp>
             <md-list>
               ip:{{ipaddress}}
+              <br>
+              Connected Devices:{{connecteddripo}}
+              <br>
+              mqtt Server Status : {{mqttserverstatus}}
                 <md-list-item>
                     <md-icon class="md-default-theme" class="material-icons">&#xE88A;</md-icon>
                     <p><a href="/admin/home">Home</a></p>

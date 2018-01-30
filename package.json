@@ -29,6 +29,7 @@
     "mqtt": "^2.15.1",
     "node-cron": "^1.2.1",
     "nodemailer": "^4.4.0",
+    "request": "^2.83.0",
     "simple-git": "^1.85.0",
     "socket.io": "^2.0.4"
   }

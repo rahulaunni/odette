@@ -118,6 +118,19 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 			$scope.ipaddress = data.data.ip;
 		}
 	});
+	$scope.mqttserverstatus='running';
+	//function to get connected dripo clients to admin view
+	User.getConnectedDripos().then(function (data) {
+		if(data.data.success){
+			$scope.connecteddripo=data.data.clients;
+		}
+		else{
+			console.log(data.data.message);
+			$scope.mqttserverstatus='stopped';
+			$scope.connecteddripo=data.data.clients;
+
+		}
+	});
 
 
 

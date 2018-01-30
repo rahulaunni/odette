@@ -11,9 +11,6 @@ angular.module('homeController',['homeServices'])
     var minute = date.getMinutes();
     $scope.currentHour = hour;
     $scope.trunc =Math.floor;
-    $scope.noopenedtask = false;
-    $scope.noinprogresstask = false;
-    $scope.noalertedtask = false;
     //on page reload get all tasks from db
     Home.getopenedTasks().then(function (data) {
         if(data.data.success){
@@ -23,7 +20,6 @@ angular.module('homeController',['homeServices'])
         }
         else{
           $scope.openedtasks = [{}];
-          $scope.noopenedtask = true;
 
         }
        
@@ -45,7 +41,6 @@ angular.module('homeController',['homeServices'])
 
         }else{
            $scope.inprogresstasks=[{}];
-           $scope.noinprogresstask = true;
 
         }
     });
@@ -56,7 +51,6 @@ angular.module('homeController',['homeServices'])
 
         }else{
            $scope.alertedtasks=[];
-           $scope.noalertedtask = true;
 
         }
     });
@@ -184,6 +178,7 @@ angular.module('homeController',['homeServices'])
                   $scope.inprogresstasks.unshift($scope.alertedtasks[key2]);
                   $scope.inprogresstasks[0].span=6;
                   $scope.alertedtasks.splice(key2,1);
+
 
                 }
 

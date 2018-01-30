@@ -42,5 +42,8 @@ angular.module('userServices',[])
 	userFactory.getIp = function () {
 		return $http.post('/api/admin/getip/');
 	}
+	userFactory.getConnectedDripos = function () {
+		return $http.post('/admin/getconnecteddripos');
+	}
 	return userFactory;
 });

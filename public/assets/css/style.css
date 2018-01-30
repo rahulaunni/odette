@@ -135,6 +135,11 @@ figure{
   flex-flow: row;
 }
 
+.action{
+display: none;
+height: 0%;
+}
+
 .infusion .action{
 display: none;
 height: 0%;
