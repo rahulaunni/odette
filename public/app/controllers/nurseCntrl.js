@@ -101,7 +101,8 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/nurse/managepatients');
+					$scope.myTabIndex = 0;
+					$window.location('/nurse/managepatients');
 				},3000);
 			}
 			else{
@@ -188,7 +189,8 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$timeout(function () {
 					app.medloader = false;
 					app.loader = false;
-					$window.location.reload('/nurse/managepatients');
+					$scope.myTabIndex = 0;
+					$window.location('/nurse/managepatients');
 				},3000);
 			}
 			else{
@@ -297,7 +299,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 						app.medloader = false;
 						app.loader = false;
 						$scope.myTabIndex = 0;
-						$window.location.reload('/nurse/managepatients');
+						$window.location('/nurse/managepatients');
 					},2000);
 
 				}
@@ -317,7 +319,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 						app.medloader = false;
 						app.loader = false;
 						$scope.myTabIndex = 0;
-						$window.location.reload('/nurse/managepatients');
+						$window.location('/nurse/managepatients');
 					},2000);
 
 				}
@@ -363,7 +365,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$timeout(function () {
 					app.editpatloader = false;
 					$scope.myTabIndex = 0;
-					$window.location('/admin/managedripos');
+					$window.location('/admin/managepatients');
 				},2000);
 			}
 			else{
@@ -399,7 +401,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		  $mdDialog.show(confirm).then(function() {
 		  	Nurse.dischargePatient(patient).then(function (data) {
 		  		if(data.data.success){
-		  			$window.location.reload('/nurse/managepatients');
+		  			$window.location('/nurse/managepatients');
 		  		}
 		  	});
 
