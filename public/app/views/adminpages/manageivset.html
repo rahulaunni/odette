@@ -1,7 +1,7 @@
 <div layout="column" layout-padding="" layout-fill>
 	<md-content>
 		<md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
-		    <md-tab label="Ivsets">
+		    <md-tab label="Ivsets" ng-click="reload();">
 		    	<md-content>
 		    	 	<div layout=row ng-hide="noivset">
 		    	  		<md-input-container class="md-icon-float md-block" flex="50">
@@ -86,7 +86,7 @@
 								</div>
 							</form>
 							<div layout="column" layout-fill layout-align="center center" ng-show="manageIvset.loader">
-								<div>Form Submitted</div>
+								<div>Adding Ivset</div>
 								<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 							</div>
 			          	</md-content>

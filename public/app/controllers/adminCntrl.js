@@ -29,7 +29,18 @@ angular.module('adminController',['userServices','adminServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/managestations');
+					$scope.myTabIndex =0;
+					Admin.viewStation().then(function (data) {
+						if(data.data.success){
+							$scope.stations=data.data.stations;
+
+						}
+						else{
+							$scope.nostation=true;
+
+						}
+					});
+					$window.location('/admin/managestations');
 				},3000);
 			}
 			else{
@@ -53,7 +64,19 @@ angular.module('adminController',['userServices','adminServices'])
 				app.editsuccessMsg = data.data.message;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/managestations');
+					$scope.myTabIndex =0;
+					Admin.viewStation().then(function (data) {
+						if(data.data.success){
+							$scope.stations=data.data.stations;
+
+						}
+						else{
+							$scope.nostation=true;
+
+						}
+					});
+					app.showOnEditStation = false;
+					$window.location('/admin/managestations');
 				},3000);
 			}
 			else{
@@ -96,7 +119,18 @@ angular.module('adminController',['userServices','adminServices'])
 		  $mdDialog.show(confirm).then(function() {
 		  	Admin.deleteStation(station).then(function (data) {
 		  		if(data.data.success){
-		  			$window.location.reload('/admin/managestations');
+		  			$scope.myTabIndex =0;
+		  			Admin.viewStation().then(function (data) {
+		  				if(data.data.success){
+		  					$scope.stations=data.data.stations;
+
+		  				}
+		  				else{
+		  					$scope.nostation=true;
+
+		  				}
+		  			});
+		  			$window.location('/admin/managestations');
 		  		}
 		  	});
 
@@ -104,6 +138,9 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  });
 		};
+		$scope.reload =  function () {
+			app.showOnEditStation = false;
+		}
 
 
 })
@@ -152,7 +189,19 @@ angular.module('adminController',['userServices','adminServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/managebeds');
+					$scope.myTabIndex =0;
+					Admin.viewBed().then(function (data) {
+						if(data.data.success){
+							$scope.beds=data.data.beds;
+
+						}
+						else{
+							$scope.nobed=true;
+
+						}
+					});
+					
+					$window.location('/admin/managebeds');
 				},3000);
 			}
 			else{
@@ -177,7 +226,19 @@ angular.module('adminController',['userServices','adminServices'])
 				app.editsuccessMsg = data.data.message;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/managestations');
+					$scope.myTabIndex =0;
+					Admin.viewBed().then(function (data) {
+						if(data.data.success){
+							$scope.beds=data.data.beds;
+
+						}
+						else{
+							$scope.nobed=true;
+
+						}
+					});
+					app.showOnEditBed = false;
+					$window.location('/admin/managebeds');
 				},3000);
 			}
 			else{
@@ -217,7 +278,19 @@ angular.module('adminController',['userServices','adminServices'])
 		  $mdDialog.show(confirm).then(function() {
 		  	Admin.deleteBed(bed).then(function (data) {
 		  		if(data.data.success){
-		  			$window.location.reload('/admin/managebeds');
+		  			$scope.myTabIndex =0;
+		  			Admin.viewBed().then(function (data) {
+		  				if(data.data.success){
+		  					$scope.beds=data.data.beds;
+
+		  				}
+		  				else{
+		  					$scope.nobed=true;
+
+		  				}
+		  			});
+		  			
+		  			$window.location('/admin/managebeds');
 		  		}
 		  	});
 
@@ -225,6 +298,9 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  });
 		};
+		$scope.reload =  function () {
+			app.showOnEditBed = false;
+		}
 
 })
 
@@ -261,7 +337,18 @@ angular.module('adminController',['userServices','adminServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/manageivsets');
+					$scope.myTabIndex =0;
+					Admin.viewIvset().then(function (data) {
+						if(data.data.success){
+							$scope.ivsets=data.data.ivsets;
+
+						}
+						else{
+							$scope.noivset=true;
+
+						}
+					});
+					$window.location('/admin/manageivsets');
 				},3000);
 			}
 			else{
@@ -287,7 +374,19 @@ angular.module('adminController',['userServices','adminServices'])
 				app.editsuccessMsg = data.data.message;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/manageivsets');
+					app.showOnEditIvset = false;
+					$scope.myTabIndex =0;
+					Admin.viewIvset().then(function (data) {
+						if(data.data.success){
+							$scope.ivsets=data.data.ivsets;
+
+						}
+						else{
+							$scope.noivset=true;
+
+						}
+					});
+					$window.location('/admin/manageivsets');
 				},3000);
 			}
 			else{
@@ -326,7 +425,18 @@ angular.module('adminController',['userServices','adminServices'])
 		  $mdDialog.show(confirm).then(function() {
 		  	Admin.deleteIvset(ivset).then(function (data) {
 		  		if(data.data.success){
-		  			$window.location.reload('/admin/manageivsets');
+		  			$scope.myTabIndex =0;
+		  			Admin.viewIvset().then(function (data) {
+		  				if(data.data.success){
+		  					$scope.ivsets=data.data.ivsets;
+
+		  				}
+		  				else{
+		  					$scope.noivset=true;
+
+		  				}
+		  			});
+		  			$window.location('/admin/manageivsets');
 		  		}
 		  	});
 
@@ -334,6 +444,9 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  });
 		};
+		$scope.reload =  function () {
+			app.showOnEditIvset = false;
+		}
 
 })
 .controller('manageDripoCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin) {
@@ -380,7 +493,18 @@ angular.module('adminController',['userServices','adminServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/managedripos');
+					$scope.myTabIndex =0;
+					Admin.viewDripo().then(function (data) {
+						if(data.data.success){
+							$scope.dripos=data.data.dripos;
+
+						}
+						else{
+							$scope.nodripo=true;
+
+						}
+					});
+					$window.location('/admin/managedripos');
 				},3000);
 			}
 			else{
@@ -389,6 +513,8 @@ angular.module('adminController',['userServices','adminServices'])
 			}
 
 		});
+	
+
 		
 	};
 
@@ -406,7 +532,19 @@ angular.module('adminController',['userServices','adminServices'])
 				app.editsuccessMsg = data.data.message;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/managedripos');
+					$scope.myTabIndex =0;
+					app.showOnEditDripo = false;
+					Admin.viewDripo().then(function (data) {
+						if(data.data.success){
+							$scope.dripos=data.data.dripos;
+
+						}
+						else{
+							$scope.nodripo=true;
+
+						}
+					});
+					$window.location('/admin/managedripos');
 				},3000);
 			}
 			else{
@@ -446,7 +584,18 @@ angular.module('adminController',['userServices','adminServices'])
 		  $mdDialog.show(confirm).then(function() {
 		  	Admin.deleteDripo(dripo).then(function (data) {
 		  		if(data.data.success){
-		  			$window.location.reload('/admin/managedripos');
+		  			$scope.myTabIndex =0;
+		  			Admin.viewDripo().then(function (data) {
+		  				if(data.data.success){
+		  					$scope.dripos=data.data.dripos;
+
+		  				}
+		  				else{
+		  					$scope.nodripo=true;
+
+		  				}
+		  			});
+		  			$window.location('/admin/managedripos');
 		  		}
 		  	});
 
@@ -454,6 +603,9 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  });
 		};
+		$scope.reload =  function () {
+			app.showOnEditDripo = false;
+		}
 
 })
 .controller('updateCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
