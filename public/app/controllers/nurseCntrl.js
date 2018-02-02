@@ -42,6 +42,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 .controller('managePatientCntrl',function ($http,$route,$scope,$rootScope,$window,$location,$timeout,$mdDialog,$scope,Auth,Admin,Nurse) {
 	var app = this;
 	$scope.nopatient = false;
+	$scope.patientstatus = 'active';
 	//function to pass patient details to frontend
 	Nurse.viewPatient().then(function (data) {
 		if(data.data.success){
