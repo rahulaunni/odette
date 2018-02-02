@@ -27,6 +27,7 @@ var cron = require('node-cron');
 var ObjectId = require('mongodb').ObjectID;
 var CryptoJS = require("crypto-js");
 var request = require('request');
+const url = require('url')
 
 //Models 
 var Task = require('./models/tasks');
@@ -39,23 +40,6 @@ var Infusionhistory = require('./models/infusionhistories');
 
 //for logging requests
 app.use(morgan('dev'));
-
-//electron window
-const electron = require('electron')
-const {BrowserWindow} = electron;
-var mainWindow = null;
-function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({width: 800, height: 600})
-
-  // and load the index.html of the app.
-  win.loadURL(url.format({
-    pathname: path.join(__dirname,'public/app/views/','index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-}
-
 
 //for updating app
 app.post('/admin/update',function (req,res) {
@@ -138,9 +122,7 @@ mongoose.connect('mongodb://localhost/lauradb',{ useMongoClient: true }, functio
 		console.log("Mongodb connection success");
 	}
 });
-server.listen(process.env.PORT || port, function(){
-	console.log("Server started listening in port"+port);
-});
+
 
 //scheduled cron job tasks
 //Task 1 : Change status of task from opened to alerted in 59th minute       
@@ -158,10 +140,10 @@ cron.schedule('59 * * * *', function(){
 });
 //MQTT Configuration
 var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://localhost:11883');
+var client = mqtt.connect('mqtt://localhost:1883');
 //subscribing to topic dripo/ on connect
 client.on('connect', function() {
-    client.subscribe('dripo/#',{ qos: 1 });
+    client.subscribe('dripo/#',{ qos: 1});
 
 });
 
@@ -347,7 +329,7 @@ client.on('message', function (topic, message) {
 
     });
 
-})
+});
 //test encryption
 // var AESKey = 'B7EE7193E395F5ED016E48FF51FA1180';
 // var message = 'Online vannae';
@@ -368,16 +350,9 @@ client.on('message', function (topic, message) {
 //socket.io config
 var io = require('socket.io')(server);
 io.on('connection', function (socket) {
-  socket.on('subscribe', function (data) {
-      console.log('Subscribing to '+data.topic);
-      socket.join(data.topic);
-      client.subscribe(data.topic);
-  });
    // when socket connection publishes a message, forward that message the the mqtt broker
   socket.on('publish', function (data) {
-    console.log(data);
-      console.log('Publishing to '+data.topic);
-      client.publish(data.topic,data.payload,{ qos: 1, retain: true });
+      client.publish(data.topic,data.payload,{ qos: 1, retain: false});
   });
 
   client.on('message', function (topic, payload, packet) {
@@ -413,7 +388,7 @@ io.on('connection', function (socket) {
             var year = dateObj.getUTCFullYear();
             var newdate = day + "/" + month + "/" + year;
             if(status == 'start'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':'start',
@@ -428,28 +403,18 @@ io.on('connection', function (socket) {
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic}});
                 Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
                     if(inf.length==0){
-                        var inf = new Infusionhistory();
-                        inf.date= newdate;
-                        inf._task = ObjectId(taskid);
-                        inf.rate =rate;
-                        inf.infstarttime=inftime;
-                        inf.infdate=infdate;
-                        inf.infusedVolume = infusedVolume;
-                        inf.timeRemaining = timeRemaining;
-                        inf.totalVolume = totalVolume;
-                        inf.percentage = percentage;
-                        inf.save(function(err,inf){
-                            if(err) throw err;
-                            Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:inf._id}},{upsert:false});
+                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{date:newdate,infstarttime:inftime,infdate:infdate,}},{upsert:true});
+                    Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,newinf){
+                        Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:newinf[0]._id}},{upsert:true});    
 
-                        });
-                       
+                    });
+
                     }
                 });
 
             } //end of if status is start
             else if(status == 'infusing'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':'infusing',
@@ -467,7 +432,7 @@ io.on('connection', function (socket) {
             }//end of if status is infusing
             else if(status == 'stop'){
                 if(percentage<90){
-                    socket.emit('dripo',{
+                    io.emit('dripo',{
                         'topic':topic.toString(),
                         'payload':payload.toString(),
                         'infusionstatus':'stop',
@@ -483,7 +448,7 @@ io.on('connection', function (socket) {
 
                 }
                 else{
-                    socket.emit('dripo',{
+                    io.emit('dripo',{
                         'topic':topic.toString(),
                         'payload':payload.toString(),
                         'infusionstatus':'Empty',
@@ -500,7 +465,7 @@ io.on('connection', function (socket) {
             }
 
             else if(status == 'Empty'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':'Empty',
@@ -518,7 +483,7 @@ io.on('connection', function (socket) {
 
             }
             else if(status == 'Empty_ACK'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':'Empty_ACK',
@@ -538,11 +503,11 @@ io.on('connection', function (socket) {
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:status,topic:""}});
-                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}});
+                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
             }//end of Empty_ACK
 
             else if(status == 'Rate_Err'|| status=='Block'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':status,
@@ -562,11 +527,28 @@ io.on('connection', function (socket) {
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
-                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}});
+                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
 
             }//end of error
+            else if(status == 'Complete'){
+                io.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':'Complete',
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+
+            }//end of complete
+
             else if(status == 'Rate_Err_ACK'|| status=='Block_ACK'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':status,
@@ -583,7 +565,7 @@ io.on('connection', function (socket) {
 
             }//end of error ack
             else if(status == 'Device_Disconnected_ACK'){
-                socket.emit('dripo',{
+                io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
                     'infusionstatus':'Connection_Lost',
@@ -599,6 +581,23 @@ io.on('connection', function (socket) {
 
 
             }//end of error ack
+            else if(status == 'Complete_ACK'){
+                io.emit('dripo',{
+                    'topic':topic.toString(),
+                    'payload':payload.toString(),
+                    'infusionstatus':status,
+                    'status':'inprogress',
+                    'taskid':taskid,
+                    'rate':rate,
+                    'infusedVolume':infusedVolume,
+                    'timeRemaining':timeRemaining,
+                    'totalVolume':totalVolume,
+                    'percentage':percentage
+                });
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+
+            }
+
 
             
         }
@@ -609,7 +608,7 @@ io.on('connection', function (socket) {
         if(message == 'offline'){
             Task.find({topic:commonTopic}).exec(function(err,task){
                 if(task.length != 0){
-                    socket.emit('dripo',{
+                    io.emit('dripo',{
                         'topic':topic.toString(),
                         'payload':payload.toString(),
                         'infusionstatus':'Device_Disconnected',
@@ -632,6 +631,9 @@ io.on('connection', function (socket) {
   });
 });
 
+server.listen(process.env.PORT || port, function(){
+    console.log("Server started listening in port"+port);
+});
 
 
 

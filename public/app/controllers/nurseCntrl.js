@@ -114,6 +114,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	app.patient = false;
 	app.showOnAddMedication = false;
 	this.showAddMedication = function (patientData) {
+		app.showOnEditMedication = false;
+		app.showOnEditPatient = false;
+		app.showOnAddMedication = true;
 		Nurse.addPatient(this.patientData).then(function (data) {
 			if(data.data.success){
 				app.patient=data.data.patient;
@@ -121,7 +124,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$scope.choices.patientid=data.data.patient._id;
 				app.successMsg = data.data.message;
 				app.loader = true;
-				app.showOnAddMedication = true;
 				$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 			}
 			else{
@@ -203,27 +205,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	app.patientid = false;
 	this.showEditMedication = function (editpatient) {
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.showOnEditPatient = false;
+		app.showOnAddMedication = false;
 		app.showOnEditMedication = true;
-		Nurse.editMedication(editpatient).then(function(data) {
-			console.log(data);
-			app.patientid=data.data.medication[0].patientid;
-			app.bedid=data.data.medication[0].bedid;
-			$scope.selected=[];
-			for (i=0;i<20;i++) {
-			 $scope.selected[i]=new Array();
-			 for (j=0;j<24;j++) {
-			  $scope.selected[i][j] = false ;
-			 }
-			}
-			$scope.editchoices = data.data.medication;
-			for(var key in $scope.editchoices){
-				var newItemNo = key;
-				$scope.editchoices[key].id=newItemNo;
-				for(var key2 in $scope.editchoices[key].time){
-					$scope.selected[key][$scope.editchoices[key].time[key2]]= true;
-				}
-			}
-		});
 		Nurse.editMedication(this.editpatient).then(function(data) {
 			app.patientid=data.data.medication[0].patientid;
 			app.bedid=data.data.medication[0].bedid;
@@ -244,7 +228,31 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 			}
 		});
 	};
-
+	this.showEditMedicationDirect = function (editpatient) {
+		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.showOnEditMedication = true;
+		app.showOnEditPatient = false;
+		app.showOnAddMedication = false;
+		Nurse.editMedication(editpatient).then(function(data) {
+			app.patientid=data.data.medication[0].patientid;
+			app.bedid=data.data.medication[0].bedid;
+			$scope.selected=[];
+			for (i=0;i<20;i++) {
+			 $scope.selected[i]=new Array();
+			 for (j=0;j<24;j++) {
+			  $scope.selected[i][j] = false ;
+			 }
+			}
+			$scope.editchoices = data.data.medication;
+			for(var key in $scope.editchoices){
+				var newItemNo = key;
+				$scope.editchoices[key].id=newItemNo;
+				for(var key2 in $scope.editchoices[key].time){
+					$scope.selected[key][$scope.editchoices[key].time[key2]]= true;
+				}
+			}
+		});
+	};
 	this.editgetTime = function (editchoice, button, index,i) {
 				$scope.selected[i][index] = !$scope.selected[i][index];//to toggle button action
 				if($scope.selected[i][index]){
@@ -288,8 +296,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 					$timeout(function () {
 						app.medloader = false;
 						app.loader = false;
+						$scope.myTabIndex = 0;
 						$window.location.reload('/nurse/managepatients');
-					},3000);
+					},2000);
 
 				}
 				else{
@@ -307,8 +316,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 					$timeout(function () {
 						app.medloader = false;
 						app.loader = false;
+						$scope.myTabIndex = 0;
 						$window.location.reload('/nurse/managepatients');
-					},3000);
+					},2000);
 
 				}
 				else{
@@ -336,8 +346,10 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	//function to provide edit patient tab and hide add patient
 	this.showEditPatient = function (patient) {
 		app.oldbed = patient.bedname;
-		app.showOnEditPatient = true;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.showOnEditMedication = false;
+		app.showOnAddMedication = false;
+		app.showOnEditPatient = true;
 		app.editpatient = patient;
 	};
 	app.editpatloader = false;
@@ -350,8 +362,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				app.editsuccessMsg = data.data.message;
 				$timeout(function () {
 					app.editpatloader = false;
-					$window.location.reload('/admin/managedripos');
-				},3000);
+					$scope.myTabIndex = 0;
+					$window.location('/admin/managedripos');
+				},2000);
 			}
 			else{
 				app.editerrorMsg=data.data.message;
@@ -394,7 +407,11 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 		  });
 		};
-
+		$scope.reload = function () {
+			app.showOnEditMedication = false;
+			app.showOnAddMedication = false;
+			app.showOnEditPatient = false;
+		}
 
 
 });

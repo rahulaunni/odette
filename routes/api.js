@@ -238,7 +238,6 @@ router.get('/resetpassword/:token', function(req, res) {
 router.put('/savepassword', function(req, res) {
 	User.findOne({userName: req.body.username}).select('userName password resetToken').exec(function(err, user) {
 		if (err) throw err; // Throw error if cannot connect
-		console.log(req.body);
 		user.password = req.body.password;
 		user.resetToken = false;
 		user.save(function(err) {
@@ -583,7 +582,6 @@ router.post('/admin/deletebed', function(req,res){
 
 //edit bed route
 router.put('/admin/editbed',function (req,res) {
-	console.log(req.body);
 	Bed.findOne({_id: req.body._id}).select('bedname').exec(function(err,bed) {
 		if (err) throw err; // Throw error if cannot connect
 		bed.bedname= req.body.bedname;
@@ -650,7 +648,6 @@ router.post('/admin/deleteivset', function(req,res){
 
 //edit ivset route
 router.put('/admin/editivset',function (req,res) {
-	console.log(req.body);
 	Ivset.findOne({_id:req.body._id}).select('ivsetname ivsetdpf').exec(function(err,ivset) {
 		if (err) throw err; // Throw error if cannot connect
 		ivset.ivsetname= req.body.ivsetname;
@@ -861,7 +858,6 @@ router.post('/nurse/addpatient', function(req,res){
 		else{
 			Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
 				if (err) return handleError(err);
-				console.log(bed);
 				bed.status = 'occupied';
 				bed._patient = patient._id;
 				bed.save(function (err) {
@@ -1026,7 +1022,6 @@ router.put('/nurse/editpatient',function (req,res) {
 
 //route for retrieve medication data and serve to edit medication page
 router.post('/nurse/editmedication', function(req,res){
-	console.log(req.body);
 	var editchoices=[{}];
 	Medication.find({_bed:req.body._bed}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
 		for (var key in medication) {

@@ -1,14 +1,14 @@
 <div layout="column" layout-fill ng-cloak>
     <md-content md-theme="dark">
         <md-tabs class="md-accent md-hue-2" md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
-        <md-tab  label="Patients">
+        <md-tab  label="Patients" ng-click="reload();">
         <div style="padding: 1%">
         <div layout=row class="md-headline" > List of Patients </div>
         <div layout=row class="md-headline" > &nbsp </div>
         <div layout=row  layout-wrap ng-hide="nopatient">
                 <md-input-container class="md-icon-float md-block" flex="100" flex-sm="100" flex-gt-sm="50">
                     <md-radio-group ng-model="patientstatus" aria-label="filter" ng-model="patientstatus" name="patient" layout="row">
-                        <md-radio-button ng-selected="true" value="">All</md-radio-button>
+                        <md-radio-button value="">All</md-radio-button>
                         <md-radio-button value="active"> Active </md-radio-button>
                         <md-radio-button value="discharged">Discharged</md-radio-button>
                     </md-radio-group>
@@ -34,13 +34,13 @@
                 Discharge</div>
                 </div >
                 <div style="border-top:1px solid #CCCCCC" class="md-subhead" ng-click="managePatient.showfromlistAddMedication(patient);" ng-show="patient.add" class="md-primary">Add Medication</div>
-                <div style="border-top:1px solid #CCCCCC" class="md-subhead" ng-click="managePatient.showEditMedication(patient);" ng-hide="patient.add" class="md-primary">Edit Medication</div>
+                <div style="border-top:1px solid #CCCCCC" class="md-subhead" ng-click="managePatient.showEditMedicationDirect(patient);" ng-hide="patient.add" class="md-primary">Edit Medication</div>
                
              </md-grid-tile>
         </md-grid-list>
     </div>
         </md-tab>
-             <md-tab label="Edit Medication" ng-if="managePatient.showOnEditMedication==true">
+             <md-tab label="Edit Medication" ng-if="managePatient.showOnEditMedication==true && managePatient.showOnEditPatient == false && managePatient.showOnAddMedication == false">
                  <md-content>
                      <div layout="column">
                          <md-content class="md-no-momentum">
@@ -174,7 +174,7 @@
                 </div>
             </md-content>
         </md-tab>
-        <md-tab label="Add Medication" ng-if="managePatient.showOnAddMedication == true && managePatient.showOnEditPatient == false">
+        <md-tab label="Add Medication" ng-if="managePatient.showOnAddMedication == true && managePatient.showOnEditPatient == false && managePatient.showOnEditMedication==false">
          <md-content class="md-padding">
              <div layout="column">
                  <md-content class="md-no-momentum">

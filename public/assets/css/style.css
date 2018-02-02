@@ -145,10 +145,10 @@ display: none;
 height: 0%;
 }
 
-.Block .status,.Rate_Err .status,.Empty .status,.Device_Disconnected .status{
+.Block .status,.Rate_Err .status,.Empty .status,.Device_Disconnected .status,.Complete .status{
   height:45%;
 }
-.Block .action,.Rate_Err .action,.Empty .action,.Device_Disconnected .action{
+.Block .action,.Rate_Err .action,.Empty .action,.Device_Disconnected .action,.Complete .action{
     height:20%;
     display: flex;
 }

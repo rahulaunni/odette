@@ -33,7 +33,6 @@ angular.module('myApp', ['ngMaterial','ngMessages','ngAnimate','userServices','a
 //socket.io client config
 .factory('socket', ['$rootScope', function($rootScope) {
   var socket = io.connect();
-
   return {
     on: function(eventName, callback){
       socket.on(eventName, callback);

@@ -181,10 +181,22 @@ angular.module('homeController',['homeServices'])
 
 
                 }
+              if(key2 == $scope.alertedtasks.length - 1){
+                for(var key3 in $scope.inprogresstasks){
+                  if($scope.inprogresstasks[key2]._id == data.taskid){
+                    $scope.inprogresstasks[key2].status = 'inprogress';
+                    $scope.inprogresstasks[key2].infusionstatus = data.infusionstatus;
+                    $scope.inprogresstasks[key2].rate = data.rate;
+                    $scope.inprogresstasks[key2].infusedVolume = data.infusedVolume;
+                    $scope.inprogresstasks[key2].timeRemaining = data.timeRemaining;
+                    $scope.inprogresstasks[key2].totalVolume = data.totalVolume;
+                    $scope.inprogresstasks[key2].percentage = data.percentage;
+                  }
+                }
+              }
 
               }
             }
-
           }
         }//end of start
         else if(data.infusionstatus == 'infusing'){
@@ -234,6 +246,21 @@ angular.module('homeController',['homeServices'])
             }
          
         }//end of stop
+        else if(data.infusionstatus == 'Complete'){
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'inprogress';
+              $scope.inprogresstasks[key].infusionstatus = data.infusionstatus;
+              $scope.inprogresstasks[key].rate = data.rate;
+              $scope.inprogresstasks[key].infusedVolume = data.infusedVolume;
+              $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
+              $scope.inprogresstasks[key].totalVolume = data.totalVolume;
+              $scope.inprogresstasks[key].percentage = data.percentage;
+
+            }
+          }
+        }//end of complete
+
         else if(data.infusionstatus == 'Empty'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
@@ -277,7 +304,7 @@ angular.module('homeController',['homeServices'])
           }
 
         }//end of Errors
-        else if(data.infusionstatus == 'Block_ACK'|| data.infusionstatus == 'Rate_Err_ACK'){
+        else if(data.infusionstatus == 'Block_ACK'|| data.infusionstatus == 'Rate_Err_ACK' || data.infusionstatus == 'Complete_ACK'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
               $scope.inprogresstasks[key].status = 'inprogress';
@@ -333,7 +360,7 @@ angular.module('homeController',['homeServices'])
     });
 
 
-      });
+});
 
   //acknowledging the alert
   $scope.ackAlert = function(ev,task) {
@@ -346,9 +373,13 @@ angular.module('homeController',['homeServices'])
       socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
 
     }
-    else{
+    else if(task.infusionstatus == 'Block' || task.infusionstatus == 'Rate_Err'){
       socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
+
+    }
+    else if(task.infusionstatus == 'Complete'){
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
 
     }
     
