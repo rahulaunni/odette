@@ -420,6 +420,11 @@ angular.module('homeController',['homeServices'])
 
 
 });
+socket.on('disconnect', function(data) {
+      console.log(data);
+      socket.disconnect();
+  });
+
 
   //acknowledging the alert
   $scope.ackAlert = function(ev,task) {

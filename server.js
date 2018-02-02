@@ -140,7 +140,7 @@ cron.schedule('59 * * * *', function(){
 });
 //MQTT Configuration
 var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://localhost:1883');
+var client = mqtt.connect('mqtt://localhost:1883',{clientId:"LauraClient"});
 //subscribing to topic dripo/ on connect
 client.on('connect', function() {
     client.subscribe('dripo/#',{ qos: 1});
@@ -348,14 +348,17 @@ client.on('message', function (topic, message) {
 // console.log("Decryptedage: ", decoded_b64msg);
 
 //socket.io config
-var io = require('socket.io')(server);
+ var io = require('socket.io')(server);
 io.on('connection', function (socket) {
    // when socket connection publishes a message, forward that message the the mqtt broker
   socket.on('publish', function (data) {
       client.publish(data.topic,data.payload,{ qos: 1, retain: false});
   });
+  console.log(' %s sockets connected', io.engine.clientsCount);
+    console.log( io.sockets.client);
 
-  client.on('message', function (topic, payload, packet) {
+});
+client.on('message', function (topic, payload, packet) {
     var topicinfoArray = topic.split("/");
     var dripoid = topicinfoArray[1];
     var commonTopic = 'dripo/'+dripoid+'/';
@@ -388,6 +391,7 @@ io.on('connection', function (socket) {
             var year = dateObj.getUTCFullYear();
             var newdate = day + "/" + month + "/" + year;
             if(status == 'start'){
+                console.log(status);
                 io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
@@ -631,8 +635,8 @@ io.on('connection', function (socket) {
         }        
 
     }
-  });
 });
+
 
 server.listen(process.env.PORT || port, function(){
     console.log("Server started listening in port"+port);
