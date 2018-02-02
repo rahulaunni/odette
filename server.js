@@ -154,12 +154,14 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
-                if(err){
-                    console.log(err);
-                }
-            });
-            console.log("Access&Denied");
+            if(topicinfoArray[3] != 'will'){
+                client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
+                    if(err){
+                        console.log(err);
+                    }
+                });
+            }
+           
         }
         else{
             var stationid = ObjectId(dripo[0]._station);
@@ -366,11 +368,14 @@ client.on('message', function (topic, payload, packet) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            client.publish('error/' + dripoid ,'Access Denied',function (err) {
-                if(err){
-                    console.log(err);
-                }
-            });
+            if(topicinfoArray[3] != 'will'){
+                client.publish('error/' + dripoid ,'Access Denied',function (err) {
+                    if(err){
+                        console.log(err);
+                    }
+                });
+            }
+           
         }
         else{
             var message = payload.toString();

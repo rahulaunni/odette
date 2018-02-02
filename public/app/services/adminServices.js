@@ -54,6 +54,9 @@ angular.module('adminServices',[])
 	} 
 	adminFactory.checkUpdate = function () {
 		return $http.post('/admin/update');
+	}   
+	adminFactory.getConnectedDripo = function () {
+		return $http.post('/api/admin/getconnecteddriponames');
 	}    
 	return adminFactory;
 });

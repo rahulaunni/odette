@@ -664,6 +664,28 @@ router.put('/admin/editivset',function (req,res) {
 });
 
 //***routes for dripo management starts here***
+//route to get all connected dripos
+router.post('/admin/getconnecteddriponames',function (req,res) {
+	request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (req,response) {
+		if(response){
+			var recObj=JSON.parse(response.body);
+			var clients=recObj.result.objects;
+			var driponames=[];
+			for(var key in clients){
+				var index = clients[key].client_id.search("DRIPO")
+				if(index != -1){
+					driponames.push(clients[key].client_id)
+				}
+			}
+			res.json({success:true,driponames:driponames});
+		}
+		else{
+			res.json({success:false,message:'Mqtt Server Stopped'});
+		}
+	});
+
+});
+
 //routes for adding dripos
 router.post('/admin/adddripo',function (req,res) {
 	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {

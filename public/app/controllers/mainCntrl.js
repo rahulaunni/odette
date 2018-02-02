@@ -1,5 +1,5 @@
 angular.module('mainController',['authServices','userServices','nurseServices'])
-.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$location,$timeout,$window,$rootScope,$route,Admin,Nurse) {
+.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$interval,$location,$timeout,$window,$rootScope,$route,Admin,Nurse) {
 	$scope.showMobileMainHeader = true;
 	$scope.openSideNavPanel = function() {
 		$mdSidenav('left').open();
@@ -119,18 +119,30 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 		}
 	});
 	$scope.mqttserverstatus='running';
-	//function to get connected dripo clients to admin view
 	User.getConnectedDripos().then(function (data) {
 		if(data.data.success){
 			$scope.connecteddripo=data.data.clients;
 		}
 		else{
-			console.log(data.data.message);
 			$scope.mqttserverstatus='stopped';
 			$scope.connecteddripo=data.data.clients;
 
 		}
 	});
+	//function to get connected dripo clients to admin view
+	$interval(function () {
+	User.getConnectedDripos().then(function (data) {
+		if(data.data.success){
+			$scope.connecteddripo=data.data.clients;
+		}
+		else{
+			$scope.mqttserverstatus='stopped';
+			$scope.connecteddripo=data.data.clients;
+
+		}
+	});
+},30000)
+
 
 
 

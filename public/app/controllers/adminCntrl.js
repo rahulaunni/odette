@@ -477,6 +477,20 @@ angular.module('adminController',['userServices','adminServices'])
 
 		}
 	});
+	//function to get all the dripo device connected and not yet added
+	$scope.driponames=[];
+	Admin.getConnectedDripo().then(function (data) {
+		if(data.data.success){
+			$scope.driponames = data.data.driponames;
+		}
+		else{
+			$scope.driponames=[];
+		}
+		console.log($scope.driponames);
+	});
+	$scope.addtoinput= function () {
+		$scope.dripoData.dripoid = 2223;
+	}
 
 	app.showOnEditDripo = false;
 	app.loader = false;
