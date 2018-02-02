@@ -405,7 +405,10 @@ io.on('connection', function (socket) {
                     if(inf.length==0){
                     Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{date:newdate,infstarttime:inftime,infdate:infdate,}},{upsert:true});
                     Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,newinf){
-                        Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:newinf[0]._id}},{upsert:true});    
+                        if(newinf.length !=0){
+                            Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:newinf[0]._id}},{upsert:true});    
+
+                        }
 
                     });
 
