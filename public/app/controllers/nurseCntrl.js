@@ -102,6 +102,23 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$timeout(function () {
 					app.loader = false;
 					$scope.myTabIndex = 0;
+					Nurse.viewPatient().then(function (data) {
+						if(data.data.success){
+							app.patient=data.data.patient;
+							$scope.patients=data.data.patients;
+							for(var key in $scope.patients){
+								if(!$scope.patients[key]._medication.length){
+									$scope.patients[key].add=true;
+								}
+								else{
+									$scope.patients[key].add=false;
+								}
+							}
+						}
+						else{
+							$scope.nopatient = true;
+						}
+					});
 					$window.location('/nurse/managepatients');
 				},3000);
 			}
