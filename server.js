@@ -28,7 +28,9 @@ var ObjectId = require('mongodb').ObjectID;
 var CryptoJS = require("crypto-js");
 var request = require('request');
 const url = require('url')
-
+var useragent = require('useragent');
+var fs =require('fs');
+var updatefolder = path.join(__dirname, '/public/updatefolder');
 //Models 
 var Task = require('./models/tasks');
 var Station = require('./models/stations');
@@ -84,9 +86,36 @@ app.post('/admin/getconnecteddripos', function(req,res){
 
 //route for updating device
  app.get('/update_dripo',function(req,res){
-     console.log(req.headers);
-     res.status(200);
-     res.sendFile('test.bin',{root:path.join(__dirname,'/public')});
+    //collecting details from device header request
+    var agent = useragent.parse(req.headers['user-agent']);
+    var deviceVersion = useragent.parse(req.headers['x-esp8266-version']);
+    var firmware = deviceVersion.source;
+    var firmwareInfoArray = firmware.split('_');
+    var versionString = firmwareInfoArray[1].toString();
+    var version = versionString.slice(1);
+    //collect file details from server
+     if(agent.source == 'ESP8266-http-Update'){
+        var serverfirmwareInfoArray;
+        var serverVersion;
+        fs.readdir(updatefolder, function(err, files) {
+            if (err){res.sendStatus(304);}
+            files.forEach(function(f) {
+                serverfirmwareInfoArray = f.split('_');
+                serverVersion = serverfirmwareInfoArray[2];
+                if(version < serverVersion){
+                    res.sendFile('Drip0_v_'+serverVersion+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/updatefolder')});
+                }
+                else{
+                    res.sendStatus(304);
+                }
+
+            });
+        });
+
+     }
+     else{
+        res.sendStatus(403);
+     }
 
  });
 
@@ -154,11 +183,12 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            if(topicinfoArray[3] != 'will'){
+            if(topicinfoArray[2] != 'will'){
                 client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
                     if(err){
                         console.log(err);
                     }
+                    console.log("devicenotadded");
                 });
             }
            

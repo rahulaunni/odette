@@ -486,11 +486,18 @@ angular.module('adminController',['userServices','adminServices'])
 		else{
 			$scope.driponames=[];
 		}
-		console.log($scope.driponames);
 	});
-	$scope.addtoinput= function () {
-		$scope.dripoData.dripoid = 2223;
+	app.dripoData ={dripoid:''}
+	$scope.insertString = function (dripo) {
+		if(app.dripoData.dripoid != undefined){
+			app.dripoData.dripoid =app.dripoData.dripoid + dripo+',';
+		}
+		else{
+			app.dripoData.dripoid =dripo+',';
+
+		}
 	}
+
 
 	app.showOnEditDripo = false;
 	app.loader = false;
@@ -620,7 +627,7 @@ angular.module('adminController',['userServices','adminServices'])
 		$scope.reload =  function () {
 			app.showOnEditDripo = false;
 		}
-
+		
 })
 .controller('updateCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
 	$scope.updated = false;

@@ -667,21 +667,32 @@ router.put('/admin/editivset',function (req,res) {
 //route to get all connected dripos
 router.post('/admin/getconnecteddriponames',function (req,res) {
 	request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (req,response) {
+		var driponames=[];
+		var unregDripos=[];
 		if(response){
 			var recObj=JSON.parse(response.body);
 			var clients=recObj.result.objects;
-			var driponames=[];
 			for(var key in clients){
 				var index = clients[key].client_id.search("DRIPO")
 				if(index != -1){
 					driponames.push(clients[key].client_id)
 				}
 			}
-			res.json({success:true,driponames:driponames});
 		}
 		else{
 			res.json({success:false,message:'Mqtt Server Stopped'});
+
 		}
+	for(var key in driponames){
+		Dripo.find({dripoid: driponames[key]}).exec(function(err, dripo) {
+			if(dripo.length == 0){
+				unregDripos.push(driponames[key]);
+				res.json({success:true,driponames:unregDripos});
+			}
+		});	
+
+	}
+
 	});
 
 });

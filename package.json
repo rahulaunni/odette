@@ -31,7 +31,8 @@
     "nodemailer": "^4.4.0",
     "request": "^2.83.0",
     "simple-git": "^1.85.0",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "useragent": "^2.3.0"
   },
   "devDependencies": {
     "electron": "^1.7.11"
