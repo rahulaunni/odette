@@ -1,7 +1,7 @@
 <div layout="column" layout-padding="" layout-fill>
 		<md-content>
 		    <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
-		      	<md-tab label="User List">
+		      	<md-tab label="User List" ng-click="reload();">
 		          	<md-content>
 		          		<div layout=row ng-hide="nouser">
 		          			<md-input-container class="md-icon-float md-block" flex="50">
@@ -39,7 +39,7 @@
 		      		<md-content class="md-padding">
 		      			<div layout="column">
 		      				<md-content class="md-no-momentum">
-		      					<form name="userForm" ng-submit='manageUser.editUser(edituser);'  ng-hide="manageUser.editloader">
+		      					<form name="form.editUser" ng-submit='manageUser.editUser(edituser);'  ng-hide="manageUser.editloader">
 									<md-input-container class="md-icon-float md-block">
 						  				<label>Username</label>
 						  				<md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
@@ -49,7 +49,7 @@
 									  	<label>Password</label>
 						  				<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
 						  				<input ng-model="manageUser.edituser.password" type="password" name="password" minlength="4" required>
-						  				<div ng-messages="userForm.password.$error" role="alert" multiple>
+						  				<div ng-messages="form.editUser.password.$error" role="alert" multiple>
 						  	    			<div ng-message="required" class="my-message">This field is required</div>
 						  	    			<div ng-message="minlength" class="my-message">That's too short! </div>
 						  				</div>
@@ -57,14 +57,14 @@
 									<md-input-container class="md-icon-float md-block">
 						  				<label>Confirm Password</label>
 						  				<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
-						  				<input ng-model="manageUser.edituser.confirmPassword" type="password" name="confirmPassword" ng-pattern="{{manageUser.edituser.password}}" required>
+						  				<input ng-model="form.editUser.edituser.confirmPassword" type="password" name="confirmPassword" ng-pattern="{{manageUser.edituser.password}}" required>
 						  				<div ng-messages="userForm.confirmPassword.$error" role="alert" multiple>
 						  	    			<div ng-message="required" class="my-message">This field is required</div>
 						  					<div ng-message="pattern" class="my-message">Passwords not matched!</div>
 						  				</div>									
 									</md-input-container>
 									<div layout="row" md-theme="altTheme">
-						    			 <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+						    			 <md-button ng-disabled="form.editUser.$invalid" type="submit" class="md-raised md-warn">Submit</md-button>
 						    			 <md-button type="dismiss" ng-click="manageUser.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
 									</div>
 								</form>
@@ -80,13 +80,13 @@
 		        	<md-content class="md-padding">
 		          		<div layout="column">
 		          			<md-content class="md-no-momentum">
-		          				<form name="userForm" ng-submit='manageUser.addUser(userData);'  ng-hide="manageUser.loader">
+		          				<form name="form.addUser" ng-submit='manageUser.addUser(userData);'  ng-hide="manageUser.loader">
 			          			    <md-input-container class="md-icon-float md-block">
 			          			      	<label>Username</label>
 			          			      	<md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
 			          			      	<input ng-model="manageUser.userData.username" type="text" name="username" ng-pattern="/^[a-zA-Z0-9_-]*$/" required>
 			          			      	<md-tooltip md-direction="bottom">Eg: doctor@{{main.hospitalname}}.care</md-tooltip>
-			          			      	<div ng-messages="userForm.username.$error" role="alert" multiple>
+			          			      	<div ng-messages="form.addUser.username.$error" role="alert" multiple>
 			          			      	    <div ng-message="required" class="my-message">This field is required</div>
 			          			      	    <div ng-message="pattern" class="my-message">Special characters are not allowed</div>
 			          			      	</div>
@@ -95,7 +95,7 @@
 									  	<label>Password</label>
 									  	<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
 									  	<input ng-model="manageUser.userData.password" type="password" name="password" minlength="4" required>
-									  	<div ng-messages="userForm.password.$error" role="alert" multiple>
+									  	<div ng-messages="form.addUser.password.$error" role="alert" multiple>
 									  	    <div ng-message="required" class="my-message">This field is required</div>
 									  	    <div ng-message="minlength" class="my-message">That's too short! </div>
 									  	</div>
@@ -104,7 +104,7 @@
 									  	<label>Confirm Password</label>
 									  	<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
 									  	<input ng-model="manageUser.userData.confirmPassword" type="password" name="confirmPassword" ng-pattern="{{manageUser.userData.password}}" required>
-									  	<div ng-messages="userForm.confirmPassword.$error" role="alert" multiple>
+									  	<div ng-messages="form.addUser.confirmPassword.$error" role="alert" multiple>
 									  	    <div ng-message="required" class="my-message">This field is required</div>
 									  		<div ng-message="pattern" class="my-message">Passwords not matched!</div>
 									  	</div>									
@@ -116,18 +116,18 @@
 									        <md-option value="doctor">doctor</md-option>
 									        <md-option value="nurse">nurse</md-option>
 									    </md-select>
-									    <div ng-messages="userForm.type.$error" role="alert" multiple>
+									    <div ng-messages="form.addUser.type.$error" role="alert" multiple>
 									        <div ng-message="required" class="my-message">This field is required</div>
 									    </div>
 									</md-input-container>
 									<div layout="row">
 									   <div md-theme="altTheme">
-									      <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+									      <md-button type="submit" ng-disabled="form.addUser.$invalid" class="md-raised md-warn">Submit</md-button>
 									   </div>
 									</div>
 								</form>
 								<div layout="column" layout-fill layout-align="center center" ng-show="manageUser.loader">
-									<div>Form Submitted</div>
+									<div>{{manageUser.successMsg}}</div>
 									<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 								</div>
 			          		</md-content>

@@ -41,17 +41,17 @@
                 <md-content class="md-padding">
                     <div layout="column">
                         <md-content class="md-no-momentum">
-                            <form name="userForm" ng-submit='manageBed.editBed(editbed);'  ng-hide="manageBed.editloader">
+                            <form name="form.editBed" ng-submit='manageBed.editBed(editbed);'  ng-hide="manageBed.editloader">
                                 <md-input-container class="md-icon-float md-block">
                                     <label>Bed Name</label>
                                     <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
                                     <input ng-model="manageBed.editbed.bedname" type="text" name="bedname"  required>
-                                    <div ng-messages="userForm.bedname.$error" role="alert" multiple>
+                                    <div ng-messages="form.editBed.bedname.$error" role="alert" multiple>
                                         <div ng-message="required" class="my-message">This field is required</div>
                                     </div>
                                 </md-input-container>
                                 <div layout="row" md-theme="altTheme">
-                                        <md-button type="submit" class="md-raised md-warn">Submit</md-button>
+                                        <md-button type="submit" ng-disabled="form.editBed.$invalid" class="md-raised md-warn">Submit</md-button>
                                         <md-button type="dismiss" ng-click="manageBed.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
                                 </div>
                             </form>
@@ -67,7 +67,7 @@
                 <md-content class="md-padding">
                     <div layout="column">
                         <md-content class="md-no-momentum">
-                            <form name="userForm" ng-submit='manageBed.addBed(bedData);'  ng-hide="manageBed.loader">
+                            <form name="form.addBed" ng-submit='manageBed.addBed(bedData);'  ng-hide="manageBed.loader">
                                 <md-input-container class="md-icon-float md-block">
                                     <label>Select Station</label>
                                     <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
@@ -76,7 +76,7 @@
                                             <md-option ng-value="station.stationname" ng-repeat="station in stations">{{station.stationname}}</md-option>
                                             </md-optgroup>
                                     </md-select>
-                                    <div ng-messages="userForm.station.$error" role="alert" multiple>
+                                    <div ng-messages="form.addBed.station.$error" role="alert" multiple>
                                         <div ng-message="required" class="my-message">This field is required</div>
                                     </div>
                                 </md-input-container>
@@ -85,17 +85,17 @@
                                     <md-icon class="md-default-theme" class="material-icons">&#xE53A;</md-icon>
                                     <input ng-model="manageBed.bedData.bedname" type="text" name="bedname" ng-pattern="/^[A-Za-z0-9]+((,|-)[A-Za-z0-9]+)*[A-Za-z0-9]+$/" required>
                                     <md-tooltip md-direction="bottom">Add multiple Beds separated by coma eg: B101,B102,B103</md-tooltip>
-                                    <div ng-messages="userForm.bedname.$error" role="alert" multiple>
+                                    <div ng-messages="form.addBed.bedname.$error" role="alert" multiple>
                                         <div ng-message="required" class="my-message">This field is required</div>
                                         <div ng-message="pattern" class="my-message">Try B101,B102,....</div>
                                     </div>
                                 </md-input-container>
                                 <div layout="row" md-theme="altTheme">
-                                    <md-button type="submit" ng-disabled="userForm.$invalid" class="md-raised md-warn">Submit</md-button>
+                                    <md-button type="submit" ng-disabled="form.addBed.$invalid" class="md-raised md-warn">Submit</md-button>
                                 </div>
                             </form>
                             <div layout="column" layout-fill layout-align="center center" ng-show="manageBed.loader">
-                                <div>Form Submitted</div>
+                                <div>{{manageBed.successMsg}}</div>
                                 <md-progress-linear md-mode="indeterminate"></md-progress-linear>
                             </div>
                         </md-content>

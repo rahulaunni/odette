@@ -21,6 +21,7 @@ angular.module('adminController',['userServices','adminServices'])
 	app.editsuccessMsg = false;
 	app.editerrorMsg = false;
 	app.editstation = {};
+	$scope.form={};
 	//function for add user form submission
 	this.addStation = function (stationData) {
 		Admin.addStation(this.stationData).then(function (data) {
@@ -40,8 +41,12 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
+					app.stationData ={};
+					$scope.form.addStation.$setPristine();
+					$scope.form.addStation.$setUntouched();
+					app.errorMsg = false;
 					$location.path('/admin/managestations');
-				},3000);
+				},1500);
 			}
 			else{
 				app.errorMsg=data.data.message;
@@ -53,6 +58,7 @@ angular.module('adminController',['userServices','adminServices'])
 	//function to provide edit station tab and hide add station tab
 	this.showEditStation = function (station) {
 		app.showOnEditStation = true;
+		app.editloader = false;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.editstation = station;
 	};
@@ -75,7 +81,12 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
+					app.editstation ={};
+					$scope.form.editStation.$setPristine();
+					$scope.form.editStation.$setUntouched();
 					app.showOnEditStation = false;
+					app.editloader = false;
+					app.editsuccessMsg = false;
 					$location.path('/admin/managestations');
 				},3000);
 			}
@@ -176,11 +187,12 @@ angular.module('adminController',['userServices','adminServices'])
 	app.loader = false;
 	app.successMsg = false;
 	app.errorMsg = false;
-	app.showOnEditStation = false;
+	app.showOnEditBed = false;
 	app.editloader = false;
 	app.editsuccessMsg = false;
 	app.editerrorMsg = false;
 	app.showOnEditBed = false;
+	$scope.form={};
 	//function to add bed while form submission
 	this.addBed = function (bedData) {
 		Admin.addBed(this.bedData).then(function (data) {
@@ -201,8 +213,11 @@ angular.module('adminController',['userServices','adminServices'])
 						}
 					});
 					app.bedData ={};
+					$scope.form.addBed.$setPristine();
+					$scope.form.addBed.$setUntouched();
+					app.errorMsg = false;
 					$location.path('/admin/managebeds');
-				},3000);
+				},1500);
 			}
 			else{
 				app.errorMsg=data.data.message;
@@ -215,6 +230,7 @@ angular.module('adminController',['userServices','adminServices'])
 	//function to provide edit bed tab and hide add bed tab
 	this.showEditBed = function (bed) {
 		app.showOnEditBed = true;
+		app.editloader = false;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.editbed = bed;
 	};
@@ -238,8 +254,13 @@ angular.module('adminController',['userServices','adminServices'])
 						}
 					});
 					app.showOnEditBed = false;
+					app.editbed ={};
+					$scope.form.editBed.$setPristine();
+					$scope.form.editBed.$setUntouched();
 					$location.path('/admin/managebeds');
-				},3000);
+					app.editsuccessMsg = false;
+					app.editloader = false;
+				},1500);
 			}
 			else{
 				app.editerrorMsg=data.data.message;
@@ -329,6 +350,7 @@ angular.module('adminController',['userServices','adminServices'])
 	app.editloader = false;
 	app.editsuccessMsg = false;
 	app.editerrorMsg = false;
+	$scope.form={};
 	//function to add bed while form submission
 	this.addIvset = function (ivsetData) {
 		Admin.addIvset(this.ivsetData).then(function (data) {
@@ -348,8 +370,12 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
+					app.ivsetData ={};
+					$scope.form.addIvset.$setPristine();
+					$scope.form.addIvset.$setUntouched();
+					app.errorMsg = false;
 					$location.path('/admin/manageivsets');
-				},3000);
+				},1500);
 			}
 			else{
 				app.errorMsg=data.data.message;
@@ -363,6 +389,7 @@ angular.module('adminController',['userServices','adminServices'])
 	//function to provide edit ivset tab and hide add ivset tab
 	this.showEditIvset = function (ivset) {
 		app.showOnEditIvset = true;
+		app.editloader = false;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.editivset = ivset;
 	};
@@ -386,8 +413,13 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
+					app.editivset ={};
+					$scope.form.editIvset.$setPristine();
+					$scope.form.editIvset.$setUntouched();
 					$location.path('/admin/manageivsets');
-				},3000);
+					app.editloader = false;
+					app.editsuccessMsg = false;
+				},1500);
 			}
 			else{
 				app.editerrorMsg=data.data.message;
@@ -479,14 +511,17 @@ angular.module('adminController',['userServices','adminServices'])
 	});
 	//function to get all the dripo device connected and not yet added
 	$scope.driponames=[];
-	Admin.getConnectedDripo().then(function (data) {
-		if(data.data.success){
-			$scope.driponames = data.data.driponames;
-		}
-		else{
-			$scope.driponames=[];
-		}
-	});
+	$scope.loadConnectedDripo = function () {
+		Admin.getConnectedDripo().then(function (data) {
+			if(data.data.success){
+				$scope.driponames = data.data.driponames;
+			}
+			else{
+				$scope.driponames=[];
+			}
+		});
+		
+	}
 	app.dripoData ={dripoid:''}
 	$scope.insertString = function (dripo) {
 		if(app.dripoData.dripoid != undefined){
@@ -506,6 +541,7 @@ angular.module('adminController',['userServices','adminServices'])
 	app.editloader = false;
 	app.editsuccessMsg = false;
 	app.editerrorMsg = false;
+	$scope.form={};
 	//function to add dripo while form submission
 	this.addDripo = function (dripoData) {
 		Admin.addDripo(this.dripoData).then(function (data) {
@@ -525,8 +561,12 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
+					app.dripoData ={};
+					$scope.form.addDripo.$setPristine();
+					$scope.form.addDripo.$setUntouched();
+					app.errorMsg = false;
 					$location.path('/admin/managedripos');
-				},3000);
+				},1500);
 			}
 			else{
 				app.errorMsg=data.data.message;
@@ -542,6 +582,7 @@ angular.module('adminController',['userServices','adminServices'])
 	//function to provide edit ivset tab and hide add ivset tab
 	this.showEditDripo = function (dripo) {
 		app.showOnEditDripo = true;
+		app.editloader = false;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.editdripo = dripo;
 	};
@@ -565,8 +606,13 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
+					app.editdripo ={};
+					$scope.form.editDripo.$setPristine();
+					$scope.form.editDripo.$setUntouched();
 					$location.path('/admin/managedripos');
-				},3000);
+					app.editsuccessMsg = false;
+					app.editloader = false;
+				},1500);
 			}
 			else{
 				app.editerrorMsg=data.data.message;
@@ -668,7 +714,9 @@ angular.module('adminController',['userServices','adminServices'])
 			$scope.totaldripo = data.data.totaldripo;
 		}
 	});
-
+	$scope.goto = function (link) {
+		$location.path(link)
+	}
 });
 
 

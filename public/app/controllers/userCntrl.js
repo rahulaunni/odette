@@ -49,6 +49,7 @@ angular.module('userControllers',['userServices'])
 	app.successMsg = false;
 	app.showOnEditUser = false;
 	app.edituser ={};
+	$scope.form={};
 	//function for add user form submission
 	this.addUser = function (userData) {
 		User.addUser(this.userData).then(function (data) {
@@ -57,8 +58,24 @@ angular.module('userControllers',['userServices'])
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/manageusers');
-				},3000);
+					$scope.myTabIndex =0;
+					User.viewUser().then(function (data) {
+						if(data.data.success){
+							$scope.users=data.data.users;
+
+						}
+						else{
+							app.users=false;
+							$scope.nouser = true;
+
+						}
+					});
+					app.userData ={};
+					$scope.form.addUser.$setPristine(true);
+					$scope.form.addUser.$setUntouched(true);
+					app.errorMsg = false;
+					$location.path('/admin/manageusers');
+				},1500);
 			}
 			else{
 				app.errorMsg=data.data.message;
@@ -70,6 +87,7 @@ angular.module('userControllers',['userServices'])
 	//function to provide edit user tab and hide add user tab
 	this.showEditUser = function (user) {
 		app.showOnEditUser = true;
+		app.editloader = false;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.edituser = user;
 	};
@@ -82,8 +100,26 @@ angular.module('userControllers',['userServices'])
 				console.log(app.editsuccessMsg);
 				$timeout(function () {
 					app.loader = false;
-					$window.location.reload('/admin/manageusers');
-				},3000);
+					$scope.myTabIndex =0;
+					User.viewUser().then(function (data) {
+						if(data.data.success){
+							$scope.users=data.data.users;
+
+						}
+						else{
+							app.users=false;
+							$scope.nouser = true;
+
+						}
+					});
+					app.userData ={};
+					app.edituser ={};
+					$scope.form.editUser.$setPristine();
+					$scope.form.editUser.$setUntouched();
+					$location.path('/admin/manageusers');
+					app.editsuccessMsg = false;
+					app.editloader = false;
+				},1500);
 			}
 			else{
 				app.editerrorMsg=data.data.message;
@@ -122,7 +158,18 @@ angular.module('userControllers',['userServices'])
 	  $mdDialog.show(confirm).then(function() {
 	  	User.deleteUser(user).then(function (data) {
 	  		if(data.data.success){
-	  			$window.location.reload('/admin/manageusers');
+	  			User.viewUser().then(function (data) {
+	  				if(data.data.success){
+	  					$scope.users=data.data.users;
+
+	  				}
+	  				else{
+	  					app.users=false;
+	  					$scope.nouser = true;
+
+	  				}
+	  			});
+	  			$location.path('/admin/manageusers');
 	  		}
 	  	});
 
@@ -130,4 +177,7 @@ angular.module('userControllers',['userServices'])
 
 	  });
 	};
+	$scope.reload =  function () {
+		app.showOnEditUser = false;
+	}
 });

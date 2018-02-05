@@ -666,16 +666,59 @@ router.put('/admin/editivset',function (req,res) {
 //***routes for dripo management starts here***
 //route to get all connected dripos
 router.post('/admin/getconnecteddriponames',function (req,res) {
+	var driponames=[];
+	var unregDripos=[];
+	var regDripos =[];
 	request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (req,response) {
-		var driponames=[];
-		var unregDripos=[];
+		
 		if(response){
 			var recObj=JSON.parse(response.body);
 			var clients=recObj.result.objects;
-			for(var key in clients){
-				var index = clients[key].client_id.search("DRIPO")
+			for(var lp1=0;lp1<clients.length;lp1++){
+				var index = clients[lp1].client_id.search("DRIPO")
 				if(index != -1){
-					driponames.push(clients[key].client_id)
+					driponames.push(clients[lp1].client_id)
+				}
+				if(lp1 == clients.length-1){
+					if(driponames.length == 0){
+						res.json({success:false,message:'No un-registred device connected'});
+
+					}
+					else{
+						var driponamesLength = driponames.length-1;
+						Dripo.find({dripoid: { "$in": driponames }}).exec(function(err, dripo) {
+							if(dripo.length != 0){
+								for(var key in dripo){
+									regDripos.push(dripo[key].dripoid);
+									if(key == dripo.length-1){
+										for(var lp2=0;lp2<driponames.length;lp2++){
+											for(var lp3=0;lp3<regDripos.length;lp3++){
+												if(driponames[lp2] == regDripos[lp3]){
+													break;
+												}
+												if(lp3 == regDripos.length-1){
+													unregDripos.push(driponames[lp2])
+												}
+											}
+											if(lp2 == driponamesLength){
+												res.json({success:true,driponames:unregDripos});
+											}
+										}
+									}
+								}
+
+							}
+							else{
+								unregDripos = driponames;
+								res.json({success:true,driponames:unregDripos});
+
+							}
+							
+						});
+
+					}
+					
+
 				}
 			}
 		}
@@ -683,15 +726,6 @@ router.post('/admin/getconnecteddriponames',function (req,res) {
 			res.json({success:false,message:'Mqtt Server Stopped'});
 
 		}
-	for(var key in driponames){
-		Dripo.find({dripoid: driponames[key]}).exec(function(err, dripo) {
-			if(dripo.length == 0){
-				unregDripos.push(driponames[key]);
-				res.json({success:true,driponames:unregDripos});
-			}
-		});	
-
-	}
 
 	});
 

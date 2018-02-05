@@ -30,12 +30,12 @@
 		        <md-content class="md-padding">
 		          	<div layout="column">
 		          		<md-content class="md-no-momentum">
-		          			<form name="userForm" ng-submit='manageIvset.editIvset(editivset);' ng-hide="manageIvset.editloader">
+		          			<form name="form.editIvset" ng-submit='manageIvset.editIvset(editivset);' ng-hide="manageIvset.editloader">
 			          			<md-input-container class="md-icon-float md-block">
 			          			    <label>Ivset Name</label>
 			          			    <md-icon class="md-default-theme" class="material-icons">&#xE891;</md-icon>
 			          			    <input ng-model="manageIvset.editivset.ivsetname" type="text" name="ivsetname"  required>
-			          			    <div ng-messages="userForm.ivsetname.$error" role="alert" multiple>
+			          			    <div ng-messages="form.editIvset.ivsetname.$error" role="alert" multiple>
 			          			      	<div ng-message="required" class="my-message">This field is required</div>
 			          			    </div>
 			          			</md-input-container>
@@ -43,12 +43,12 @@
 			          			    <label>Ivset Drop Factor</label>
 			          			    <md-icon class="md-default-theme" class="material-icons">&#xE91C;</md-icon>
 			          			    <input ng-model="manageIvset.editivset.ivsetdpf" type="number" name="ivsetdpf"  required>
-			          			    <div ng-messages="userForm.ivsetdpf.$error" role="alert" multiple>
+			          			    <div ng-messages="form.editIvset.ivsetdpf.$error" role="alert" multiple>
 			          			      	<div ng-message="required" class="my-message">This field is required</div>
 			          			    </div>
 			          			</md-input-container>
 								<div layout="row" md-theme="altTheme">
-									<md-button type="submit" class="md-raised md-warn">Submit</md-button>
+									<md-button type="submit" ng-disabled="form.editIvset.$invalid"  class="md-raised md-warn">Submit</md-button>
 									<md-button type="dismiss" ng-click="manageIvset.cancel();" md-theme="default" class="md-raised md-warn">Cancel</md-button>
 								</div>
 							</form>
@@ -64,12 +64,12 @@
 		        <md-content class="md-padding">
 		          	<div layout="column">
 		          		<md-content class="md-no-momentum">
-		          			<form name="userForm" ng-submit='manageIvset.addIvset(ivsetData);' ng-hide="manageIvset.loader">
+		          			<form name="form.addIvset" ng-submit='manageIvset.addIvset(ivsetData);' ng-hide="manageIvset.loader">
 			          			<md-input-container class="md-icon-float md-block">
 			          			    <label>Ivset Name</label>
 			          			    <md-icon class="md-default-theme" class="material-icons">&#xE891;</md-icon>
 			          			    <input ng-model="manageIvset.ivsetData.ivsetname" type="text" name="ivsetname"  required>
-			          			    <div ng-messages="userForm.ivsetname.$error" role="alert" multiple>
+			          			    <div ng-messages="form.addIvset.ivsetname.$error" role="alert" multiple>
 			          			      	<div ng-message="required" class="my-message">This field is required</div>
 			          			    </div>
 			          			</md-input-container>
@@ -77,16 +77,16 @@
 			          			    <label>Ivset Drop Factor</label>
 			          			    <md-icon class="md-default-theme" class="material-icons">&#xE91C;</md-icon>
 			          			    <input ng-model="manageIvset.ivsetData.ivsetdpf" type="number" name="ivsetdpf"  required>
-			          			    <div ng-messages="userForm.ivsetdpf.$error" role="alert" multiple>
+			          			    <div ng-messages="form.addIvset.ivsetdpf.$error" role="alert" multiple>
 			          			      	<div ng-message="required" class="my-message">This field is required</div>
 			          			    </div>
 			          			</md-input-container>
 								<div layout="row" md-theme="altTheme">
-									<md-button type="submit" class="md-raised md-warn">Submit</md-button>
+									<md-button ng-disabled="form.addIvset.$invalid"  type="submit" class="md-raised md-warn">Submit</md-button>
 								</div>
 							</form>
 							<div layout="column" layout-fill layout-align="center center" ng-show="manageIvset.loader">
-								<div>Adding Ivset</div>
+								<div>{{manageIvset.successMsg}}</div>
 								<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 							</div>
 			          	</md-content>

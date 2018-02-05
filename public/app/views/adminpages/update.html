@@ -1,10 +1,11 @@
 <div layout="column" layout-padding="" layout-fill>
-	<p>Update
-	<md-button ng-click="update.checkUpdate();" >
-		<md-icon ng-hide="loader" class="md-default-theme" class="material-icons">&#xE923;</md-icon>
-		<md-progress-circular ng-show="loader"  md-diameter="20px" md-mode="indeterminate"></md-progress-circular>
+	<div class="md-title" style="clear:both;margin-top:2em;color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Update Server Code</div>
+	<p>Do not update the software  with out consulting the software provider. Please check that all the devices are offline before updating the software</p>
+	<div layout="row" >
+	<md-button flex-xs=100 flex-gt-md="25" class="md-raised md-warn" ng-click="update.checkUpdate();"  >
+		UPDATE SERVER CODE
 	</md-button>
-	</p>
+</div>
 	<div ng-show="updated">{{reply}}</div>
 	<div ng-show="nochange">{{reply}}</div>
 </div>

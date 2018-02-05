@@ -1,170 +1,86 @@
 <div layout="column" layout-padding="" layout-fill>
     <md-content class="md-padding" layout-xs="column" layout="column">
-        <md-list>
-            <md-subheader class="md-no-sticky">Users</md-subheader>
-            <md-list-item class="md-3-line">
-                <md-divider></md-divider>
-                <div flex layout="row" layout-xs="column">
-                    <div flex layout="column">
-                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">All users</span>
-                                    <span class="md-subhead">Total Users: {{totaluser}}</span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-md card-media"></div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center" >
-                              <md-button href="/admin/manageusers" class="md-fab md-primary" aria-label="Use Android">
-                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                              </md-button>                              
-                            </md-card-actions>
-                        </md-card>
-                    </div>
-                    <div flex layout="column">
-                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Nurse Account</span>
-                                    <span class="md-subhead">Total accounts: {{totalnurse}}</span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-md card-media"></div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                               <md-button href="/admin/manageusers" class="md-fab md-primary" aria-label="Use Android">
-                                 <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                               </md-button> 
-                            </md-card-actions>
-                        </md-card>
-                    </div>
-                    <div flex layout="column">
-                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Doctor Account</span>
-                                    <span class="md-subhead">Total accounts: {{totaldoctor}}</span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-md card-media"></div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                               <md-button href="/admin/manageusers" class="md-fab md-primary" aria-label="Use Android">
-                                 <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                               </md-button> 
-                            </md-card-actions>
-                        </md-card>
-                    </div>
-                </div>
-                <md-divider></md-divider>
-            </md-list-item>
-            <md-subheader class="md-no-sticky">Infrastructure and Equipmesnts</md-subheader>
-            <md-list-item class="md-3-line">
-                <div flex layout="row" layout-xs="column">
-                    <div flex layout="column">
-                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Nursing Stations</span>
-                                    <span class="md-subhead">Total Stations: {{totalstation}}</span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-md card-media"></div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                              <md-button href="/admin/managestations" class="md-fab md-primary" aria-label="Use Android">
-                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                              </md-button>  
-                            </md-card-actions>
-                        </md-card>
-                    </div>
-                    <div flex layout="column">
-                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Beds</span>
-                                    <span class="md-subhead">Total Beds:{{totalbed}}</span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-md card-media"></div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                              <md-button href="/admin/managebeds" class="md-fab md-primary" aria-label="Use Android">
-                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                              </md-button> 
-                            </md-card-actions>
-                        </md-card>
-                    </div>
-                    <div flex layout="column">
-                        <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                            <md-card-title>
-                                <md-card-title-text>
-                                    <span class="md-headline">Ivsets</span>
-                                    <span class="md-subhead">Models: {{totalivset}}</span>
-                                </md-card-title-text>
-                                <md-card-title-media>
-                                    <div class="md-media-md card-media"></div>
-                                </md-card-title-media>
-                            </md-card-title>
-                            <md-card-actions layout="row" layout-align="end center">
-                              <md-button href="/admin/manageivsets" class="md-fab md-primary" aria-label="Use Android">
-                                <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                              </md-button> 
-                            </md-card-actions>
-                        </md-card>
-                    </div>  
-                </div>
-                <md-divider ng-if="!$last"></md-divider>
-            </md-list-item>
-            <md-subheader class="md-no-sticky">Smart Devices</md-subheader>
-            <md-list-item class="md-3-line">
-                <div flex layout="row" layout-xs="column">
-                   <div flex layout="column">
-                       <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                           <md-card-title>
-                               <md-card-title-text>
-                                   <span class="md-headline">Dripo</span>
-                                   <span class="md-subhead">Total Dripo: {{totaldripo}}</span>
-                               </md-card-title-text>
-                               <md-card-title-media>
-                                   <div class="md-media-md card-media"></div>
-                               </md-card-title-media>
-                           </md-card-title>
-                           <md-card-actions layout="row" layout-align="end center">
-                            <md-button href="/admin/managedripos" class="md-fab md-primary" aria-label="Use Android">
-                              <md-icon class="md-default-theme" class="material-icons">&#xE869;</md-icon>
-                            </md-button> 
-                           </md-card-actions>
-                       </md-card>
-                   </div>
-                   <div flex layout="column">
-                       <md-card md-theme="{{ showDarkTheme ? 'dark-blue' : 'default' }}" md-theme-watch>
-                           <md-card-title>
-                               <md-card-title-text>
-                                   <span class="md-headline">The Button</span>
-                                   <span class="md-subhead">Coming Soon</span>
-                               </md-card-title-text>
-                               <md-card-title-media>
-                                   <div class="md-media-md card-media"></div>
-                               </md-card-title-media>
-                           </md-card-title>
-                           <md-card-actions layout="row" layout-align="end center">
-                            <md-button href="http://evelabs.co" target="_blank" class="md-fab md-primary" aria-label="Use Android">
-                              <md-icon class="md-default-theme" class="material-icons">&#xE80E;</md-icon>
-                            </md-button> 
-                           </md-card-actions>
-                       </md-card>
-                   </div>
-                </div>
-                </div>
-                <md-divider></md-divider>
-            </md-list-item>
-        </md-list>
-    </md-content>
+
+<!-- User list portion -->
+
+<div class="md-title" style="margin-top:2em;height:1.5em;color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Users </div>
+
+      <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
+
+        <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Nurses</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of users : {{totalnurse}}</div>
+          <div flex="100" ng-click="goto('/admin/manageusers');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              VIEW
+          </div>
+      </md-grid-tile>
+
+      <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Doctors</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of users : {{totaldoctor}}</div>
+          <div flex="100" ng-click="goto('/admin/manageusers');"  class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              VIEW
+          </div>
+      </md-grid-tile>
+
+  </md-grid-list>
+
+
+
+  <!-- Infra and equipments-->
+
+<div class="md-title" style="clear:both;margin-top:2em;height:1.5em;color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Infrastructure and Equipments</div>
+
+      <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
+
+        <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Stations</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of stations : {{totalstation}}</div>
+          <div flex="100" ng-click="goto('/admin/managestations');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              VIEW
+          </div>
+      </md-grid-tile>
+
+      <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Bed</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of bed: {{totalbed}}</div>
+          <div flex="100" ng-click="goto('/admin/managebeds');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              VIEW
+          </div>
+      </md-grid-tile>
+
+
+       <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Ivset</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of Ivsets: {{totalivset}}</div>
+          <div flex="100" ng-click="goto('/admin/manageivsets');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              VIEW
+          </div>
+      </md-grid-tile>
+
+  </md-grid-list>
+
+
+ <!--Devices-->
+
+<div class="md-title" style="clear:both;margin-top:2em;height:1.5em;color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Smart Devices</div>
+
+      <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
+
+        <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Dripo</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of devices : {{totaldripo}}</div>
+          <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Online Devices: {{connecteddripo}}</div>
+          <div flex="100" ng-click="goto('/admin/managedripos');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              VIEW
+          </div>
+      </md-grid-tile>
+
+     
+  </md-grid-list>
+
+
+
+
+</md-content>
 </div>
