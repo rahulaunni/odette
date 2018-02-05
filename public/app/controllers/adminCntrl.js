@@ -40,7 +40,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
-					$window.location('/admin/managestations');
+					$location.path('/admin/managestations');
 				},3000);
 			}
 			else{
@@ -76,7 +76,7 @@ angular.module('adminController',['userServices','adminServices'])
 						}
 					});
 					app.showOnEditStation = false;
-					$window.location('/admin/managestations');
+					$location.path('/admin/managestations');
 				},3000);
 			}
 			else{
@@ -130,7 +130,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  				}
 		  			});
-		  			$window.location('/admin/managestations');
+		  			$location.path('/admin/managestations');
 		  		}
 		  	});
 
@@ -200,8 +200,8 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
-					
-					$window.location('/admin/managebeds');
+					app.bedData ={};
+					$location.path('/admin/managebeds');
 				},3000);
 			}
 			else{
@@ -238,7 +238,7 @@ angular.module('adminController',['userServices','adminServices'])
 						}
 					});
 					app.showOnEditBed = false;
-					$window.location('/admin/managebeds');
+					$location.path('/admin/managebeds');
 				},3000);
 			}
 			else{
@@ -290,7 +290,7 @@ angular.module('adminController',['userServices','adminServices'])
 		  				}
 		  			});
 		  			
-		  			$window.location('/admin/managebeds');
+		  			$location.path('/admin/managebeds');
 		  		}
 		  	});
 
@@ -348,7 +348,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
-					$window.location('/admin/manageivsets');
+					$location.path('/admin/manageivsets');
 				},3000);
 			}
 			else{
@@ -386,7 +386,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
-					$window.location('/admin/manageivsets');
+					$location.path('/admin/manageivsets');
 				},3000);
 			}
 			else{
@@ -436,7 +436,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  				}
 		  			});
-		  			$window.location('/admin/manageivsets');
+		  			$location.path('/admin/manageivsets');
 		  		}
 		  	});
 
@@ -525,7 +525,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
-					$window.location('/admin/managedripos');
+					$location.path('/admin/managedripos');
 				},3000);
 			}
 			else{
@@ -565,7 +565,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 						}
 					});
-					$window.location('/admin/managedripos');
+					$location.path('/admin/managedripos');
 				},3000);
 			}
 			else{
@@ -616,7 +616,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 		  				}
 		  			});
-		  			$window.location('/admin/managedripos');
+		  			$location.path('/admin/managedripos');
 		  		}
 		  	});
 
