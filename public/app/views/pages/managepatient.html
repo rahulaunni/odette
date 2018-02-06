@@ -59,17 +59,20 @@
                                          <md-input-container class="md-icon-float md-block" flex>
                                              <label>Rate(ml/hr)</label>
                                              <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                             <input ng-model="editchoice.medicinerate" type="number" name="medicinerate" required>
+                                             <input ng-model="editchoice.medicinerate" type="number" name="medicinerate" required ng-min="5" ng-max="1000">
                                              <div ng-messages="medForm.medicinerate.$error" role="alert" multiple>
                                                  <div ng-message="required" class="my-message">This field is required</div>
+                                                 <div ng-message="min" class="my-message">Dripo can't be used for this rate</div>
+                                                 <div ng-message="max" class="my-message">Dripo can't be used for this rate</div>
                                              </div>
                                          </md-input-container>
                                          <md-input-container class="md-icon-float md-block" flex>
                                              <label>Volume(ml)</label>
                                              <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                             <input ng-model="editchoice.medicinevolume" type="number" name="medicinevolume" required>
+                                             <input ng-model="editchoice.medicinevolume" type="number" name="medicinevolume" required ng-min="0">
                                              <div ng-messages="medForm.medicinevolume.$error" role="alert" multiple>
                                                  <div ng-message="required" class="my-message">This field is required</div>
+                                                 <div ng-message="min" class="my-message">Volume can't be negative</div>
                                              </div>
                                          </md-input-container>
                                      </div>
@@ -115,17 +118,19 @@
                                 <md-input-container class="md-icon-float md-block" flex>
                                     <label>Age</label>
                                     <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                    <input ng-model="managePatient.editpatient.patientage" type="number" name="patientage" required>
+                                    <input ng-model="managePatient.editpatient.patientage" type="number" name="patientage" required ng-min="10">
                                     <div ng-messages="patientForm.patientage.$error" role="alert" multiple>
                                         <div ng-message="required" class="my-message">This field is required</div>
+                                        <div ng-message="min" class="my-message">Age can't be negative</div>
                                     </div>
                                 </md-input-container>
                                 <md-input-container class="md-icon-float md-block" flex>
                                     <label>Weight</label>
                                     <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                    <input ng-model="managePatient.editpatient.patientweight" type="text" name="patientweight" required>
+                                    <input ng-model="managePatient.editpatient.patientweight" type="number" name="patientweight" required ng-min="0">
                                     <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>
                                         <div ng-message="required" class="my-message">This field is required</div>
+                                        <div ng-message="min" class="my-message">Weight can't be negative</div>
                                     </div>
                                 </md-input-container>
                             </div>
@@ -193,17 +198,20 @@
                                  <md-input-container class="md-icon-float md-block" flex>
                                      <label>Rate(ml/hr)</label>
                                      <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                     <input ng-model="choice.medicinerate" type="number" name="medicinerate" required>
+                                     <input ng-model="choice.medicinerate" type="number" name="medicinerate" ng-min="5" ng-max="1000"  required>
                                      <div ng-messages="medForm.medicinerate.$error" role="alert" multiple>
                                          <div ng-message="required" class="my-message">This field is required</div>
+                                         <div ng-message="min" class="my-message">Dripo can't be used for this rate</div>
+                                         <div ng-message="max" class="my-message">Dripo can't be used for this rate</div>
                                      </div>
                                  </md-input-container>
                                  <md-input-container class="md-icon-float md-block" flex>
                                      <label>Volume(ml)</label>
                                      <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                                     <input ng-model="choice.medicinevolume" type="number" name="medicinevolume" required>
+                                     <input ng-model="choice.medicinevolume" type="number" name="medicinevolume" required ng-min="0">
                                      <div ng-messages="medForm.medicinevolume.$error" role="alert" multiple>
                                          <div ng-message="required" class="my-message">This field is required</div>
+                                         <div ng-message="min" class="my-message">Volume can't be negative</div>
                                      </div>
                                  </md-input-container>
                              </div>
@@ -251,17 +259,19 @@
                       <md-input-container class="md-icon-float md-block" flex>
                           <label>Age</label>
                           <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                          <input ng-model="managePatient.patientData.patientage" type="number" name="patientage" required>
+                          <input ng-model="managePatient.patientData.patientage" type="number" name="patientage" required ng-min="0">
                           <div ng-messages="patientForm.patientage.$error" role="alert" multiple>
                               <div ng-message="required" class="my-message">This field is required</div>
+                              <div ng-message="min" class="my-message">Age can't be negative</div>
                           </div>
                       </md-input-container>
                       <md-input-container class="md-icon-float md-block" flex>
                           <label>Weight</label>
                           <md-icon class="md-default-theme" class="material-icons">&#xE88F;</md-icon>
-                          <input ng-model="managePatient.patientData.patientweight" type="text" name="patientweight" required>
+                          <input ng-model="managePatient.patientData.patientweight" type="number" name="patientweight" required ng-min="0">
                           <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>
                               <div ng-message="required" class="my-message">This field is required</div>
+                              <div ng-message="min" class="my-message">Weight can't be negative</div>
                           </div>
                       </md-input-container>
                   </div>

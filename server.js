@@ -30,7 +30,6 @@ var request = require('request');
 const url = require('url')
 var useragent = require('useragent');
 var fs =require('fs');
-var updatefolder = path.join(__dirname, '/public/updatefolder');
 //Models 
 var Task = require('./models/tasks');
 var Station = require('./models/stations');
@@ -59,30 +58,6 @@ app.post('/admin/update',function (req,res) {
 
 });
 
-//route to return number of connected devices
-app.post('/admin/getconnecteddripos', function(req,res){
-    var counter = 0;
-    request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (req,response) {
-        if(response){
-            var recObj=JSON.parse(response.body);
-            var clients=recObj.result.objects;
-            for(var key in clients){
-                var index = clients[key].client_id.search("DRIPO")
-                if(index != -1){
-                    counter = counter +1;
-                }
-
-            }
-            res.json({success:true,clients:counter});
-
-        }
-        else{
-            res.json({success:false,clients:counter,message:"mqtt server stopped"});
-
-        }
-       
-    });
-});
 
 //route for updating device
  app.get('/update_dripo',function(req,res){
@@ -91,28 +66,34 @@ app.post('/admin/getconnecteddripos', function(req,res){
     var deviceVersion = useragent.parse(req.headers['x-esp8266-version']);
     var firmware = deviceVersion.source;
     var firmwareInfoArray = firmware.split('_');
+    var firmwareName = firmwareInfoArray[0];
     var versionString = firmwareInfoArray[1].toString();
     var version = versionString.slice(1);
     //collect file details from server
      if(agent.source == 'ESP8266-http-Update'){
-        var serverfirmwareInfoArray;
-        var serverVersion;
-        fs.readdir(updatefolder, function(err, files) {
-            if (err){res.sendStatus(304);}
-            files.forEach(function(f) {
-                serverfirmwareInfoArray = f.split('_');
-                serverVersion = serverfirmwareInfoArray[2];
-                if(version < serverVersion){
-                    res.sendFile('Drip0_v_'+serverVersion+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/updatefolder')});
-                }
-                else{
-                    res.sendStatus(304);
-                }
+        if(firmwareName == 'scotch'){
+               var serverfirmwareInfoArray;
+               var serverVersion;
+               var updatefolder = path.join(__dirname, '/public/dripo_firmware/scotch');
+               fs.readdir(updatefolder, function(err, files) {
+                   if (err){res.sendStatus(304);}
+                   files.forEach(function(f) {
+                       serverfirmwareInfoArray = f.split('_');
+                       serverVersion = serverfirmwareInfoArray[2];
+                       if(version < serverVersion){
+                           res.sendFile('scotch_v_'+serverVersion+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/dripo_firmware/scotch')});
+                       }
+                       else{
+                           res.sendStatus(304);
+                       }
 
-            });
-        });
+                   });
+               });
 
-     }
+            }
+
+        }
+        
      else{
         res.sendStatus(403);
      }
@@ -188,7 +169,6 @@ client.on('message', function (topic, message) {
                     if(err){
                         console.log(err);
                     }
-                    console.log("devicenotadded");
                 });
             }
            
@@ -386,8 +366,6 @@ io.on('connection', function (socket) {
   socket.on('publish', function (data) {
       client.publish(data.topic,data.payload,{ qos: 1, retain: false});
   });
-  console.log(' %s sockets connected', io.engine.clientsCount);
-    console.log( io.sockets.client);
 
 });
 client.on('message', function (topic, payload, packet) {
@@ -544,7 +522,7 @@ client.on('message', function (topic, payload, packet) {
                 var day = dateObj.getUTCDate();
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:status,topic:""}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
             }//end of Empty_ACK
 

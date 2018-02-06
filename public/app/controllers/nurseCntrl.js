@@ -249,6 +249,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		});
 	};
 	this.showEditMedicationDirect = function (editpatient) {
+		app.editmedloader = false;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
 		app.showOnEditMedication = true;
 		app.showOnEditPatient = false;
@@ -284,6 +285,8 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 					editchoice.time.splice(index, 1);
 					// var index = choice.time.indexOf(pmbutton);
 					// choice.time.splice(index, 1);
+
+
 				 }
 	     };
 
@@ -317,7 +320,10 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 						app.medloader = false;
 						app.loader = false;
 						$scope.myTabIndex = 0;
+						app.showOnEditMedication = false;
+						app.showOnAddMedication = true;
 						$window.location('/nurse/managepatients');
+						app.editmedloader = false;
 					},2000);
 
 				}

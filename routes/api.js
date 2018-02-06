@@ -1484,13 +1484,13 @@ router.post('/nurse/getalertedtask', function(req,res){
 
 //route to skip a task 
 router.post('/nurse/skiptask', function(req,res){
-	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'skipped'}});
+	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'skipped',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
 	res.json({success:true,message:'task skipped'})
 });
 
 //route to close a task 
 router.post('/nurse/closetask', function(req,res){
-	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed'}});
+	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
 	res.json({success:true,message:'task closed'})
 });
 
