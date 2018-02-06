@@ -204,6 +204,9 @@ position: fixed;
 .selectedIndex {
   background: rgb(255,87,34);
 }
-
+/*stlye for nurse menu*/
+.nurseselectedIndex {
+  background: rgb(255,87,34);
+}
 
 

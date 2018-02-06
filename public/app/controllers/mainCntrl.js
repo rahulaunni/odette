@@ -152,6 +152,7 @@ $scope.adminMenuItems=[{menu:'Home',icon:'home',href:'/admin/home'},
 					   {menu:'Manage Dripo',icon:'speaker_phone',href:'/admin/managedripos'},
 					   {menu:'Update Server',icon:'update',href:'/admin/update'}];
 //checking for the route change for changing the selected menu item
+$scope.selectedIndex = 0;
 $rootScope.$on("$routeChangeStart",function () {
 	if($location.path() == '/admin/home'){
 		$scope.selectedIndex = 0;
@@ -188,7 +189,27 @@ $scope.adminNav = function (link) {
 
 });
 
+/********************* Nurse Menu *********************************/
+$scope.nurseMenuItems=[{menu:'Home',icon:'home',href:'/'},
+					   {menu:'Manage Patient',icon:'people',href:'/managepatients'},
+					   {menu:'Help',icon:'help',href:'/nurse/help'},
+					   {menu:'About',icon:'info',href:'/nurse/about'},
+					  ];
+//checking for the route change for changing the selected menu item
+$rootScope.$on("$routeChangeStart",function () {
+	if($location.path() == '/'){
+		$scope.nurseselectedIndex = 0;
 
+	}
+	else if($location.path() == '/managepatients'){
+		$scope.nurseselectedIndex = 1;
+
+	}
+});
+//admin menu navigation
+$scope.nurseNav = function (link) {
+	$location.path(link);
+}
 
 
 });
