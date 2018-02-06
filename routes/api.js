@@ -669,7 +669,7 @@ router.post('/admin/getconnecteddriponames',function (req,res) {
 	var driponames=[];
 	var unregDripos=[];
 	var regDripos =[];
-	request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (req,response) {
+	request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (request,response) {
 		
 		if(response){
 			var recObj=JSON.parse(response.body);
@@ -686,7 +686,8 @@ router.post('/admin/getconnecteddriponames',function (req,res) {
 					}
 					else{
 						var driponamesLength = driponames.length-1;
-						Dripo.find({dripoid: { "$in": driponames }}).exec(function(err, dripo) {
+						Dripo.find({dripoid: { "$in": driponames },_user: ObjectId(req.decoded.uid)}).exec(function(err, dripo) {
+							if(err) throw err;
 							if(dripo.length != 0){
 								for(var key in dripo){
 									regDripos.push(dripo[key].dripoid);
@@ -729,6 +730,51 @@ router.post('/admin/getconnecteddriponames',function (req,res) {
 
 	});
 
+});
+//route to return number of connected devices
+router.post('/admin/getconnecteddripos', function(req,res){
+    var counter = 0;
+    var driponames=[];
+    request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (request,response) {
+        if(response){
+            var recObj=JSON.parse(response.body);
+            var clients=recObj.result.objects;
+            for(var lp1=0;lp1<clients.length;lp1++){
+            	var index = clients[lp1].client_id.search("DRIPO")
+            	if(index != -1){
+            		driponames.push(clients[lp1].client_id)
+            	}
+            	if(lp1 == clients.length-1){
+            		if(driponames.length == 0){
+            			res.json({success:true,clients:0});
+
+            		}
+            		else{
+            			var driponamesLength = driponames.length-1;
+            			Dripo.find({dripoid: { "$in": driponames },_user: ObjectId(req.decoded.uid)}).exec(function(err, dripo) {
+            				if(err) throw err;
+            				if(dripo.length ==0){
+            					res.json({success:true,clients:0});
+            				}
+            				else{
+            					res.json({success:true,clients:dripo.length});
+
+            				}
+            			});
+
+
+
+            		}
+            	}
+            }
+
+        }
+        else{
+            res.json({success:false,clients:counter,message:"mqtt server stopped"});
+
+        }
+       
+    });
 });
 
 //routes for adding dripos

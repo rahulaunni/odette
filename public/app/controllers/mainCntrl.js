@@ -143,6 +143,51 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 	});
 },30000)
 
+/********************* Admin Menu *********************************/
+$scope.adminMenuItems=[{menu:'Home',icon:'home',href:'/admin/home'},
+					   {menu:'Manage User',icon:'account_circle',href:'/admin/manageusers'},
+					   {menu:'Manage Station',icon:'important_devices',href:'/admin/managestations'},
+					   {menu:'Manage Beds',icon:'hotel',href:'/admin/managebeds'},
+					   {menu:'Manage Ivset',icon:'opacity',href:'/admin/manageivsets'},
+					   {menu:'Manage Dripo',icon:'speaker_phone',href:'/admin/managedripos'},
+					   {menu:'Update Server',icon:'update',href:'/admin/update'}];
+//checking for the route change for changing the selected menu item
+$rootScope.$on("$routeChangeStart",function () {
+	if($location.path() == '/admin/home'){
+		$scope.selectedIndex = 0;
+
+	}
+	else if($location.path() == '/admin/manageusers'){
+		$scope.selectedIndex = 1;
+
+	}
+	else if($location.path() == '/admin/managestations'){
+		$scope.selectedIndex = 2;
+
+	}
+	else if($location.path() == '/admin/managebeds'){
+		$scope.selectedIndex = 3;
+
+	}
+	else if($location.path() == '/admin/manageivsets'){
+		$scope.selectedIndex = 4;
+
+	}
+	else if($location.path() == '/admin/managedripos'){
+		$scope.selectedIndex = 5;
+
+	}
+	else if($location.path() == '/admin/update'){
+		$scope.selectedIndex = 6;
+
+	}
+//admin menu navigation
+$scope.adminNav = function (link) {
+	$location.path(link);
+}
+
+});
+
 
 
 

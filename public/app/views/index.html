@@ -64,7 +64,7 @@
                     </div>
                 </div>
             </md-toolbar>
-            <!-- Sidenav for xs (mobile) and sm (raspberry pi touch) -->
+            <!-- Admin Sidenav for xs (mobile) and sm (raspberry pi touch) -->
             <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" style="background: #333">
             <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2" style="background:rgba(0,0,0,0.87)">
                 <div class="md-toolbar-tools">
@@ -80,52 +80,19 @@
             </md-toolbar> 
             <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2"  style="background: #333">
                 <md-list>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE88A;</md-icon>
-                        <p><a href="/admin/home" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)">Home</a></p>
+                    <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
+                      <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
+                      <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
                     </md-list-item>
-                     <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                        <p><a href="/admin/manageusers" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)">Users</a></p>
-                    </md-list-item>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                        <p><a href="/admin/managestations" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)">Nursing Stations</a></p>
-                        </md-list-item>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons" >&#xE869;</md-icon>
-                        <p><a ng-href="/admin/managebeds" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)">Beds</a></p>
-                    </md-list-item>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                        <p><a ng-href="/admin/manageivsets" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)" >IV-Sets</a></p>
-                    </md-list-item>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                        <p><a ng-href="/admin/managedripos" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)">Devices</a></p>
-                    </md-list-item>
-                    <md-divider></md-divider>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE923;</md-icon>
-                        <p><a ng-href="/admin/update" ng-click="closeSideNavPanel()" style="color: rgb(210,210,210)">Update</a></p>
-                    </md-list-item>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE88E;</md-icon>
-                        <p style="color: rgb(210,210,210)">About</p>
-                    </md-list-item>
-                    <md-list-item>
-                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE887;</md-icon>
-                        <p style="color: rgb(210,210,210)">Help</p>
-                    </md-list-item>
-                    <md-list-item>
+                    <md-list-item ng-click="main.logout()">
                         <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
-                        <p><a href="/logout" ng-click="main.logout()" style="color: rgb(210,210,210)">Logout</a></p>
+                        <p><a href="/logout" style="color: rgb(210,210,210)">Logout</a></p>
                     </md-list-item>
                 </md-list>        
             </md-content> 
         </md-sidenav>
     </div>  
-    <!-- Side Nav for laptops and tabs which is always open -->
+    <!-- Admin Side Nav for laptops and tabs which is always open -->
     <div flex="20" hide-xs hide-sm hide-md class="lap-side-nav" style="background: #333">
         <md-toolbar layout="row"  style="background:rgba(0,0,0,0.87)">
             <div class="md-toolbar-tools">
@@ -141,47 +108,14 @@
               <div class="md-body-2" style="color: rgb(230,230,230)">MQTT Server: {{mqttserverstatus}}</div>
             </div>
             <md-list>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">&#xE88A;</md-icon>
-                    <p><a href="/admin/home" style="color: rgb(210,210,210)">Home</a></p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                    <p><a href="/admin/manageusers" style="color: rgb(210,210,210)">Users</a></p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                  <p><a href="/admin/managestations" style="color: rgb(210,210,210)">Nursing Stations</a></p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/admin/managebeds" style="color: rgb(210,210,210)" >Beds</a></p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/admin/manageivsets" style="color: rgb(210,210,210)" >IV-Sets</a></p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE869;</md-icon>
-                    <p><a ng-href="/admin/managedripos" style="color: rgb(210,210,210)" >Devices</a></p>
-                </md-list-item>
-                <md-divider></md-divider>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE923;</md-icon>
-                    <p><a ng-href="/admin/update" style="color: rgb(210,210,210)" ng-click="closeSideNavPanel()">Update</a></p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE88E;</md-icon>
-                    <p style="color: rgb(210,210,210)">About</p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE887;</md-icon>
-                    <p style="color: rgb(210,210,210)">Help</p>
-                </md-list-item>
-                <md-list-item>
-                    <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
-                    <p><a href="/logout" style="color: rgb(210,210,210)" ng-click="main.logout()">Logout</a></p>
-                </md-list-item>
+              <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
+                <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
+                <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
+              </md-list-item>
+              <md-list-item ng-click="main.logout()">
+                  <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
+                  <p><a href="/logout" style="color: rgb(210,210,210)">Logout</a></p>
+              </md-list-item>
             </md-list>
         </md-content>
     </div>
@@ -193,6 +127,9 @@
     </div>
     </div>
 
+
+    
+<!-- **************************************************************************************************************** -->
 <!-- when login as nurse -->
 <div ng-show="main.nurseaccess" layout="row" layout-xs="column" layout-fill>
     <!-- Side Nav for laptops and tabs which is always open -->

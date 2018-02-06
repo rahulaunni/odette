@@ -43,7 +43,7 @@ angular.module('userServices',[])
 		return $http.post('/api/admin/getip/');
 	}
 	userFactory.getConnectedDripos = function () {
-		return $http.post('/admin/getconnecteddripos');
+		return $http.post('api/admin/getconnecteddripos');
 	}
 	return userFactory;
 });

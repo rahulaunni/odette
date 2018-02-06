@@ -200,7 +200,10 @@ left: auto;
 position: fixed;
 }
 
-/* Style for grid title in the task due section of nurse home page*/
+/* Style for admin menu*/
+.selectedIndex {
+  background: rgb(255,87,34);
+}
 
 
 
