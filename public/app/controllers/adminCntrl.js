@@ -544,6 +544,7 @@ angular.module('adminController',['userServices','adminServices'])
 	$scope.form={};
 	//function to add dripo while form submission
 	this.addDripo = function (dripoData) {
+		console.log(this.dripoData);
 		Admin.addDripo(this.dripoData).then(function (data) {
 			if(data.data.success){
 				app.successMsg = data.data.message;
@@ -578,7 +579,7 @@ angular.module('adminController',['userServices','adminServices'])
 
 		
 	};
-
+	
 	//function to provide edit ivset tab and hide add ivset tab
 	this.showEditDripo = function (dripo) {
 		app.showOnEditDripo = true;

@@ -206,7 +206,12 @@ position: fixed;
 }
 /*stlye for nurse menu*/
 .nurseselectedIndex {
-  background: rgb(255,87,34);
+  background:rgba(255,64,129,0.87);
 }
 
-
+.nurseview{
+  background: #rgb(250,250,250);
+}
+.nurseview md-tabs-wrapper{
+  background: #FFFFFF;
+}

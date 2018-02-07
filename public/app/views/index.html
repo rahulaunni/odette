@@ -84,9 +84,9 @@
                       <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
                       <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
                     </md-list-item>
-                    <md-list-item ng-click="main.logout()">
+                    <md-list-item ng-click="main.showConfirmlogout($event)">
                         <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
-                        <p><a href="/logout" style="color: rgb(210,210,210)">Logout</a></p>
+                        <p style="color: rgb(210,210,210)">Logout</p>
                     </md-list-item>
                 </md-list>        
             </md-content> 
@@ -112,7 +112,7 @@
                 <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
                 <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
               </md-list-item>
-              <md-list-item ng-click="main.logout()">
+              <md-list-item ng-click="main.showConfirmlogout($event)">
                   <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
                   <p><a href="/logout" style="color: rgb(210,210,210)">Logout</a></p>
               </md-list-item>
@@ -149,10 +149,10 @@
        <div  hide-xs>
         <md-list>
           <md-list-item data-ng-repeat="nurseMenuItem in nurseMenuItems" ng-class="{nurseselectedIndex: nurseselectedIndex===$index}" ng-click="nurseNav(nurseMenuItem.href)">
-            <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{nurseMenuItem.icon}}</md-icon>
+            <md-icon class="md-default-theme" style="color: rgb(210,210,210);margin:auto;margin-bottom:.8em;margin-top:.8em"  class="material-icons">{{nurseMenuItem.icon}}</md-icon>
           </md-list-item>
-          <md-list-item ng-click="main.logout()">
-              <md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE8AC;</md-icon>
+          <md-list-item ng-click="main.showConfirmlogout($event)">
+              <md-icon class="md-default-theme" style="color: rgb(244,244,244);margin:auto;margin-bottom:.5em;margin-top:.5em" class="material-icons">&#xE8AC;</md-icon>
           </md-list-item>
         </md-list>
        </div>
@@ -176,16 +176,16 @@
                   <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{nurseMenuItem.icon}}</md-icon>
                   <p style="color: rgb(210,210,210)">{{nurseMenuItem.menu}}</p>
                 </md-list-item>
-                <md-list-item ng-click="main.logout()">
+                <md-list-item ng-click="main.showConfirmlogout($event)">
                     <md-icon class="md-default-theme" style="color: rgb(244,244,244)" class="material-icons">&#xE8AC;</md-icon>
-                    <p><a style="color: rgb(244,244,244)" href="/logout">Logout</a></p>
+                    <p style="color: rgb(244,244,244)">Logout</p>
                 </md-list-item>
             </md-list>
         </md-content>
     </md-sidenav>
 <!-- this div is used to inject pages for nurse -->
         <div flex>
-            <md-content ng-show="main.nurseaccess" layout="column"  layout-fill>
+            <md-content ng-show="main.nurseaccess" class="nurseview" layout="column"  layout-fill>
                 <div ng-view ></div>
             </md-content>
         </div>

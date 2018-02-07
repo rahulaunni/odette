@@ -1,5 +1,5 @@
 angular.module('mainController',['authServices','userServices','nurseServices'])
-.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$interval,$location,$timeout,$window,$rootScope,$route,Admin,Nurse) {
+.controller('mainCntrl', function ($scope, $mdSidenav,Auth,User,$mdDialog,$interval,$location,$timeout,$window,$rootScope,$route,Admin,Nurse) {
 	$scope.showMobileMainHeader = true;
 	$scope.openSideNavPanel = function() {
 		$mdSidenav('left').open();
@@ -211,5 +211,34 @@ $scope.nurseNav = function (link) {
 	$location.path(link);
 }
 
+//logout confirmation 
+	//function for deleteting an user by admin show a dialog box and delte on confirm
+	this.showConfirmlogout = function(ev) {
+	  // Appending dialog to document.body to cover sidenav in docs app
+	  var confirm = $mdDialog.confirm({
+	  	onComplete: function afterShowAnimation() {
+                        var $dialog = angular.element(document.querySelector('md-dialog'));
+                        var $actionsSection = $dialog.find('md-dialog-actions');
+                        var $cancelButton = $actionsSection.children()[0];
+                        var $confirmButton = $actionsSection.children()[1];
+                        angular.element($confirmButton).addClass('md-raised md-warn');
+                        angular.element($cancelButton).addClass('md-raised');
+                    }
+            })
+	        .title('Are you sure You want to logout')
+	        .textContent('Warning!!!')
+	        .ariaLabel('Lucky day')
+	        .targetEvent(ev)
+	        .ok('Yes, Logout!')
+	        .cancel('No, Continue');
+
+	  $mdDialog.show(confirm).then(function() {
+	  		
+	  	app.logout();
+
+	  }, function() {
+
+	  });
+	};
 
 });

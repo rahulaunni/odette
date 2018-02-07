@@ -1,6 +1,6 @@
 <div layout="column" layout-fill ng-cloak>
-    <md-content md-theme="dark">
-        <md-tabs class="md-accent md-hue-2" md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
+    <md-content>
+        <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="true">
         <md-tab  label="Patients" ng-click="reload();">
         <div style="padding: 1%">
         <div layout=row class="md-headline" > List of Patients </div>
@@ -23,21 +23,27 @@
                          Add a patient to start with !
         </div>
 
-        <md-grid-list md-cols="1" md-cols-sm="2" md-cols-md="4" md-cols-gt-md="5" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
-             <md-grid-tile class="gridtile patient"  md-colspan="1"  ng-repeat="patient in patients | filter:{patientstatus: patientstatus} | filter:patientSearch" md-rowspan="1">
-                <div style="background: #616161;color:#ffffff" class="md-headline">{{patient.patientname}}</div>
-                <div style="background: #dfdfdf;color:#111111" class="md-subhead">Age: {{patient.patientage}}</div>
-                <div style="background: #dfdfdf;color:#111111" class="md-subhead" >Weight: {{patient.patientweight}}</div>
-                <div style="border-top:1px solid #CCCCCC" flex layout-wrap layout="row"> 
-                <div flex="50" style="background:#fcfcfc;color:#111111" ng-click="managePatient.showEditPatient(patient);" class="md-primary">Edit Details</div>
-                <div flex="50" style="border-left:1px solid #cccccc;background: #fcfcfc;color:#111111;" ng-click="managePatient.showConfirmdischargePatient($event,patient);">
-                Discharge</div>
-                </div >
-                <div style="border-top:1px solid #CCCCCC" class="md-subhead" ng-click="managePatient.showfromlistAddMedication(patient);" ng-show="patient.add" class="md-primary">Add Medication</div>
-                <div style="border-top:1px solid #CCCCCC" class="md-subhead" ng-click="managePatient.showEditMedicationDirect(patient);" ng-hide="patient.add" class="md-primary">Edit Medication</div>
-               
-             </md-grid-tile>
-        </md-grid-list>
+
+        <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
+    <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" class="alertedgrid" id="alerted"  md-colspan="6"  ng-repeat="patient in patients | filter:{patientstatus: patientstatus} | filter:patientSearch" md-rowspan="5">
+        <div style="width:100%;height: 100%" layout="column" layout-align="center stretch">
+            <div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{patient.patientname}}</div>
+            <div flex="100" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-title" ng-click="showDetails($event,alertedtask);">Bed</div>
+            <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;background: #616161">
+                <div flex="50" style="border-right: 1px solid #424242;height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showSkipConfirm($event,alertedtask);"><md-icon class="material-icons" style="margin:0px;transform:scale(.6);font-weight:bold;color: #FFFFFF">&#xE5CD;</md-icon>Skip</div>
+                <div flex="50" style="height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showCloseConfirm($event,alertedtask);"><md-icon class="material-icons" style="margin:0px;transform:scale(.6);font-weight:bold;color: #FFFFFF">&#xE876;</md-icon>Done</div>
+            </div>  
+            <div flex="100" layout="row" style="color:#cccccc;background: #424242" layout-align="center center">
+                <div style="color:rgb(63,81,181)" class="md-body-2" ng-click="managePatient.showfromlistAddMedication(patient);" ng-show="patient.add">Add Medication</div>
+                <div style="color:rgb(230,230,230)" ng-click="managePatient.showEditMedicationDirect(patient);" ng-hide="patient.add" class="md-body-1"><md-icon class="material-icons" style="margin:0px;color:rgba(255,64,129,0.87);transform:scale(.6);font-weight:bold;">mode_edit</md-icon>Edit Medication</div>
+            </div>
+        </div>
+        </md-grid-tile>
+</md-grid-list>
+
+
+
+
     </div>
         </md-tab>
              <md-tab label="Edit Medication" ng-if="managePatient.showOnEditMedication==true && managePatient.showOnEditPatient == false && managePatient.showOnAddMedication == false">
