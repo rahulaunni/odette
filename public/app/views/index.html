@@ -11,6 +11,7 @@
   <link rel = "stylesheet" href = "assets/css/bootstrap.css">
   <link rel = "stylesheet" href = "assets/css/style.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <link rel="icon" href="assets/img/siteicon.ico">
 
 
 
@@ -54,8 +55,8 @@
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
     <!-- when login as admin -->
     <div ng-show="main.adminaccess" layout="row" layout-xs="column" layout-fill>
-        <div flex="none"  hide-lg hide-xl>
-            <md-toolbar class = "md-default"   hide-lg  hide-xl  style="background: #424242">
+        <div flex="none"  hide-lg hide-xl style="background: #333">
+            <md-toolbar class = "md-default"   hide-lg  hide-xl  style="background:rgba(0,0,0,0.87)">
                 <div class = "md-toolbar-tools" layout="row" layout-align="start center">
                     <div flex="none" ng-show="main.isLoggedIn"> 
                         <md-button class="md-icon-button" ng-click="openSideNavPanel()">
@@ -64,6 +65,16 @@
                     </div>
                 </div>
             </md-toolbar>
+            <div  hide-xs >
+             <md-list>
+               <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
+                 <md-icon class="md-default-theme" class="material-icons" style="color: rgb(210,210,210);margin:auto;margin-bottom:.7em;margin-top:.7em;text-align: center;">{{adminMenuItem.icon}}</md-icon>
+               </md-list-item>
+               <md-list-item ng-click="main.showConfirmlogout($event)">
+                   <md-icon class="md-default-theme" style="color: rgb(210,210,210);margin:auto;margin-bottom:.8em;margin-top:.8em;text-align: center; class="material-icons">&#xE8AC;</md-icon>
+               </md-list-item>
+             </md-list>
+            </div>
             <!-- Admin Sidenav for xs (mobile) and sm (raspberry pi touch) -->
             <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" style="background: #333">
             <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2" style="background:rgba(0,0,0,0.87)">
@@ -97,7 +108,7 @@
         <md-toolbar layout="row"  style="background:rgba(0,0,0,0.87)">
             <div class="md-toolbar-tools">
                 <h2>
-                    <span>Admin Toolbar</span>
+                    <span>Dashboard</span>
                 </h2>
                 <span flex></span>
             </div>

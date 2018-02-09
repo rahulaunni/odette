@@ -30,6 +30,7 @@ var request = require('request');
 const url = require('url')
 var useragent = require('useragent');
 var fs =require('fs');
+var md5 = require('md5-file');
 //Models 
 var Task = require('./models/tasks');
 var Station = require('./models/stations');
@@ -61,42 +62,77 @@ app.post('/admin/update',function (req,res) {
 
 //route for updating device
  app.get('/update_dripo',function(req,res){
+   // console.log(req.headers);
+   
+    //res.sendFile('scotch_v_'+1.1+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/dripo_firmware/scotch')});
+    //res.end();
+
+    console.log(req.headers);
+
+   var full_path = path.join(__dirname,'/public/dripo_firmware/scotch/'+'scotch_v_'+'1.1'+'_ino.nodemcu.bin'); 
+
+    fs.readFile(full_path, "binary", function(err, file) {  
+
+      res.writeHeader(200, 
+          {"Content-Type": "application/octet-stream", 
+      "Content-Disposition": "attachment;filename="+path.basename(full_path),
+         "Content-Length": ""+fs.statSync(full_path)["size"],
+     }); 
+     //console.log(file);
+    res.write(file, "binary");
+       res.end();
+});  
     //collecting details from device header request
-    var agent = useragent.parse(req.headers['user-agent']);
-    var deviceVersion = useragent.parse(req.headers['x-esp8266-version']);
-    var firmware = deviceVersion.source;
-    var firmwareInfoArray = firmware.split('_');
-    var firmwareName = firmwareInfoArray[0];
-    var versionString = firmwareInfoArray[1].toString();
-    var version = versionString.slice(1);
-    //collect file details from server
-     if(agent.source == 'ESP8266-http-Update'){
-        if(firmwareName == 'scotch'){
-               var serverfirmwareInfoArray;
-               var serverVersion;
-               var updatefolder = path.join(__dirname, '/public/dripo_firmware/scotch');
-               fs.readdir(updatefolder, function(err, files) {
-                   if (err){res.sendStatus(304);}
-                   files.forEach(function(f) {
-                       serverfirmwareInfoArray = f.split('_');
-                       serverVersion = serverfirmwareInfoArray[2];
-                       if(version < serverVersion){
-                           res.sendFile('scotch_v_'+serverVersion+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/dripo_firmware/scotch')});
-                       }
-                       else{
-                           res.sendStatus(304);
-                       }
+    // var agent = useragent.parse(req.headers['user-agent']);
+    // var deviceVersion = useragent.parse(req.headers['x-esp8266-version']);
+    // var firmware = deviceVersion.source;
+    // var firmwareInfoArray = firmware.split('_');
+    // var firmwareName = firmwareInfoArray[0];
+    // var version = firmwareInfoArray[2];
+    // //collect file details from server
+    //  if(agent.source == 'ESP8266-http-Update'){
+    //     if(firmwareName == 'scotch'){
+    //            var serverfirmwareInfoArray;
+    //            var serverVersion;
+    //            var updatefolder = path.join(__dirname, '/public/dripo_firmware/scotch');
+    //            fs.readdir(updatefolder, function(err, files) {
+    //                if (err){res.sendStatus(304);}
+    //                files.forEach(function(f) {
+    //                    serverfirmwareInfoArray = f.split('_');
+    //                    serverVersion = serverfirmwareInfoArray[2];
+    //                    if(serverVersion != undefined){
+    //                     if(version < serverVersion){
+    //                         console.log("updated to "+serverVersion);
+    //                         var full_path = path.join(__dirname,'/public/dripo_firmware/scotch/'+'scotch_v_'+serverVersion+'_ino.nodemcu.bin')
+    //                         console.log("updated");
+    //                         res.writeHeader(200, 
+    //                             {"Content-Type": "application/octet-stream", 
+    //                             "Content-Disposition": "attachment;filename="+path.basename(full_path),
+    //                             "Content-Length": ""+fs.statSync(full_path)["size"]
+    //                         });  
+    //                         res.end();
 
-                   });
-               });
+    //                       //  res.sendFile('scotch_v_'+serverVersion+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/dripo_firmware/scotch')});
+    //                     }
+    //                     else if(version >= serverVersion){
+    //                         console.log("noupdate");
+    //                         res.writeHeader(304);  
+    //                     res.end();
+    //                     }
 
-            }
 
-        }
+    //                    }
+                      
+    //                });
+    //            });
+
+    //         }
+
+    //     }
         
-     else{
-        res.sendStatus(403);
-     }
+    //  else{
+    //     res.sendStatus(403);
+    //  }
 
  });
 
@@ -164,8 +200,10 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
+            console.log(message.toString());
             if(topicinfoArray[2] != 'will'){
                 client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
+                    console.log("DEVICE NOT ADDED");
                     if(err){
                         console.log(err);
                     }
@@ -176,7 +214,7 @@ client.on('message', function (topic, message) {
         else{
             var stationid = ObjectId(dripo[0]._station);
             var userid =ObjectId(dripo[0]._user);
-            if(topicinfoArray[2]=='bed_req'){
+            if(message=='bed'){
                 Bed.find({_station:stationid,status:'occupied'}).exec(function(err,bed){
                     if(err) throw err;
                     if(!bed.length){
@@ -205,7 +243,7 @@ client.on('message', function (topic, message) {
                 });
 
             }//end of first bed_req
-            else if(topicinfoArray[2]== 'med_req'){
+            else if(message== 'med'){
                 bedid = ObjectId(message.toString());
                 Medication.find({_bed:bedid}).exec(function(err,medication){
                     if(err) throw err;
@@ -232,7 +270,7 @@ client.on('message', function (topic, message) {
 
 
             }//end of med_req
-            else if(topicinfoArray[2] == 'req_df'){
+            else if(message == 'df'){
                 medicineid = ObjectId(message.toString());
                 Medication.find({_id:medicineid}).exec(function(err,medication){
                     var mlhr=medication[0].medicinerate;
@@ -282,7 +320,7 @@ client.on('message', function (topic, message) {
                 });
 
             }//end of dpf_req
-            else if (topicinfoArray[2]== 'rate_req'){
+            else if (message== 'rate'){
                 var timeid;
                 Medication.find({'_id':message}).populate({path:'_bed',model:'Bed',populate:{path:'_patient',model:'Patient'}}).exec(function(err,medication){
                     if(err) throw err;
@@ -376,7 +414,7 @@ client.on('message', function (topic, payload, packet) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            if(topicinfoArray[3] != 'will'){
+            if(topicinfoArray[2] != 'will'){
                 client.publish('error/' + dripoid ,'Access Denied',function (err) {
                     if(err){
                         console.log(err);

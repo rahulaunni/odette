@@ -677,6 +677,7 @@ angular.module('adminController',['userServices','adminServices'])
 		
 })
 .controller('updateCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Admin,User) {
+	var app =this;
 	$scope.updated = false;
 	$scope.nochange = false;
 	$scope.reply =false;
@@ -698,6 +699,32 @@ angular.module('adminController',['userServices','adminServices'])
 			}
 		});
 
+	}
+	$scope.showConfirmUpdate = function (ev) {
+			  var confirm = $mdDialog.confirm({
+			  	onComplete: function afterShowAnimation() {
+		                        var $dialog = angular.element(document.querySelector('md-dialog'));
+		                        var $actionsSection = $dialog.find('md-dialog-actions');
+		                        var $cancelButton = $actionsSection.children()[0];
+		                        var $confirmButton = $actionsSection.children()[1];
+		                        angular.element($confirmButton).addClass('md-raised md-warn');
+		                        angular.element($cancelButton).addClass('md-raised');
+		                    }
+		            })
+			        .title('Are you sure you want to update server')
+			        .textContent('Warning! Make sure all device are offline')
+			        .ariaLabel('Lucky day')
+			        .targetEvent(ev)
+			        .ok('Yes, update!')
+			        .cancel('No, Cancel');
+
+			  $mdDialog.show(confirm).then(function() {
+			  		
+			  	app.checkUpdate();
+
+			  }, function() {
+
+			  });
 	}
 })
 

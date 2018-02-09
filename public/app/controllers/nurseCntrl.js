@@ -102,6 +102,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				app.loader = true;
 				$timeout(function () {
 					app.loader = false;
+					app.successMsg = false;
 					$scope.myTabIndex = 0;
 					Nurse.viewPatient().then(function (data) {
 						if(data.data.success){
@@ -120,7 +121,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 							$scope.nopatient = true;
 						}
 					});
-					$window.location('/nurse/managepatients');
+					$location.path('/managepatients');
 				},3000);
 			}
 			else{
@@ -152,7 +153,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		});
 		
 	};
-
 
 
 	//function to get time details
@@ -207,8 +207,26 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$timeout(function () {
 					app.medloader = false;
 					app.loader = false;
+					app.showOnAddMedication = false;
 					$scope.myTabIndex = 0;
-					$window.location('/nurse/managepatients');
+					Nurse.viewPatient().then(function (data) {
+						if(data.data.success){
+							app.patient=data.data.patient;
+							$scope.patients=data.data.patients;
+							for(var key in $scope.patients){
+								if(!$scope.patients[key]._medication.length){
+									$scope.patients[key].add=true;
+								}
+								else{
+									$scope.patients[key].add=false;
+								}
+							}
+						}
+						else{
+							$scope.nopatient = true;
+						}
+					});
+					$location.path('/managepatients');
 				},3000);
 			}
 			else{
@@ -321,8 +339,25 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 						app.loader = false;
 						$scope.myTabIndex = 0;
 						app.showOnEditMedication = false;
-						app.showOnAddMedication = true;
-						$window.location('/nurse/managepatients');
+						Nurse.viewPatient().then(function (data) {
+							if(data.data.success){
+								app.patient=data.data.patient;
+								$scope.patients=data.data.patients;
+								for(var key in $scope.patients){
+									if(!$scope.patients[key]._medication.length){
+										$scope.patients[key].add=true;
+									}
+									else{
+										$scope.patients[key].add=false;
+									}
+								}
+							}
+							else{
+								$scope.nopatient = true;
+							}
+						});
+						console.log("obj");
+						$location.path('/managepatients');
 						app.editmedloader = false;
 					},2000);
 
@@ -343,7 +378,24 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 						app.medloader = false;
 						app.loader = false;
 						$scope.myTabIndex = 0;
-						$window.location('/nurse/managepatients');
+						Nurse.viewPatient().then(function (data) {
+							if(data.data.success){
+								app.patient=data.data.patient;
+								$scope.patients=data.data.patients;
+								for(var key in $scope.patients){
+									if(!$scope.patients[key]._medication.length){
+										$scope.patients[key].add=true;
+									}
+									else{
+										$scope.patients[key].add=false;
+									}
+								}
+							}
+							else{
+								$scope.nopatient = true;
+							}
+						});
+						$location.path('/managepatients');
 					},2000);
 
 				}
@@ -364,8 +416,10 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	this.showfromlistAddMedication = function (patient) {
 		app.patient = patient;
 		app.bed = {_id:patient._bed};
-		app.showOnAddMedication = true;
 		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+		app.showOnAddMedication = true;
+		app.showOnEditMedication = false;
+		app.showOnEditPatient = false;
 
 	}
 	app.showOnEditPatient = false;
@@ -389,7 +443,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$timeout(function () {
 					app.editpatloader = false;
 					$scope.myTabIndex = 0;
-					$window.location('/admin/managepatients');
+					$location.path('/admin/managepatients');
 				},2000);
 			}
 			else{
@@ -425,7 +479,24 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		  $mdDialog.show(confirm).then(function() {
 		  	Nurse.dischargePatient(patient).then(function (data) {
 		  		if(data.data.success){
-		  			$window.location('/nurse/managepatients');
+		  			Nurse.viewPatient().then(function (data) {
+		  				if(data.data.success){
+		  					app.patient=data.data.patient;
+		  					$scope.patients=data.data.patients;
+		  					for(var key in $scope.patients){
+		  						if(!$scope.patients[key]._medication.length){
+		  							$scope.patients[key].add=true;
+		  						}
+		  						else{
+		  							$scope.patients[key].add=false;
+		  						}
+		  					}
+		  				}
+		  				else{
+		  					$scope.nopatient = true;
+		  				}
+		  			});
+		  			$location.path('/managepatients');
 		  		}
 		  	});
 

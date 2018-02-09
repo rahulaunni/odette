@@ -1074,7 +1074,7 @@ router.post('/nurse/viewpatient', function(req,res){
 router.post('/nurse/dischargepatient', function(req,res){
 	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged'}},{upsert:false});
 	Task.collection.remove({_patient:ObjectId(req.body._id)});
-	Medication.collection.remove({_patient:ObjectId(req.body._id)});
+	Medication.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{_bed:""}});
 	res.json({success:true,message:'Patient discharged'});
 });
 
