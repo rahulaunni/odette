@@ -216,6 +216,7 @@ position: fixed;
 .selectedIndex {
   background: rgb(255,87,34);
 }
+
 /*stlye for nurse menu*/
 .nurseselectedIndex {
   background:rgba(255,64,129,0.87);
@@ -231,5 +232,9 @@ position: fixed;
 #patientcard .md-button{
   margin:0px;
   text-transform: none;
+
 }
+
+
+
 

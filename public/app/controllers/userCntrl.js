@@ -1,7 +1,19 @@
 angular.module('userControllers',['userServices'])
-.controller('registerCntrl',function ($http,$location,$timeout,User) {
+.controller('registerCntrl',function ($http,$location,$timeout,$mdDialog,User) {
 	var app=this;
-
+	this.showTermsandConditions = function (ev) {
+		$mdDialog.show(
+		     $mdDialog.alert()
+		       .parent(angular.element(document.querySelector('#popupContainer')))
+		       .clickOutsideToClose(true)
+		       .title('Terms & Conditions')
+		       .textContent('blah..blah..blah')
+		       .ariaLabel('Alert Dialog Demo')
+		       .ok('OK!')
+		       .targetEvent(ev)
+		   );
+			
+	}
 	this.registerUser = function (userData) {
 		app.loader = true;
 		app.errorMsg = false;

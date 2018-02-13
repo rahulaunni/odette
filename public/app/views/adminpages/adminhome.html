@@ -1,4 +1,4 @@
-<div layout="column" layout-padding="" layout-fill>
+<div layout="column" layout-padding="" layout-fill >
     <md-content class="md-padding" layout-xs="column" layout="column">
 
 <!-- User list portion -->
@@ -8,19 +8,21 @@
       <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
 
         <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
-          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Nurses</div>
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: rgba(0,0,0,0.87)"class="md-headline">Nurses</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of users : {{totalnurse}}</div>
-          <div flex="100" ng-click="goto('/admin/manageusers');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
-              VIEW
-          </div>
+          <md-button  class="md-no-style md-button md-ink-ripple md-clickable" flex="100" ng-click="goto('/admin/manageusers');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              <md-icon class="material-icons md-warn" style="border:1px dashed black;border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">pageview</md-icon>
+              <div style="padding-left:.3em;">View</div>
+          </md-button>
       </md-grid-tile>
 
       <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
-          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Doctors</div>
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background:  rgba(0,0,0,0.87)" class="md-headline">Doctors</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of users : {{totaldoctor}}</div>
-          <div flex="100" ng-click="goto('/admin/manageusers');"  class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
-              VIEW
-          </div>
+          <md-button  class="md-no-style md-button md-ink-ripple md-clickable"  flex="100" ng-click="goto('/admin/manageusers');"  class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+             <md-icon class="material-icons md-warn" style="border:1px dashed black;border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">pageview</md-icon>
+             <div style="padding-left:.3em;">View</div> 
+          </md-button>
       </md-grid-tile>
 
   </md-grid-list>
@@ -34,28 +36,31 @@
       <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
 
         <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
-          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Stations</div>
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: rgba(0,0,0,0.87)" class="md-headline">Stations</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of stations : {{totalstation}}</div>
-          <div flex="100" ng-click="goto('/admin/managestations');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
-              VIEW
-          </div>
+          <md-button class="md-no-style md-button md-ink-ripple md-clickable" flex="100" ng-click="goto('/admin/managestations');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              <md-icon class="material-icons md-warn" style="border:1px dashed black;border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">pageview</md-icon>
+              <div style="padding-left:.3em;">View</div> 
+          </md-button>
       </md-grid-tile>
 
       <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
-          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Bed</div>
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: rgba(0,0,0,0.87)" class="md-headline">Bed</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of bed: {{totalbed}}</div>
-          <div flex="100" ng-click="goto('/admin/managebeds');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
-              VIEW
-          </div>
+          <md-button class="md-no-style md-button md-ink-ripple md-clickable" flex="100" ng-click="goto('/admin/managebeds');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              <md-icon class="material-icons md-warn" style="border:1px dashed black;border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">pageview</md-icon>
+              <div style="padding-left:.3em;">View</div> 
+          </md-button>
       </md-grid-tile>
 
 
        <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
-          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Ivset</div>
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: rgba(0,0,0,0.87)" class="md-headline">Ivset</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of Ivsets: {{totalivset}}</div>
-          <div flex="100" ng-click="goto('/admin/manageivsets');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
-              VIEW
-          </div>
+          <md-button class="md-no-style md-button md-ink-ripple md-clickable" flex="100" ng-click="goto('/admin/manageivsets');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              <md-icon class="material-icons md-warn" style="border:1px dashed black;border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">pageview</md-icon>
+              <div style="padding-left:.3em;">View</div> 
+          </md-button>
       </md-grid-tile>
 
   </md-grid-list>
@@ -68,12 +73,13 @@
       <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
 
         <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" md-colspan="6" md-rowspan="5" layout="row">
-          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: #616161"class="md-headline">Dripo</div>
+          <div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;width:100%;background: rgba(0,0,0,0.87)" class="md-headline">Dripo</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Number of devices : {{totaldripo}}</div>
           <div class="md-body-2"flex="100" layout="row" layout-align="center center" style="width:100%;color:#616161;background: #dfdfdf">Online Devices: {{connecteddripo}}</div>
-          <div flex="100" ng-click="goto('/admin/managedripos');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
-              VIEW
-          </div>
+          <md-button class="md-no-style md-button md-ink-ripple md-clickable" flex="100" ng-click="goto('/admin/managedripos');" class="md-body-2" layout="row" layout-align="center center" style="cursor: pointer;width:100%;color:#111111;background: #fcfcfc">
+              <md-icon class="material-icons md-warn" style="border:1px dashed black;border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">pageview</md-icon>
+              <div style="padding-left:.3em;">View</div> 
+          </md-button>
       </md-grid-tile>
 
      

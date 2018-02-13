@@ -43,6 +43,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	var app = this;
 	$scope.nopatient = false;
 	$scope.patientstatus = 'active';
+	$scope.myTabIndex = 0;
+	app.patientData ={admittedon:''}
+	app.patientData.admittedon = new Date();
 	//function to pass patient details to frontend
 	Nurse.viewPatient().then(function (data) {
 		if(data.data.success){
@@ -443,7 +446,24 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 				$timeout(function () {
 					app.editpatloader = false;
 					$scope.myTabIndex = 0;
-					$location.path('/admin/managepatients');
+					Nurse.viewPatient().then(function (data) {
+						if(data.data.success){
+							app.patient=data.data.patient;
+							$scope.patients=data.data.patients;
+							for(var key in $scope.patients){
+								if(!$scope.patients[key]._medication.length){
+									$scope.patients[key].add=true;
+								}
+								else{
+									$scope.patients[key].add=false;
+								}
+							}
+						}
+						else{
+							$scope.nopatient = true;
+						}
+					});
+					$location.path('/managepatients');
 				},2000);
 			}
 			else{
@@ -509,6 +529,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 			app.showOnAddMedication = false;
 			app.showOnEditPatient = false;
 		}
+
 
 
 });

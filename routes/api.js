@@ -292,6 +292,7 @@ router.put('/activate/:token', function(req, res) {
 					if (err) {
 						console.log(err); // If unable to save user, log error info to console/terminal
 					} else {
+						res.json({ success: true, message: 'Account activated!' }); // Return success message to controller
 						var transporter = nodemailer.createTransport({
 						  service: 'gmail',
 						  auth: {
@@ -315,7 +316,6 @@ router.put('/activate/:token', function(req, res) {
 						   else
 						     console.log(info);
 						});
-						res.json({ success: true, message: 'Account activated!' }); // Return success message to controller
 					}
 				});
 			}
@@ -325,9 +325,15 @@ router.put('/activate/:token', function(req, res) {
 });
 
 //route to get ip adress to admin panel
-router.post('/admin/getip', function(req, res) {
+router.get('/admin/getip', function(req, res) {
 	var ipaddress= ip.address();
-	res.json({success:true,ip:ipaddress})
+	if(!ipaddress){
+		res.jason({success:false,message:"Can't retrieve ip address"})
+	}
+	else{
+		res.json({success:true,ip:ipaddress})
+
+	}
 
 });
 
@@ -357,8 +363,14 @@ router.use(function (req,res,next) {
 	}
 });
 
-router.post('/user',function (req,res) {
-	res.send(req.decoded);
+router.get('/user',function (req,res) {
+	if(!req.decoded){
+		res.send("Unable to decode user, login again")
+	}
+	else{
+		res.send(req.decoded);
+
+	}
 });
 //Routes after authentication;
 
@@ -401,7 +413,7 @@ router.post('/admin/adduser', function(req,res){
 	});
 });
 //route for fetching all the user details to the admin view
-router.post('/admin/viewuser', function(req,res){
+router.get('/admin/viewuser', function(req,res){
 	User.find({_admin: req.decoded.username}).select('userName  permission').exec(function(err, user) {	
 			if (err) throw err;
 			if(!user.length){
@@ -419,6 +431,8 @@ router.post('/admin/deleteuser', function(req,res){
 	User.remove({_id:req.body._id},function (err) {
 		if(err){
 			console.log(err);
+			res.json({success:false,message:"No user found"});
+
 		}
 		else{
 			res.json({success:true,message:"User removed successfully"});
@@ -473,7 +487,7 @@ router.post('/admin/addstation',function (req,res) {
 });
 
 //route for fetching all the station details to the admin view
-router.post('/admin/viewstation', function(req,res){
+router.get('/admin/viewstation', function(req,res){
 	Station.find({username: req.decoded.username}).exec(function(err, station) {	
 			if (err) throw err;
 			if(!station.length){
@@ -554,7 +568,7 @@ router.post('/admin/addbed',function (req,res) {
 });
 
 //route for fetching all the bed details to the admin view
-router.post('/admin/viewbed', function(req,res){
+router.get('/admin/viewbed', function(req,res){
 	Bed.find({username: req.decoded.username}).exec(function(err, bed) {	
 			if (err) throw err;
 			if(!bed.length){
@@ -620,7 +634,7 @@ router.post('/admin/addivset', function(req,res){
 });
 
 //route for fetching all the ivset details to the admin view
-router.post('/admin/viewivset', function(req,res){
+router.get('/admin/viewivset', function(req,res){
 	Ivset.find({username: req.decoded.username}).exec(function(err, ivset) {	
 			if (err) throw err;
 			if(!ivset.length){
@@ -665,7 +679,7 @@ router.put('/admin/editivset',function (req,res) {
 
 //***routes for dripo management starts here***
 //route to get all connected dripos
-router.post('/admin/getconnecteddriponames',function (req,res) {
+router.get('/admin/getconnecteddriponames',function (req,res) {
 	var driponames=[];
 	var unregDripos=[];
 	var regDripos =[];
@@ -732,7 +746,7 @@ router.post('/admin/getconnecteddriponames',function (req,res) {
 
 });
 //route to return number of connected devices
-router.post('/admin/getconnecteddripos', function(req,res){
+router.get('/admin/getconnecteddripos', function(req,res){
     var counter = 0;
     var driponames=[];
     request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (request,response) {
@@ -810,7 +824,7 @@ router.post('/admin/adddripo',function (req,res) {
 });
 
 //route for fetching all the dripo details to the admin view
-router.post('/admin/viewdripo', function(req,res){
+router.get('/admin/viewdripo', function(req,res){
 	Dripo.find({username: req.decoded.username}).exec(function(err, dripo) {	
 			if (err) throw err;
 			if(!dripo.length){
@@ -860,7 +874,7 @@ router.put('/admin/editdripo',function (req,res) {
 });
 
 //route to provide all the details needed for admin home page
-router.post('/admin/getdetails', function(req,res){
+router.get('/admin/getdetails', function(req,res){
 	User.find({_admin:req.decoded.username}).exec(function (err,alluser) {
 		if (err)	throw err;
 		var totaluser = alluser.length;
@@ -895,9 +909,11 @@ router.post('/admin/getdetails', function(req,res){
 
 });
 
+
+//***********************************************************************************************************************
 //***routes for nurse starts from here***
 //route for fetching all the station details for nurse to select station
-router.post('/nurse/viewstation', function(req,res){
+router.get('/nurse/viewstation', function(req,res){
 	Station.find({username: req.decoded.admin}).exec(function(err, station) {	
 			if (err) throw err;
 			if(!station.length){
@@ -920,7 +936,7 @@ router.post('/nurse/setstation', function(req,res){
 });
 
 //route for fetching all the bed details to nurse while adding patient
-router.post('/nurse/viewbed', function(req,res){
+router.get('/nurse/viewbed', function(req,res){
 	Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'unoccupied'}).exec(function(err,bed) {	
 		if (err) throw err;
 		if(!bed.length){
@@ -935,7 +951,7 @@ router.post('/nurse/viewbed', function(req,res){
 });
 
 //route for fetching all the doctor accout details to nurse while adding patient
-router.post('/nurse/viewdoctor', function(req,res){
+router.get('/nurse/viewdoctor', function(req,res){
 	User.find({_admin: req.decoded.admin,permission:'doctor'}).exec(function(err,doctor) {	
 		if (err) throw err;
 		if(!doctor.length){
@@ -1058,7 +1074,7 @@ router.post('/nurse/addmedication', function(req,res){
 });
 
 //route for fetching all the patient details to nurse 
-router.post('/nurse/viewpatient', function(req,res){
+router.get('/nurse/viewpatient', function(req,res){
 	Patient.find({_admin: req.decoded.admin,stationname:req.decoded.station}).exec(function(err,patient) {	
 		if (err) throw err;
 		if(!patient.length){
@@ -1071,8 +1087,9 @@ router.post('/nurse/viewpatient', function(req,res){
 });
 
 //route for discharging a patient
-router.post('/nurse/dischargepatient', function(req,res){
-	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged'}},{upsert:false});
+router.put('/nurse/dischargepatient', function(req,res){
+	var date = new Date();
+	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged',dischargedon:date}},{upsert:false});
 	Task.collection.remove({_patient:ObjectId(req.body._id)});
 	Medication.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{_bed:""}});
 	res.json({success:true,message:'Patient discharged'});
@@ -1087,6 +1104,7 @@ router.put('/nurse/editpatient',function (req,res) {
 		patient.patientage= req.body.patientage;
 		patient.patientweight= req.body.patientweight;
 		patient.bedname= req.body.bedname;
+		patient.patientstatus = 'active';
 		patient.doctorname= req.body.doctorname;
 		patient.admittedon= req.body.admittedon;
 		patient.save(function(err) {
@@ -1386,7 +1404,7 @@ router.post('/nurse/deletemedication', function(req,res){
 
 /***routes for nurse home page starts here ***/
 // route to provide all the tasks associated with a station
-router.post('/nurse/getopenedtask', function(req,res){
+router.get('/nurse/getopenedtask', function(req,res){
 	var date=new Date();
 	var hour=date.getHours();
 	var index =-1;
@@ -1455,7 +1473,7 @@ router.post('/nurse/getopenedtask', function(req,res){
 });
 
 //route to send all active tasks that is inprogress 
-router.post('/nurse/getinprogresstask', function(req,res){
+router.get('/nurse/getinprogresstask', function(req,res){
 	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,inprogresstask) {
 			if(inprogresstask.length==0){
 				res.json({success:false,message:"no tasks found"});
@@ -1469,7 +1487,7 @@ router.post('/nurse/getinprogresstask', function(req,res){
 });
 
 //route to send all active tasks that is alerted tasks
-router.post('/nurse/getalertedtask', function(req,res){
+router.get('/nurse/getalertedtask', function(req,res){
 	Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
 			if(alertedtask.length==0){
 				res.json({success:false,message:"no tasks found"});

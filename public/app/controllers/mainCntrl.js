@@ -150,7 +150,9 @@ $scope.adminMenuItems=[{menu:'Home',icon:'home',href:'/admin/home'},
 					   {menu:'Manage Beds',icon:'hotel',href:'/admin/managebeds'},
 					   {menu:'Manage Ivset',icon:'opacity',href:'/admin/manageivsets'},
 					   {menu:'Manage Dripo',icon:'speaker_phone',href:'/admin/managedripos'},
-					   {menu:'Update Server',icon:'update',href:'/admin/update'}];
+					   {menu:'Update Server',icon:'update',href:'/admin/update'},
+					   {menu:'Help',icon:'help',href:'/admin/help'}
+];
 //checking for the route change for changing the selected menu item
 $scope.selectedIndex = 0;
 $rootScope.$on("$routeChangeStart",function () {
@@ -182,18 +184,23 @@ $rootScope.$on("$routeChangeStart",function () {
 		$scope.selectedIndex = 6;
 
 	}
+	else if($location.path() == '/admin/help'){
+		$scope.selectedIndex = 7;
+
+	}
+
+
+
+});
 //admin menu navigation
 $scope.adminNav = function (link) {
 	$location.path(link);
 }
 
-});
-
 /********************* Nurse Menu *********************************/
 $scope.nurseMenuItems=[{menu:'Home',icon:'home',href:'/'},
 					   {menu:'Manage Patient',icon:'people',href:'/managepatients'},
-					   {menu:'Help',icon:'help',href:'/nurse/help'},
-					   {menu:'About',icon:'info',href:'/nurse/about'},
+					   {menu:'Help',icon:'help',href:'/help'},
 					  ];
 //checking for the route change for changing the selected menu item
 $rootScope.$on("$routeChangeStart",function () {
@@ -203,6 +210,10 @@ $rootScope.$on("$routeChangeStart",function () {
 	}
 	else if($location.path() == '/managepatients'){
 		$scope.nurseselectedIndex = 1;
+
+	}
+	else if($location.path() == '/help'){
+		$scope.nurseselectedIndex = 2;
 
 	}
 });

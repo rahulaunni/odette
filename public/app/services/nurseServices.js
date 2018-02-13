@@ -3,7 +3,7 @@ angular.module('nurseServices',['authServices'])
 	nurseFactory={};
 
 	nurseFactory.viewStation = function () {
-		return $http.post('/api/nurse/viewstation');
+		return $http.get('/api/nurse/viewstation');
 	}
 	nurseFactory.setStation = function (selectstationData) {
 		//updating token with selected station
@@ -13,10 +13,10 @@ angular.module('nurseServices',['authServices'])
 	});
 	}  
 	nurseFactory.viewBed = function () {
-		return $http.post('/api/nurse/viewbed');
+		return $http.get('/api/nurse/viewbed');
 	}
 	nurseFactory.viewDoctor = function () {
-		return $http.post('/api/nurse/viewdoctor');
+		return $http.get('/api/nurse/viewdoctor');
 	}
 	nurseFactory.addPatient = function (patientData) {
 		return $http.post('/api/nurse/addpatient',patientData);
@@ -25,10 +25,10 @@ angular.module('nurseServices',['authServices'])
 		return $http.post('/api/nurse/addmedication',choices);
 	}
 	nurseFactory.viewPatient = function () {
-		return $http.post('/api/nurse/viewpatient');
+		return $http.get('/api/nurse/viewpatient');
 	}
 	nurseFactory.dischargePatient = function (patient) {
-		return $http.post('/api/nurse/dischargepatient',patient);
+		return $http.put('/api/nurse/dischargepatient',patient);
 	}
 	nurseFactory.editPatient = function (editpatient) {
 		return $http.put('/api/nurse/editpatient',editpatient);

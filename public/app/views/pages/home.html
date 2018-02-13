@@ -55,11 +55,13 @@
 				<div class="md-body-1">{{alertedtask._medication.medicinename}}</div>
 			</div>
 			<div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;background: #616161">
-				<div flex="50" style="border-right: 1px solid #424242;height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showSkipConfirm($event,alertedtask);"><md-icon class="material-icons md-warn" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE5CD;</md-icon>
+				<md-button flex="50" class="md-button md-no-style md-clickable md-ink-ripple" style="border-right: 1px solid #424242;height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showSkipConfirm($event,alertedtask);"><md-icon class="material-icons md-warn" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE5CD;</md-icon>
 					<div  style="padding-left: .5em;">
 						Skip
-					</div></div>
-				<div flex="50" style="height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showCloseConfirm($event,alertedtask);"><md-icon class="material-icons" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;color:rgb(76,175,80);transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE876;</md-icon><div style="padding-left: .5em;">Done</div></div>
+					</div>
+				</md-button>
+				<md-button flex="50" class="md-button md-no-style md-clickable md-ink-ripple" style="height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showCloseConfirm($event,alertedtask);"><md-icon class="material-icons" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;color:rgb(76,175,80);transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE876;</md-icon><div style="padding-left: .5em;">Done</div>
+				</md-button>
 			</div>	
 		</div>
 			<!-- hidden details -->
@@ -127,3 +129,14 @@
 <md-button href="/managepatients" class="md-fab md-fab-bottom-right  md-button md-ink-ripple scrolling">
 	<md-icon class="material-icons">&#xE145;</md-icon>
 </md-button>
+
+<!-- audio alert -->
+<audio id="drugmed">
+  <source src="../../../assets/audio/drugmed.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+<audio id="drughi">
+  <source src="../../../assets/audio/drughi.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>

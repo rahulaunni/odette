@@ -31,7 +31,7 @@ angular.module('userServices',[])
 		return $http.post('/api/admin/adduser',userData);
 	}
 	userFactory.viewUser = function (userData) {
-		return $http.post('/api/admin/viewuser',userData);
+		return $http.get('/api/admin/viewuser',userData);
 	}
 	userFactory.deleteUser = function (user) {
 		return $http.post('/api/admin/deleteuser',user);
@@ -40,10 +40,10 @@ angular.module('userServices',[])
 		return $http.put('/api/admin/savelocalpassword/',edituser);
 	}
 	userFactory.getIp = function () {
-		return $http.post('/api/admin/getip/');
+		return $http.get('/api/admin/getip/');
 	}
 	userFactory.getConnectedDripos = function () {
-		return $http.post('api/admin/getconnecteddripos');
+		return $http.get('api/admin/getconnecteddripos');
 	}
 	return userFactory;
 });

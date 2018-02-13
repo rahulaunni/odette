@@ -5,7 +5,7 @@ angular.module('adminServices',[])
 		return $http.post('/api/admin/addstation',stationData);
 	}
 	adminFactory.viewStation = function (stationData) {
-		return $http.post('/api/admin/viewstation',stationData);
+		return $http.get('/api/admin/viewstation',stationData);
 	}
 	adminFactory.deleteStation = function (station) {
 		return $http.post('/api/admin/deletestation',station);
@@ -17,7 +17,7 @@ angular.module('adminServices',[])
 		return $http.post('/api/admin/addbed',bedData);
 	}
 	adminFactory.viewBed = function (bedData) {
-		return $http.post('/api/admin/viewbed',bedData);
+		return $http.get('/api/admin/viewbed',bedData);
 	} 
 	adminFactory.deleteBed = function (bed) {
 		return $http.post('/api/admin/deletebed',bed);
@@ -26,7 +26,7 @@ angular.module('adminServices',[])
 		return $http.put('/api/admin/editbed',editbed);
 	} 
 	adminFactory.addIvset = function (ivsetData) {
-		return $http.post('/api/admin/addivset',ivsetData);
+		return $http.get('/api/admin/addivset',ivsetData);
 	}    
 	adminFactory.viewIvset = function (ivsetData) {
 		return $http.post('/api/admin/viewivset',ivsetData);
@@ -41,7 +41,7 @@ angular.module('adminServices',[])
 		return $http.post('/api/admin/adddripo',dripoData);
 	}
 	adminFactory.viewDripo = function (dripoData) {
-		return $http.post('/api/admin/viewdripo',dripoData);
+		return $http.get('/api/admin/viewdripo',dripoData);
 	}
 	adminFactory.deleteDripo = function (dripo) {
 		return $http.post('/api/admin/deletedripo',dripo);
@@ -50,13 +50,13 @@ angular.module('adminServices',[])
 		return $http.put('/api/admin/editdripo',editdripo);
 	}
 	adminFactory.getDetails = function () {
-		return $http.post('/api/admin/getdetails');
+		return $http.get('/api/admin/getdetails');
 	} 
 	adminFactory.checkUpdate = function () {
 		return $http.post('/admin/update');
 	}   
 	adminFactory.getConnectedDripo = function () {
-		return $http.post('/api/admin/getconnecteddriponames');
+		return $http.get('/api/admin/getconnecteddriponames');
 	}    
 	return adminFactory;
 });

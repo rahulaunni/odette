@@ -214,7 +214,7 @@ client.on('message', function (topic, message) {
         else{
             var stationid = ObjectId(dripo[0]._station);
             var userid =ObjectId(dripo[0]._user);
-            if(message=='bed'){
+            if(topicinfoArray[2]=='bed_req'){
                 Bed.find({_station:stationid,status:'occupied'}).exec(function(err,bed){
                     if(err) throw err;
                     if(!bed.length){
@@ -243,7 +243,7 @@ client.on('message', function (topic, message) {
                 });
 
             }//end of first bed_req
-            else if(message== 'med'){
+            else if(topicinfoArray[2] == 'med_req'){
                 bedid = ObjectId(message.toString());
                 Medication.find({_bed:bedid}).exec(function(err,medication){
                     if(err) throw err;
@@ -270,7 +270,7 @@ client.on('message', function (topic, message) {
 
 
             }//end of med_req
-            else if(message == 'df'){
+            else if(topicinfoArray[2] == 'req_df'){
                 medicineid = ObjectId(message.toString());
                 Medication.find({_id:medicineid}).exec(function(err,medication){
                     var mlhr=medication[0].medicinerate;
@@ -320,7 +320,7 @@ client.on('message', function (topic, message) {
                 });
 
             }//end of dpf_req
-            else if (message== 'rate'){
+            else if (topicinfoArray[2]== 'rate_req'){
                 var timeid;
                 Medication.find({'_id':message}).populate({path:'_bed',model:'Bed',populate:{path:'_patient',model:'Patient'}}).exec(function(err,medication){
                     if(err) throw err;
@@ -502,7 +502,13 @@ client.on('message', function (topic, payload, packet) {
                         'totalVolume':totalVolume,
                         'percentage':percentage
                     });
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                if(!taskid){
+                    console.log("no task id");
+                }
+                else{
+                    Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+
+                }
 
                 }
                 else{

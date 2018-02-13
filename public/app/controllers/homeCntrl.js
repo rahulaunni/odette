@@ -2,6 +2,8 @@ angular.module('homeController',['homeServices'])
 .controller('homeCntrl',function ($http,$route,$scope,$rootScope,$interval,$window,$location,$timeout,$mdDialog,$scope,Home,socket) {
     var app = this;
     var index = false;
+    var drugmed = document.getElementById("drugmed");
+    var drughi = document.getElementById("drughi");   
     $scope.openedtasks = [{}];
     $scope.times = [];
     $scope.inprogresstasks=[{}];
@@ -187,7 +189,6 @@ angular.module('homeController',['homeServices'])
                       }
                   });
                   $scope.noInprogressTasks=false;
-                  console.log($scope.noInprogressTasks);
                   $scope.alertedtasks[key2].status = 'inprogress';
                   $scope.alertedtasks[key2].infusionstatus = data.infusionstatus;
                   $scope.alertedtasks[key2].rate = data.rate;
@@ -299,6 +300,7 @@ angular.module('homeController',['homeServices'])
 
             }
           }
+          // drughi.play();
         }//end of complete
 
         else if(data.infusionstatus == 'Empty'){
@@ -311,9 +313,9 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
-
             }
           }
+          // drughi.play();
         }//end of empty
         else if(data.infusionstatus == 'Empty_ACK'){
           for(var key in $scope.inprogresstasks){
@@ -346,7 +348,7 @@ angular.module('homeController',['homeServices'])
 
         }
 
-        else if(data.infusionstatus == 'Block'|| data.infusionstatus == 'Rate_Err'){
+        else if(data.infusionstatus == 'Block'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
               $scope.inprogresstasks[key].status = 'inprogress';
@@ -356,13 +358,31 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
-
             }
 
 
           }
+          // drughi.play();
+
 
         }//end of Errors
+        else if(data.infusionstatus == 'Rate_Err'){
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'inprogress';
+              $scope.inprogresstasks[key].infusionstatus = data.infusionstatus;
+              $scope.inprogresstasks[key].rate = data.rate;
+              $scope.inprogresstasks[key].infusedVolume = data.infusedVolume;
+              $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
+              $scope.inprogresstasks[key].totalVolume = data.totalVolume;
+              $scope.inprogresstasks[key].percentage = data.percentage;
+            }
+
+
+          }
+          // drugmed.play();
+
+        }
         else if(data.infusionstatus == 'Block_ACK'|| data.infusionstatus == 'Rate_Err_ACK' || data.infusionstatus == 'Complete_ACK'){
           for(var key in $scope.inprogresstasks){
             if($scope.inprogresstasks[key]._id == data.taskid){
@@ -390,6 +410,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              drughi.play();
 
             }
 

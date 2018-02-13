@@ -43,6 +43,16 @@
 					<div ng-message="pattern" class="my-message">Passwords not matched!</div>
 				</div>
 			</md-input-container>
+			<md-input-container class="md-block">
+			     <md-checkbox name="tos" ng-model="userForm.tos" required>
+			       I accept the <a ng-click="register.showTermsandConditions($event);"> terms and conditions</a> of service.
+			     </md-checkbox>
+			     <div ng-messages="userForm.tos.$error" multiple md-auto-hide="false">
+			       <div ng-message="required">
+			         You must accept the terms of service before you can proceed.
+			       </div>
+			     </div>
+			   </md-input-container>
 			<div md-theme="altTheme" layout="row" ng-hide="register.loader">
 				<md-button type="submit" class="md-raised md-warn" ng-disabled="userForm.$invalid" flex="100">Register</md-button>
 			</div>

@@ -85,6 +85,13 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'manageIvset',
 		permission:['admin']
 	})
+	.when('/admin/help',{
+		templateUrl:'app/views/adminpages/adminhelp.html',
+		authenticated:true,
+		controller: 'adminhelpCntrl',
+		controllerAs: 'adminhelp',
+		permission:['admin']
+	})
 	.when('/logout',{
 		templateUrl:'app/views/pages/logout.html',
 		authenticated:true
@@ -108,6 +115,13 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		authenticated:true,
 		controller: 'managePatientCntrl',
 		controllerAs: 'managePatient',
+		permission:['nurse']
+	})
+	.when('/help',{
+		templateUrl:'app/views/pages/help.html',
+		authenticated:true,
+		controller: 'helpCntrl',
+		controllerAs: 'help',
 		permission:['nurse']
 	})
 	.otherwise({redirectTo:'/'});

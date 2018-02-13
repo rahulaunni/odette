@@ -118,7 +118,7 @@
               <div class="md-body-2" style="color: rgb(230,230,230)" >Server IP :{{ipaddress}}</div>
               <div class="md-body-2" style="color: rgb(230,230,230)">MQTT Server: {{mqttserverstatus}}</div>
             </div>
-            <md-list>
+            <md-list id="adminmenu">
               <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
                 <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
                 <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
