@@ -31,6 +31,7 @@ module.exports = function(router) {
 
 //route to resgister new user
 router.post('/register', function(req,res){
+	console.log(req.body);
 	//creater user object by fetching values from req.body
 	var user = new User();
 	user.hospitalName = req.body.hospitalName;
@@ -76,37 +77,7 @@ router.post('/register', function(req,res){
 	});	
 });
 
-//user login route
-router.post('/login',function (req,res) {
-	//finding user from database
-	User.findOne({userName:req.body.username}).select('userName _id hospitalName password active').exec(function (err,user) {
-		if(err) throw err;
-		//if no user found resond with no user found error message
-		if(!user){
-			res.json({success:false,message:"No user found"});
-		}
-		//if user found checking for password match
-		else if(user){
-			var validPassword = user.comparePassword(req.body.password);
-			if (!validPassword){
-				res.json({success:false,message:"Wrong password"});
-			}
-			//if password matches check whether user has an active account
-			else if(!user.active){
-				res.json({success:false,message:"Account is not yet activated",expired:true});
-			}
-			else{
-				//successful login and passing a token to the user for login
-				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret);
-				res.json({success:true,message:"Authentication success",token:token});
-
-			}
-
-		}
-		
-	});
-});
-
+//route to verify the user before sending verification link again
 router.post('/resend',function (req,res) {
 	User.findOne({userName:req.body.username}).select('userName password active').exec(function (err,user) {
 		if(err) throw err;
@@ -216,6 +187,7 @@ router.put('/forgotpassword', function(req, res) {
 	});
 });
 
+//route to verify the password reset link
 router.get('/resetpassword/:token', function(req, res) {
 	User.findOne({ resetToken: req.params.token }, function(err, user) {
 		if (err) throw err; // Throw error if cannot login
@@ -324,18 +296,38 @@ router.put('/activate/:token', function(req, res) {
 	
 });
 
-//route to get ip adress to admin panel
-router.get('/admin/getip', function(req, res) {
-	var ipaddress= ip.address();
-	if(!ipaddress){
-		res.jason({success:false,message:"Can't retrieve ip address"})
-	}
-	else{
-		res.json({success:true,ip:ipaddress})
+//user login route
+router.post('/login',function (req,res) {
+	//finding user from database
+	User.findOne({userName:req.body.username}).select('userName _id hospitalName password active').exec(function (err,user) {
+		if(err) throw err;
+		//if no user found resond with no user found error message
+		if(!user){
+			res.json({success:false,message:"No user found"});
+		}
+		//if user found checking for password match
+		else if(user){
+			var validPassword = user.comparePassword(req.body.password);
+			if (!validPassword){
+				res.json({success:false,message:"Wrong password"});
+			}
+			//if password matches check whether user has an active account
+			else if(!user.active){
+				res.json({success:false,message:"Account is not yet activated",expired:true});
+			}
+			else{
+				//successful login and passing a token to the user for login
+				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret);
+				res.json({success:true,message:"Authentication success",token:token});
 
-	}
+			}
 
+		}
+		
+	});
 });
+
+
 
 
 
@@ -388,9 +380,24 @@ router.get('/permission',function (req,res) {
 
 		});
 });
+
+//route to get ip adress to admin panel
+router.get('/admin/getip', function(req, res) {
+	var ipaddress= ip.address();
+	if(!ipaddress){
+		res.jason({success:false,message:"Can't retrieve ip address"})
+	}
+	else{
+		res.json({success:true,ip:ipaddress})
+
+	}
+
+});
+
+//********************************************************************************************************************
 //***routes for local users management starts from here***
 //route to add a new user by admin
-router.post('/admin/adduser', function(req,res){
+router.post('/admin/user', function(req,res){
 		var user = new User();
 		user.hospitalName = req.decoded.hospitalname;
 		user.userName = req.body.username+'@'+req.decoded.hospitalname+'.care';
@@ -413,7 +420,7 @@ router.post('/admin/adduser', function(req,res){
 	});
 });
 //route for fetching all the user details to the admin view
-router.get('/admin/viewuser', function(req,res){
+router.get('/admin/user', function(req,res){
 	User.find({_admin: req.decoded.username}).select('userName  permission').exec(function(err, user) {	
 			if (err) throw err;
 			if(!user.length){
@@ -427,8 +434,8 @@ router.get('/admin/viewuser', function(req,res){
 });
 
 //route to delete an user from database
-router.post('/admin/deleteuser', function(req,res){
-	User.remove({_id:req.body._id},function (err) {
+router.delete('/admin/user', function(req,res){
+	User.remove({_id:req.query.userid},function (err) {
 		if(err){
 			console.log(err);
 			res.json({success:false,message:"No user found"});
@@ -440,7 +447,7 @@ router.post('/admin/deleteuser', function(req,res){
 	})
 });
 
-router.put('/admin/savelocalpassword', function(req, res) {
+router.put('/admin/user', function(req, res) {
 	User.findOne({_id:req.body._id}).select('userName password resetToken').exec(function(err, user) {
 		if (err) throw err; // Throw error if cannot connect
 		user.password = req.body.password;
@@ -456,7 +463,7 @@ router.put('/admin/savelocalpassword', function(req, res) {
 });
 
 //***routes for station management starts here***
-router.post('/admin/addstation',function (req,res) {
+router.post('/admin/station',function (req,res) {
 	//to make sure unique station name for each admin
 	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 		if (err) throw err;
@@ -487,7 +494,7 @@ router.post('/admin/addstation',function (req,res) {
 });
 
 //route for fetching all the station details to the admin view
-router.get('/admin/viewstation', function(req,res){
+router.get('/admin/station', function(req,res){
 	Station.find({username: req.decoded.username}).exec(function(err, station) {	
 			if (err) throw err;
 			if(!station.length){
@@ -502,10 +509,11 @@ router.get('/admin/viewstation', function(req,res){
 });
 
 //route to delete a station from database
-router.post('/admin/deletestation', function(req,res){
-	Station.remove({_id:req.body._id},function (err) {
+router.delete('/admin/station', function(req,res){
+	Station.remove({_id:req.query.stationid},function (err) {
 		if(err){
 			console.log(err);
+			res.json({success:false,message:"No station found"});
 		}
 		else{
 			res.json({success:true,message:"Station removed successfully"});
@@ -513,7 +521,7 @@ router.post('/admin/deletestation', function(req,res){
 	})
 });
 
-router.put('/admin/editstation',function (req,res) {
+router.put('/admin/station',function (req,res) {
 	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 		if (err) throw err;
 		if(!station){
@@ -534,7 +542,7 @@ router.put('/admin/editstation',function (req,res) {
 	});
 });
 //routes for bed management starts from here
-router.post('/admin/addbed',function (req,res) {
+router.post('/admin/bed',function (req,res) {
 	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 	var bedArray = [];
 	var beds = req.body.bedname;
@@ -568,7 +576,7 @@ router.post('/admin/addbed',function (req,res) {
 });
 
 //route for fetching all the bed details to the admin view
-router.get('/admin/viewbed', function(req,res){
+router.get('/admin/bed', function(req,res){
 	Bed.find({username: req.decoded.username}).exec(function(err, bed) {	
 			if (err) throw err;
 			if(!bed.length){
@@ -583,10 +591,11 @@ router.get('/admin/viewbed', function(req,res){
 });
 
 //route to delete a bed from database
-router.post('/admin/deletebed', function(req,res){
-	Bed.remove({_id: req.body._id},function (err) {
+router.delete('/admin/bed', function(req,res){
+	Bed.remove({_id: req.query.bedid},function (err) {
 		if(err){
 			console.log(err);
+			res.json({success:false,message:"No bed found"});
 		}
 		else{
 			res.json({success:true,message:"Station removed successfully"});
@@ -595,7 +604,7 @@ router.post('/admin/deletebed', function(req,res){
 });
 
 //edit bed route
-router.put('/admin/editbed',function (req,res) {
+router.put('/admin/bed',function (req,res) {
 	Bed.findOne({_id: req.body._id}).select('bedname').exec(function(err,bed) {
 		if (err) throw err; // Throw error if cannot connect
 		bed.bedname= req.body.bedname;
@@ -612,7 +621,7 @@ router.put('/admin/editbed',function (req,res) {
 
 //***routes for ivset management strats here***
 //route to add a new ivset by admin
-router.post('/admin/addivset', function(req,res){
+router.post('/admin/ivset', function(req,res){
 		var ivset = new Ivset();
 		ivset.ivsetname = req.body.ivsetname;
 		ivset.ivsetdpf = req.body.ivsetdpf;
@@ -634,7 +643,7 @@ router.post('/admin/addivset', function(req,res){
 });
 
 //route for fetching all the ivset details to the admin view
-router.get('/admin/viewivset', function(req,res){
+router.get('/admin/ivset', function(req,res){
 	Ivset.find({username: req.decoded.username}).exec(function(err, ivset) {	
 			if (err) throw err;
 			if(!ivset.length){
@@ -649,10 +658,12 @@ router.get('/admin/viewivset', function(req,res){
 });
 
 //route to delete a ivset from database
-router.post('/admin/deleteivset', function(req,res){
-	Ivset.remove({_id:req.body._id},function (err) {
+router.delete('/admin/ivset', function(req,res){
+	Ivset.remove({_id:req.query.ivsetid},function (err) {
 		if(err){
 			console.log(err);
+			res.json({success:false,message:"No ivset found"});
+
 		}
 		else{
 			res.json({success:true,message:"Ivset removed successfully"});
@@ -661,7 +672,7 @@ router.post('/admin/deleteivset', function(req,res){
 });
 
 //edit ivset route
-router.put('/admin/editivset',function (req,res) {
+router.put('/admin/ivset',function (req,res) {
 	Ivset.findOne({_id:req.body._id}).select('ivsetname ivsetdpf').exec(function(err,ivset) {
 		if (err) throw err; // Throw error if cannot connect
 		ivset.ivsetname= req.body.ivsetname;
@@ -792,7 +803,7 @@ router.get('/admin/getconnecteddripos', function(req,res){
 });
 
 //routes for adding dripos
-router.post('/admin/adddripo',function (req,res) {
+router.post('/admin/dripo',function (req,res) {
 	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
 	var dripoArray = [];
 	var dripos = req.body.dripoid;
@@ -824,7 +835,7 @@ router.post('/admin/adddripo',function (req,res) {
 });
 
 //route for fetching all the dripo details to the admin view
-router.get('/admin/viewdripo', function(req,res){
+router.get('/admin/dripo', function(req,res){
 	Dripo.find({username: req.decoded.username}).exec(function(err, dripo) {	
 			if (err) throw err;
 			if(!dripo.length){
@@ -839,10 +850,12 @@ router.get('/admin/viewdripo', function(req,res){
 });
 
 //route to delete a dripo from database
-router.post('/admin/deletedripo', function(req,res){
-	Dripo.remove({_id:req.body._id},function (err) {
+router.delete('/admin/dripo', function(req,res){
+	Dripo.remove({_id:req.query.dripoid},function (err) {
 		if(err){
 			console.log(err);
+			res.json({success:false,message:"No dripo found"});
+
 		}
 		else{
 			res.json({success:true,message:"Dripo removed successfully"});
@@ -851,7 +864,7 @@ router.post('/admin/deletedripo', function(req,res){
 });
 
 //route for edit dripo
-router.put('/admin/editdripo',function (req,res) {
+router.put('/admin/dripo',function (req,res) {
 	Dripo.findOne({dripoid: req.body.dripoid,username:req.decoded.username}).exec(function(err,dripo) {
 		if (err) throw err;
 		if(!dripo){
@@ -966,7 +979,7 @@ router.get('/nurse/viewdoctor', function(req,res){
 });
 
 //route for saving patient personal and other detaills, also change the bed status to occupied
-router.post('/nurse/addpatient', function(req,res){
+router.post('/nurse/patient', function(req,res){
 	var patient = new Patient();
 	patient.patientname= req.body.patientname;
 	patient.patientage= req.body.patientage;
@@ -1003,7 +1016,7 @@ router.post('/nurse/addpatient', function(req,res){
 
 });
 
-router.post('/nurse/addmedication', function(req,res){
+router.post('/nurse/medication', function(req,res){
 	var medicationObjArray=[{}];
 	var patientid;
 	for (var key in req.body) {
@@ -1074,7 +1087,7 @@ router.post('/nurse/addmedication', function(req,res){
 });
 
 //route for fetching all the patient details to nurse 
-router.get('/nurse/viewpatient', function(req,res){
+router.get('/nurse/patient', function(req,res){
 	Patient.find({_admin: req.decoded.admin,stationname:req.decoded.station}).exec(function(err,patient) {	
 		if (err) throw err;
 		if(!patient.length){
@@ -1096,7 +1109,7 @@ router.put('/nurse/dischargepatient', function(req,res){
 });
 
 //route for edit patient 
-router.put('/nurse/editpatient',function (req,res) {
+router.put('/nurse/patient',function (req,res) {
 	//save updated patient info
 	Patient.findOne({_id: req.body._id}).exec(function(err,patient) {
 		if (err) throw err; // Throw error if cannot connect

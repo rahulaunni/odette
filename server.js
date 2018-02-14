@@ -62,77 +62,46 @@ app.post('/admin/update',function (req,res) {
 
 //route for updating device
  app.get('/update_dripo',function(req,res){
-   // console.log(req.headers);
-   
-    //res.sendFile('scotch_v_'+1.1+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/dripo_firmware/scotch')});
-    //res.end();
+    var deviceVersion =  req.query.v;
+    var deviceVersionArray = deviceVersion.split('_');
+    var version = deviceVersionArray[2];
+    var serverfirmwareInfoArray;
+    var serverVersion;
+    console.log(version);
+    var updatefolder = path.join(__dirname, '/public/dripo_firmware/scotch');
+    fs.readdir(updatefolder, function(err, files) {
+        if (err){res.sendStatus(304);}
+        files.forEach(function(f) {
+        serverfirmwareInfoArray = f.split('_');
+        serverVersion = serverfirmwareInfoArray[2];
+        console.log(serverVersion);
+        if(serverVersion != undefined){
+            var full_path = path.join(__dirname,'/public/dripo_firmware/scotch/'+'scotch_v_'+serverVersion+'_ino.nodemcu.bin'); 
+            if(version < serverVersion){
+                fs.readFile(full_path, "binary", function(err, file) {  
+                res.writeHeader(200, 
+                    {"Content-Type": "application/octet-stream", 
+                     "Content-Disposition": "attachment;filename="+path.basename(full_path),
+                     "Content-Length": ""+fs.statSync(full_path)["size"],
+                 }); 
+                res.write(file, "binary");
+                console.log("updated");
+                   res.end();
+                });  
 
-    console.log(req.headers);
-
-   var full_path = path.join(__dirname,'/public/dripo_firmware/scotch/'+'scotch_v_'+'1.1'+'_ino.nodemcu.bin'); 
-
-    fs.readFile(full_path, "binary", function(err, file) {  
-
-      res.writeHeader(200, 
-          {"Content-Type": "application/octet-stream", 
-      "Content-Disposition": "attachment;filename="+path.basename(full_path),
-         "Content-Length": ""+fs.statSync(full_path)["size"],
-     }); 
-     //console.log(file);
-    res.write(file, "binary");
-       res.end();
-});  
-    //collecting details from device header request
-    // var agent = useragent.parse(req.headers['user-agent']);
-    // var deviceVersion = useragent.parse(req.headers['x-esp8266-version']);
-    // var firmware = deviceVersion.source;
-    // var firmwareInfoArray = firmware.split('_');
-    // var firmwareName = firmwareInfoArray[0];
-    // var version = firmwareInfoArray[2];
-    // //collect file details from server
-    //  if(agent.source == 'ESP8266-http-Update'){
-    //     if(firmwareName == 'scotch'){
-    //            var serverfirmwareInfoArray;
-    //            var serverVersion;
-    //            var updatefolder = path.join(__dirname, '/public/dripo_firmware/scotch');
-    //            fs.readdir(updatefolder, function(err, files) {
-    //                if (err){res.sendStatus(304);}
-    //                files.forEach(function(f) {
-    //                    serverfirmwareInfoArray = f.split('_');
-    //                    serverVersion = serverfirmwareInfoArray[2];
-    //                    if(serverVersion != undefined){
-    //                     if(version < serverVersion){
-    //                         console.log("updated to "+serverVersion);
-    //                         var full_path = path.join(__dirname,'/public/dripo_firmware/scotch/'+'scotch_v_'+serverVersion+'_ino.nodemcu.bin')
-    //                         console.log("updated");
-    //                         res.writeHeader(200, 
-    //                             {"Content-Type": "application/octet-stream", 
-    //                             "Content-Disposition": "attachment;filename="+path.basename(full_path),
-    //                             "Content-Length": ""+fs.statSync(full_path)["size"]
-    //                         });  
-    //                         res.end();
-
-    //                       //  res.sendFile('scotch_v_'+serverVersion+'_ino.nodemcu.bin',{root:path.join(__dirname,'/public/dripo_firmware/scotch')});
-    //                     }
-    //                     else if(version >= serverVersion){
-    //                         console.log("noupdate");
-    //                         res.writeHeader(304);  
-    //                     res.end();
-    //                     }
+            }
+                
+            else if(version >= serverVersion){
+                console.log("noupdate");
+                res.writeHeader(304);  
+                res.end();
+            }
 
 
-    //                    }
-                      
-    //                });
-    //            });
-
-    //         }
-
-    //     }
-        
-    //  else{
-    //     res.sendStatus(403);
-    //  }
+        }
+                          
+        });
+    });
 
  });
 
@@ -200,7 +169,6 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            console.log(message.toString());
             if(topicinfoArray[2] != 'will'){
                 client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
                     console.log("DEVICE NOT ADDED");
@@ -212,6 +180,18 @@ client.on('message', function (topic, message) {
            
         }
         else{
+            //for testing the device reason for restart
+            if(topicinfoArray[2].toString() == 'will'){
+                var filePath = path.join(__dirname, '/public/logs/restart.txt');
+                var messageStr = message.toString();
+                var messageArray = messageStr.split('-');
+                if(messageArray[0] == 'Online'){
+                    fs.appendFileSync(filePath,messageArray[1]+'\n', "UTF-8",{'flags': 'a+'});
+
+                }
+
+            }
+            //******************************************
             var stationid = ObjectId(dripo[0]._station);
             var userid =ObjectId(dripo[0]._user);
             if(topicinfoArray[2]=='bed_req'){

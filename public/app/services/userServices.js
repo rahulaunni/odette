@@ -28,16 +28,16 @@ angular.module('userServices',[])
 		return $http.get('/api/permission/');
 	}
 	userFactory.addUser = function (userData) {
-		return $http.post('/api/admin/adduser',userData);
+		return $http.post('/api/admin/user',userData);
 	}
 	userFactory.viewUser = function (userData) {
-		return $http.get('/api/admin/viewuser',userData);
+		return $http.get('/api/admin/user',userData);
 	}
 	userFactory.deleteUser = function (user) {
-		return $http.post('/api/admin/deleteuser',user);
+		return $http.delete('/api/admin/user',{params:{userid:user._id}});
 	}
 	userFactory.savelocalPassword = function (edituser) {
-		return $http.put('/api/admin/savelocalpassword/',edituser);
+		return $http.put('/api/admin/user',edituser);
 	}
 	userFactory.getIp = function () {
 		return $http.get('/api/admin/getip/');

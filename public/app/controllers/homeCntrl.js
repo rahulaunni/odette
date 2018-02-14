@@ -300,7 +300,7 @@ angular.module('homeController',['homeServices'])
 
             }
           }
-          // drughi.play();
+           drughi.play();
         }//end of complete
 
         else if(data.infusionstatus == 'Empty'){
@@ -315,7 +315,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].percentage = data.percentage;
             }
           }
-          // drughi.play();
+           drughi.play();
         }//end of empty
         else if(data.infusionstatus == 'Empty_ACK'){
           for(var key in $scope.inprogresstasks){
@@ -362,7 +362,7 @@ angular.module('homeController',['homeServices'])
 
 
           }
-          // drughi.play();
+          drughi.play();
 
 
         }//end of Errors
@@ -380,7 +380,7 @@ angular.module('homeController',['homeServices'])
 
 
           }
-          // drugmed.play();
+          drugmed.play();
 
         }
         else if(data.infusionstatus == 'Block_ACK'|| data.infusionstatus == 'Rate_Err_ACK' || data.infusionstatus == 'Complete_ACK'){
@@ -410,12 +410,13 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
-              drughi.play();
 
             }
 
 
           }
+          drughi.play();
+
           
         }//end of device_disconnected
         else if(data.infusionstatus == 'Connection_Lost'){

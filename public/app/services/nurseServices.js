@@ -19,19 +19,19 @@ angular.module('nurseServices',['authServices'])
 		return $http.get('/api/nurse/viewdoctor');
 	}
 	nurseFactory.addPatient = function (patientData) {
-		return $http.post('/api/nurse/addpatient',patientData);
+		return $http.post('/api/nurse/patient',patientData);
 	}
 	nurseFactory.addMedication = function (choices) {
-		return $http.post('/api/nurse/addmedication',choices);
+		return $http.post('/api/nurse/medication',choices);
 	}
 	nurseFactory.viewPatient = function () {
-		return $http.get('/api/nurse/viewpatient');
+		return $http.get('/api/nurse/patient');
 	}
 	nurseFactory.dischargePatient = function (patient) {
 		return $http.put('/api/nurse/dischargepatient',patient);
 	}
 	nurseFactory.editPatient = function (editpatient) {
-		return $http.put('/api/nurse/editpatient',editpatient);
+		return $http.put('/api/nurse/patient',editpatient);
 	}
 	nurseFactory.editMedication = function (editpatient) {
 		return $http.post('/api/nurse/editmedication',editpatient);
