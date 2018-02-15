@@ -298,33 +298,40 @@ router.put('/activate/:token', function(req, res) {
 
 //user login route
 router.post('/login',function (req,res) {
-	//finding user from database
-	User.findOne({userName:req.body.username}).select('userName _id hospitalName password active').exec(function (err,user) {
-		if(err) throw err;
-		//if no user found resond with no user found error message
-		if(!user){
-			res.json({success:false,message:"No user found"});
-		}
-		//if user found checking for password match
-		else if(user){
-			var validPassword = user.comparePassword(req.body.password);
-			if (!validPassword){
-				res.json({success:false,message:"Wrong password"});
+	if(req.body.username && req.body.password){
+		//finding user from database
+		User.findOne({userName:req.body.username}).select('userName _id hospitalName password active').exec(function (err,user) {
+			if(err) throw err;
+			//if no user found resond with no user found error message
+			if(!user){
+				res.json({success:false,message:"No user found"});
 			}
-			//if password matches check whether user has an active account
-			else if(!user.active){
-				res.json({success:false,message:"Account is not yet activated",expired:true});
-			}
-			else{
-				//successful login and passing a token to the user for login
-				var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret);
-				res.json({success:true,message:"Authentication success",token:token});
+			//if user found checking for password match
+			else if(user){
+				var validPassword = user.comparePassword(req.body.password);
+				if (!validPassword){
+					res.json({success:false,message:"Wrong password"});
+				}
+				//if password matches check whether user has an active account
+				else if(!user.active){
+					res.json({success:false,message:"Account is not yet activated",expired:true});
+				}
+				else{
+					//successful login and passing a token to the user for login
+					var token = jwt.sign({username:user.userName,hospitalname:user.hospitalName,uid:user._id},secret);
+					res.json({success:true,message:"Authentication success",token:token});
+
+				}
 
 			}
+			
+		});
+	}
+	else{
+		res.json({success:false,message:"A required field is empty"});
 
-		}
-		
-	});
+	}
+	
 });
 
 
@@ -381,6 +388,19 @@ router.get('/permission',function (req,res) {
 		});
 });
 
+router.get('/admin/gethost', function(req, res) {
+	var host = req.get('host');
+	if(host == 'localhost:3000'){
+		res.json({success:true,type:'local'})
+	}
+	else{
+		res.json({success:true,type:'online'})
+
+	}
+
+});
+
+
 //route to get ip adress to admin panel
 router.get('/admin/getip', function(req, res) {
 	var ipaddress= ip.address();
@@ -394,30 +414,44 @@ router.get('/admin/getip', function(req, res) {
 
 });
 
+
+router.get('/admin/getstaticip', function(req, res) {
+		res.json({success:true,ip:'3.127.153.164'});
+
+});
+
 //********************************************************************************************************************
 //***routes for local users management starts from here***
 //route to add a new user by admin
 router.post('/admin/user', function(req,res){
 		var user = new User();
-		user.hospitalName = req.decoded.hospitalname;
-		user.userName = req.body.username+'@'+req.decoded.hospitalname+'.care';
-		user.password = req.body.password;
-		user.permission = req.body.permission;
-		user.active = true;
-		user._admin = req.decoded.username;
-		user.tempToken = false;
-		// saving user to database
-		user.save(function(err){
-			if (err) {
-				console.log(err);
-				//responding error back to frontend
-				res.json({success:false,message:'User already exist'});
-			}
-			else{
+		if(req.body.username && req.body.password && req.body.permission){
+				user.hospitalName = req.decoded.hospitalname;
+				user.userName = req.body.username+'@'+req.decoded.hospitalname+'.care';
+				user.password = req.body.password;
+				user.permission = req.body.permission;
+				user.active = true;
+				user._admin = req.decoded.username;
+				user.tempToken = false;
+				// saving user to database
+				user.save(function(err){
+					if (err) {
+						console.log(err);
+						//responding error back to frontend
+						res.json({success:false,message:'User already exist'});
+					}
+					else{
 
-				res.json({success:true,message:'User added'});
-			}
-	});
+						res.json({success:true,message:'User added'});
+					}
+			});
+
+		}
+		else{
+			res.json({success:false,message:'A required value is missing'});
+
+		}
+		
 });
 //route for fetching all the user details to the admin view
 router.get('/admin/user', function(req,res){
@@ -435,61 +469,100 @@ router.get('/admin/user', function(req,res){
 
 //route to delete an user from database
 router.delete('/admin/user', function(req,res){
-	User.remove({_id:req.query.userid},function (err) {
-		if(err){
-			console.log(err);
-			res.json({success:false,message:"No user found"});
-
-		}
-		else{
-			res.json({success:true,message:"User removed successfully"});
-		}
-	})
-});
-
-router.put('/admin/user', function(req, res) {
-	User.findOne({_id:req.body._id}).select('userName password resetToken').exec(function(err, user) {
-		if (err) throw err; // Throw error if cannot connect
-		user.password = req.body.password;
-		user.save(function(err) {
-			if (err) {
+	if(req.query.userid){
+		User.remove({_id:req.query.userid},function (err) {
+			if(err){
 				console.log(err);
-				res.json({success:false,message:'Failed to connect to database'})
-			} else {
-				res.json({ success: true, message: 'Your password changed successfully'}); 
+				res.json({success:false,message:"No user found"});
+
+			}
+			else{
+				res.json({success:true,message:"User removed successfully"});
 			}
 		});
-	});
+	}
+	else{
+		res.json({success:false,message:"No userid in query"});
+
+	}
+	
+});
+
+//route to update/change password of nurse/doctor account
+router.put('/admin/user', function(req, res) {
+	if(req.body._id){
+		User.findOne({_id:req.body._id}).select('userName password resetToken').exec(function(err, user) {
+			if (err) throw err; // Throw error if cannot connect
+			if(!user){
+				res.json({success:false,message:'no user found'})
+			}
+			else{
+				if(req.body.password){
+					user.password = req.body.password;
+					user.save(function(err) {
+						if (err) {
+							console.log(err);
+							res.json({success:false,message:'Failed to connect to database'})
+						} else {
+							res.json({ success: true, message: 'Your password changed successfully'}); 
+						}
+					});
+
+				}
+				else{
+					res.json({success:false,message:'Password field empty'})
+
+				}
+				
+
+			}
+			
+		});
+
+	}
+	else{
+		res.json({success:false,message:'_id field is empty'})
+
+	}
+	
 });
 
 //***routes for station management starts here***
 router.post('/admin/station',function (req,res) {
 	//to make sure unique station name for each admin
-	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
-		if (err) throw err;
-		if(!station){
-				var station = new Station();
-				station.stationname = req.body.stationname;
-				station.username = req.decoded.username;
-				station._user = ObjectId(req.decoded.uid);
-				// saving user to database
-				station.save(function(err){
-					if (err) {
-						console.log(err);
-						//responding error back to frontend
-						res.json({success:false,message:'Data Base error try after sometimes'});
-					}
-					else{
+	if(req.body.stationname){
+		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+			if (err) throw err;
+			if(!station){
+					var station = new Station();
+					station.stationname = req.body.stationname;
+					station.username = req.decoded.username;
+					station._user = ObjectId(req.decoded.uid);
+					// saving user to database
+					station.save(function(err){
+						if (err) {
+							console.log(err);
+							//responding error back to frontend
+							res.json({success:false,message:'Data Base error try after sometimes'});
+						}
+						else{
 
-						res.json({success:true,message:'Station added'});
-					}
-			});
-		}
-		else{
-			res.json({success:false,message:'You have already added this station name'})
-		}
+							res.json({success:true,message:'Station added'});
+						}
+				});
+			}
+			else{
+				res.json({success:false,message:'You have already added this station name'})
+			}
 
-	});
+		});
+
+	}
+	else{
+		res.json({success:false,message:'A required field is missing'});
+
+	}
+	
 
 });
 
@@ -510,68 +583,88 @@ router.get('/admin/station', function(req,res){
 
 //route to delete a station from database
 router.delete('/admin/station', function(req,res){
-	Station.remove({_id:req.query.stationid},function (err) {
-		if(err){
-			console.log(err);
-			res.json({success:false,message:"No station found"});
-		}
-		else{
-			res.json({success:true,message:"Station removed successfully"});
-		}
-	})
+	if(req.query.stationid){
+		Station.remove({_id:req.query.stationid},function (err) {
+			if(err){
+				console.log(err);
+				res.json({success:false,message:"No station found"});
+			}
+			else{
+				res.json({success:true,message:"Station removed successfully"});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:"No stationid in query"});
+
+	}
+	
 });
 
 router.put('/admin/station',function (req,res) {
-	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
-		if (err) throw err;
-		if(!station){
-			Station.findOne({_id:req.body._id}).select('stationname').exec(function(err,oldstation) {
-			oldstation.stationname=req.body.stationname;
-			oldstation.save(function (err) {
-				if(err) throw err;
-				else{
-					res.json({success:true,message:'Station name updated',stations:station});
-				}
+	if(req.body.stationname && req.body._id){
+		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+			if (err) throw err;
+			if(!station){
+				Station.findOne({_id:req.body._id}).select('stationname').exec(function(err,oldstation) {
+				oldstation.stationname=req.body.stationname;
+				oldstation.save(function (err) {
+					if(err) throw err;
+					else{
+						res.json({success:true,message:'Station name updated',stations:station});
+					}
+				});
 			});
-		});
-		}
-		else{
-			res.json({success:false,message:'You have already added this station name'})
-		}
+			}
+			else{
+				res.json({success:false,message:'You have already added this station name'})
+			}
 
-	});
+		});
+	}
+	else{
+		res.json({success:false,message:'A required field is missing'});
+	}
+	
 });
 //routes for bed management starts from here
 router.post('/admin/bed',function (req,res) {
-	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
-	var bedArray = [];
-	var beds = req.body.bedname;
-	var bedArray = beds.split(",");
-	var bedObjArray=[{}];
+	if(req.body.stationname && req.body.bedname){
+		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+		var bedArray = [];
+		var beds = req.body.bedname;
+		var bedArray = beds.split(",");
+		var bedObjArray=[{}];
 
-	for (var key in bedArray){
-		var bedObj={};
-		bedObj.bedname=bedArray[key];
-		bedObj.username=req.decoded.username;
-		bedObj.stationname=req.body.stationname;
-		bedObj._user = ObjectId(req.decoded.uid);
-		bedObj._station = ObjectId(station._id);
-		bedObj.status = 'unoccupied'
-		bedObjArray[key] = bedObj;
+		for (var key in bedArray){
+			var bedObj={};
+			bedObj.bedname=bedArray[key];
+			bedObj.username=req.decoded.username;
+			bedObj.stationname=req.body.stationname;
+			bedObj._user = ObjectId(req.decoded.uid);
+			bedObj._station = ObjectId(station._id);
+			bedObj.status = 'unoccupied'
+			bedObjArray[key] = bedObj;
+		}
+
+		Bed.collection.insert(bedObjArray, onInsert);
+		    function onInsert(err,docs){
+		    	if(err){
+		    		console.log(err);
+		    		res.json({success:false,message:'Data Base error try after sometimes'});
+		    	} 
+		    	else{
+		    		res.json({success:true,message:'Bed added'});
+
+		    	}
+		    }
+		 });
+
 	}
-
-	Bed.collection.insert(bedObjArray, onInsert);
-	    function onInsert(err,docs){
-	    	if(err){
-	    		console.log(err);
-	    		res.json({success:false,message:'Data Base error try after sometimes'});
-	    	} 
-	    	else{
-	    		res.json({success:true,message:'Bed added'});
-
-	    	}
-	    }
-	 });
+	else{
+		res.json({success:false,message:'A required field is empty'});
+	}
+	
 
 });
 
@@ -592,36 +685,51 @@ router.get('/admin/bed', function(req,res){
 
 //route to delete a bed from database
 router.delete('/admin/bed', function(req,res){
-	Bed.remove({_id: req.query.bedid},function (err) {
-		if(err){
-			console.log(err);
-			res.json({success:false,message:"No bed found"});
-		}
-		else{
-			res.json({success:true,message:"Station removed successfully"});
-		}
-	})
+	if(req.query.bedid){
+		Bed.remove({_id: req.query.bedid},function (err) {
+			if(err){
+				console.log(err);
+				res.json({success:false,message:"No bed found"});
+			}
+			else{
+				res.json({success:true,message:"Station removed successfully"});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:"No bedid in query"});
+
+	}
+	
 });
 
 //edit bed route
 router.put('/admin/bed',function (req,res) {
-	Bed.findOne({_id: req.body._id}).select('bedname').exec(function(err,bed) {
-		if (err) throw err; // Throw error if cannot connect
-		bed.bedname= req.body.bedname;
-		bed.save(function(err) {
-			if (err) {
-				console.log(err);
-				res.json({success:false,message:'Failed to connect to database'})
-			} else {
-				res.json({ success: true, message: 'Bed name updated'}); 
-			}
+	if(req.body.bedname && req.body._id){
+		Bed.findOne({_id: req.body._id}).select('bedname').exec(function(err,bed) {
+			if (err) throw err; // Throw error if cannot connect
+			bed.bedname= req.body.bedname;
+			bed.save(function(err) {
+				if (err) {
+					console.log(err);
+					res.json({success:false,message:'Failed to connect to database'})
+				} else {
+					res.json({ success: true, message: 'Bed name updated'}); 
+				}
+			});
 		});
-	});
+	}
+	else{
+		res.json({success:false,message:'A required field is empty'});
+
+	}
+	
 });
 
 //***routes for ivset management strats here***
 //route to add a new ivset by admin
 router.post('/admin/ivset', function(req,res){
+	if(req.body.ivsetname && req.body.ivsetdpf){
 		var ivset = new Ivset();
 		ivset.ivsetname = req.body.ivsetname;
 		ivset.ivsetdpf = req.body.ivsetdpf;
@@ -639,6 +747,12 @@ router.post('/admin/ivset', function(req,res){
 				res.json({success:true,message:'Ivset added'});
 			}
 		});
+	}
+	else{
+		res.json({success:false,message:'A required field is empty'});
+
+	}
+		
 
 });
 
@@ -659,33 +773,48 @@ router.get('/admin/ivset', function(req,res){
 
 //route to delete a ivset from database
 router.delete('/admin/ivset', function(req,res){
-	Ivset.remove({_id:req.query.ivsetid},function (err) {
-		if(err){
-			console.log(err);
-			res.json({success:false,message:"No ivset found"});
+	if(req.query.ivsetid){
+		Ivset.remove({_id:req.query.ivsetid},function (err) {
+			if(err){
+				console.log(err);
+				res.json({success:false,message:"No ivset found"});
 
-		}
-		else{
-			res.json({success:true,message:"Ivset removed successfully"});
-		}
-	})
+			}
+			else{
+				res.json({success:true,message:"Ivset removed successfully"});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:"No ivsetid provided in query"});
+
+	}
+	
 });
 
 //edit ivset route
 router.put('/admin/ivset',function (req,res) {
-	Ivset.findOne({_id:req.body._id}).select('ivsetname ivsetdpf').exec(function(err,ivset) {
-		if (err) throw err; // Throw error if cannot connect
-		ivset.ivsetname= req.body.ivsetname;
-		ivset.ivsetdpf= req.body.ivsetdpf;
-		ivset.save(function(err) {
-			if (err) {
-				console.log(err);
-				res.json({success:false,message:'Failed to connect to database'})
-			} else {
-				res.json({ success: true, message: 'Ivset details updated'}); 
-			}
+	if(req.body.ivsetname && req.body.ivsetdpf && req.body._id){
+		Ivset.findOne({_id:req.body._id}).select('ivsetname ivsetdpf').exec(function(err,ivset) {
+			if (err) throw err; // Throw error if cannot connect
+			ivset.ivsetname= req.body.ivsetname;
+			ivset.ivsetdpf= req.body.ivsetdpf;
+			ivset.save(function(err) {
+				if (err) {
+					console.log(err);
+					res.json({success:false,message:'Failed to connect to database'})
+				} else {
+					res.json({ success: true, message: 'Ivset details updated'}); 
+				}
+			});
 		});
-	});
+	}
+	else{
+		res.json({success:false,message:'A required field is empty'});
+
+	}
+
+	
 });
 
 //***routes for dripo management starts here***

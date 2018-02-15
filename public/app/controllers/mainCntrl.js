@@ -112,12 +112,28 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 	    return viewLocation === $location.path();
 	};
 	$scope.ipaddress = false;
-	//function to get ip address of server
-	User.getIp().then(function (data) {
+	User.getType().then(function (data) {
 		if(data.data.success){
-			$scope.ipaddress = data.data.ip;
+			if(data.data.type == 'local'){
+				//function to get ip address of server
+				User.getIp().then(function (data) {
+					if(data.data.success){
+						$scope.ipaddress = data.data.ip;
+					}
+				});
+			} 
+			else{
+				//function to get static ip address of server
+				User.getStaticIp().then(function (data) {
+					if(data.data.success){
+						$scope.ipaddress = data.data.ip;
+					}
+				});
+			}
 		}
 	});
+
+	
 	$scope.mqttserverstatus='running';
 	User.getConnectedDripos().then(function (data) {
 		if(data.data.success){

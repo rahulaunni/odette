@@ -39,8 +39,14 @@ angular.module('userServices',[])
 	userFactory.savelocalPassword = function (edituser) {
 		return $http.put('/api/admin/user',edituser);
 	}
+	userFactory.getType = function () {
+		return $http.get('/api/admin/gethost');
+	}
 	userFactory.getIp = function () {
 		return $http.get('/api/admin/getip/');
+	}
+	userFactory.getStaticIp = function () {
+		return $http.get('/api/admin/getstaticip');
 	}
 	userFactory.getConnectedDripos = function () {
 		return $http.get('api/admin/getconnecteddripos');

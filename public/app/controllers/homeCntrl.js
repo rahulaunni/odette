@@ -299,7 +299,6 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].percentage = data.percentage;
               drughi.play();
 
-
             }
           }
         }//end of complete
@@ -452,6 +451,7 @@ angular.module('homeController',['homeServices'])
   //acknowledging the alert
   $scope.ackAlert = function(ev,task) {
     if(task.infusionstatus == 'Empty'){
+      console.log(task);
       socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Empty_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
@@ -467,6 +467,7 @@ angular.module('homeController',['homeServices'])
     }
     else if(task.infusionstatus == 'Complete'){
       socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
+      socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
     
