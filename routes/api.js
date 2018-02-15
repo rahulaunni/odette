@@ -1409,8 +1409,9 @@ router.put('/nurse/editmedication', function(req,res){
 router.post('/nurse/deletemedication', function(req,res){
 	var patientid = ObjectId(req.body.patientid);
 	Patient.collection.update({_id:patientid},{$unset:{_medication:""}});
-	Medication.collection.remove({_patient:patientid});
-	Task.collection.updateMany({_patient:patientid},{$set:{status:'closed'}},{upsert:false});
+	Medication.collection.updateMany({_patient:patientid},{$unset:{_bed:""}},{upsert:false});
+	Medication.collection.updateMany({_patient:patientid},{$unset:{_task:""}},{upsert:false});
+	Task.collection.remove({_patient:patientid});
 	res.json({success:true,message:"deleted all medicine associated with patient"})
 });
 
