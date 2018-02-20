@@ -58,12 +58,15 @@ router.post('/register', function(req,res){
 			var host=req.get('host');
 			//link for the mail for activation of account
 			var link="http://"+req.get('host')+"/activate/"+user.tempToken; 
+			var ipaddress = ip.address();
+			var offlinelink = "http://"+ipaddress+":3000"+"/activate/"+user.tempToken; 
 			//activation mail object
 			var mailOptions = {
 			  from: 'dripocare@gmail.com',
 			  to: user.userName,
 			  subject: 'Verification Link For Evelabs.care',
-			html : "Hello "+user.userName+",<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>" 
+			html : "Hello "+user.userName+",<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a><br>Please Click on this link to verify your email if you are registered local server<br><a href="+offlinelink+">Click here to verify</a>" 
+
 			};
 			transporter.sendMail(mailOptions, function (err, info) {
 			   if(err)
@@ -124,11 +127,13 @@ router.put('/resend', function(req, res) {
 				});
 				var host=req.get('host');
 				var link="http://"+req.get('host')+"/activate/"+user.tempToken; 
+				var ipaddress = ip.address();
+				var offlinelink = "http://"+ipaddress+":3000"+"/activate/"+user.tempToken; 
 				var mailOptions = {
 				  from: 'dripocare@gmail.com',
 				  to: user.userName,
 				  subject: 'Verification Link For Evelabs.care',
-				html : "Hello "+user.userName+",<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>" 
+				html : "Hello "+user.userName+",<br> Please Click on this link to verify your email if you are registered with evelabs.care.<br><a href="+link+">Click here to verify</a><br> Please Click on this link to verify your email if you are registered local server<br><a href="+offlinelink+">Click here to verify</a>" 
 				};
 				transporter.sendMail(mailOptions, function (err, info) {
 				   if(err)
@@ -167,11 +172,13 @@ router.put('/forgotpassword', function(req, res) {
 					});
 					var host=req.get('host');
 					var link="http://"+req.get('host')+"/resetpassword/"+user.resetToken; 
+					var ipaddress = ip.address();
+					var offlinelink = "http://"+ipaddress+":3000"+"/resetpassword/"+user.resetToken; 
 					var mailOptions = {
 					  from: 'dripocare@gmail.com',
 					  to: user.userName,
 					  subject: 'Password reset link for Evelabs.care',
-					html : "Hello "+user.userName+",<br> Please Click on the link to reset your Evelabs.care account password.<br><a href="+link+">Click here to verify</a>" 
+					html : "Hello "+user.userName+",<br> Please Click on the link to reset your Evelabs.care account password.<br><a href="+link+">Click here to verify</a><br> Please Click on this link to change local account password<br><a href="+offlinelink+">Click here to verify</a>" 
 					};
 					transporter.sendMail(mailOptions, function (err, info) {
 					   if(err)
@@ -631,33 +638,41 @@ router.put('/admin/station',function (req,res) {
 router.post('/admin/bed',function (req,res) {
 	if(req.body.stationname && req.body.bedname){
 		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
-		var bedArray = [];
-		var beds = req.body.bedname;
-		var bedArray = beds.split(",");
-		var bedObjArray=[{}];
+		if(!station){
+			res.json({success:false,message:'Not a valid station'});
 
-		for (var key in bedArray){
-			var bedObj={};
-			bedObj.bedname=bedArray[key];
-			bedObj.username=req.decoded.username;
-			bedObj.stationname=req.body.stationname;
-			bedObj._user = ObjectId(req.decoded.uid);
-			bedObj._station = ObjectId(station._id);
-			bedObj.status = 'unoccupied'
-			bedObjArray[key] = bedObj;
 		}
+		else{
+			var bedArray = [];
+			var beds = req.body.bedname;
+			var bedArray = beds.split(",");
+			var bedObjArray=[{}];
 
-		Bed.collection.insert(bedObjArray, onInsert);
-		    function onInsert(err,docs){
-		    	if(err){
-		    		console.log(err);
-		    		res.json({success:false,message:'Data Base error try after sometimes'});
-		    	} 
-		    	else{
-		    		res.json({success:true,message:'Bed added'});
+			for (var key in bedArray){
+				var bedObj={};
+				bedObj.bedname=bedArray[key];
+				bedObj.username=req.decoded.username;
+				bedObj.stationname=req.body.stationname;
+				bedObj._user = ObjectId(req.decoded.uid);
+				bedObj._station = ObjectId(station._id);
+				bedObj.status = 'unoccupied'
+				bedObjArray[key] = bedObj;
+			}
 
-		    	}
-		    }
+			Bed.collection.insert(bedObjArray, onInsert);
+			    function onInsert(err,docs){
+			    	if(err){
+			    		console.log(err);
+			    		res.json({success:false,message:'Data Base error try after sometimes'});
+			    	} 
+			    	else{
+			    		res.json({success:true,message:'Bed added'});
+
+			    	}
+			    }
+
+		}
+		
 		 });
 
 	}
@@ -933,33 +948,47 @@ router.get('/admin/getconnecteddripos', function(req,res){
 
 //routes for adding dripos
 router.post('/admin/dripo',function (req,res) {
-	Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
-	var dripoArray = [];
-	var dripos = req.body.dripoid;
-	var dripoArray = dripos.split(",");
-	var dripoObjArray=[{}];
-	for (var key in dripoArray){
-		var dripoObj={};
-		dripoObj.dripoid=dripoArray[key];
-		dripoObj.username=req.decoded.username;
-		dripoObj.stationname=req.body.stationname;
-		dripoObj._user = ObjectId(req.decoded.uid);
-		dripoObj._station = ObjectId(station._id);
-		dripoObjArray[key] = dripoObj;
+	if(req.body.stationname && req.body.dripoid){
+		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+			if(!station){
+				res.json({success:false,message:'Not a valid station'});
+			}
+			else{
+				var dripoArray = [];
+				var dripos = req.body.dripoid;
+				var dripoArray = dripos.split(",");
+				var dripoObjArray=[{}];
+				for (var key in dripoArray){
+					var dripoObj={};
+					dripoObj.dripoid=dripoArray[key];
+					dripoObj.username=req.decoded.username;
+					dripoObj.stationname=req.body.stationname;
+					dripoObj._user = ObjectId(req.decoded.uid);
+					dripoObj._station = ObjectId(station._id);
+					dripoObjArray[key] = dripoObj;
+				}
+
+				Dripo.collection.insert(dripoObjArray, onInsert);
+				    function onInsert(err,docs){
+				    	if(err){
+				    		console.log(err);
+				    		res.json({success:false,message:'Data Base error try after sometimes'});
+				    	} 
+				    	else{
+				    		res.json({success:true,message:'Dripo added'});
+
+				    	}
+				    }
+
+			}
+		
+		});
 	}
+	else{
+		res.json({success:false,message:'Required field is empty'});
 
-	Dripo.collection.insert(dripoObjArray, onInsert);
-	    function onInsert(err,docs){
-	    	if(err){
-	    		console.log(err);
-	    		res.json({success:false,message:'Data Base error try after sometimes'});
-	    	} 
-	    	else{
-	    		res.json({success:true,message:'Dripo added'});
-
-	    	}
-	    }
-	});
+	}
+	
 
 });
 
@@ -980,39 +1009,51 @@ router.get('/admin/dripo', function(req,res){
 
 //route to delete a dripo from database
 router.delete('/admin/dripo', function(req,res){
-	Dripo.remove({_id:req.query.dripoid},function (err) {
-		if(err){
-			console.log(err);
-			res.json({success:false,message:"No dripo found"});
+	if(req.query.dripoid){
+		Dripo.remove({_id:req.query.dripoid},function (err) {
+			if(err){
+				console.log(err);
+				res.json({success:false,message:"No dripo found"});
 
-		}
-		else{
-			res.json({success:true,message:"Dripo removed successfully"});
-		}
-	})
+			}
+			else{
+				res.json({success:true,message:"Dripo removed successfully"});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:"No dripoid in query"});
+	}
+	
 });
 
 //route for edit dripo
 router.put('/admin/dripo',function (req,res) {
-	Dripo.findOne({dripoid: req.body.dripoid,username:req.decoded.username}).exec(function(err,dripo) {
-		if (err) throw err;
-		if(!dripo){
-			Dripo.findOne({_id:req.body._id}).select('stationname dripoid').exec(function(err,olddripo) {
-			olddripo.stationname=req.body.stationname;
-			olddripo.dripoid = req.body.dripoid;
-			olddripo.save(function (err) {
-				if(err) throw err;
-				else{
-					res.json({success:true,message:'Dripo details updated'});
-				}
+	if(req.body.dripoid && req.body._id){
+		Dripo.findOne({dripoid: req.body.dripoid,username:req.decoded.username}).exec(function(err,dripo) {
+			if (err) throw err;
+			if(!dripo){
+				Dripo.findOne({_id:req.body._id}).select('stationname dripoid').exec(function(err,olddripo) {
+				olddripo.stationname=req.body.stationname;
+				olddripo.dripoid = req.body.dripoid;
+				olddripo.save(function (err) {
+					if(err) throw err;
+					else{
+						res.json({success:true,message:'Dripo details updated'});
+					}
+				});
 			});
-		});
-		}
-		else{
-			res.json({success:false,message:'You have already added this Dripo'})
-		}
+			}
+			else{
+				res.json({success:false,message:'You have already added this Dripo'})
+			}
 
-	});
+		});
+	}
+	else{
+		res.json({success:false,message:'Required field is empty'})
+	}
+	
 });
 
 //route to provide all the details needed for admin home page
@@ -1070,233 +1111,339 @@ router.get('/nurse/viewstation', function(req,res){
 });
 //route to set new token including the user selected station
 router.post('/nurse/setstation', function(req,res){
-	Station.find({username: req.decoded.admin,stationname:req.body.stationname}).exec(function(err, station) {
-		var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname,stationid:station[0]._id},secret);
-		res.json({success:true,message:"token updated",token:token});
-	});	
+	console.log(req.decoded);
+	if(req.body.stationname){
+		Station.find({username: req.decoded.admin,stationname:req.body.stationname}).exec(function(err, station) {
+			if(station.length == 0){
+				res.json({success:false,message:"Selected Station not found"});
+			}
+			else{
+				console.log(station);
+				var token = jwt.sign({username:req.decoded.username,hospitalname:req.decoded.hospitalname,uid:req.decoded.uid,station:req.body.stationname,stationid:station[0]._id},secret);
+				res.json({success:true,message:"token updated",token:token});
+
+			}
+
+		});	
+	}
+	else{
+		res.json({success:false,message:"Required field is empty"});
+	}
+	
 		
 });
 
 //route for fetching all the bed details to nurse while adding patient
 router.get('/nurse/viewbed', function(req,res){
-	Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'unoccupied'}).exec(function(err,bed) {	
-		if (err) throw err;
-		if(!bed.length){
-			res.json({success:false,message:'No bed found, Contact admin'});
-		}
-			
-		else{
+	if(req.decoded.admin && req.decoded.station){
+		Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'unoccupied'}).exec(function(err,bed) {	
+			if (err) throw err;
+			if(!bed.length){
+				res.json({success:false,message:'No bed found, Contact admin'});
+			}
+				
+			else{
 
-			res.json({success:true,message:'bed found',beds:bed});
-		}
-	});
+				res.json({success:true,message:'bed found',beds:bed});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'});
+	}
+	
 });
 
 //route for fetching all the doctor accout details to nurse while adding patient
 router.get('/nurse/viewdoctor', function(req,res){
-	User.find({_admin: req.decoded.admin,permission:'doctor'}).exec(function(err,doctor) {	
-		if (err) throw err;
-		if(!doctor.length){
-			res.json({success:false,message:'No doctor found, Contact admin'});
-		}
-			
-		else{
+	if(req.decoded.admin){
+		User.find({_admin: req.decoded.admin,permission:'doctor'}).exec(function(err,doctor) {	
+			if (err) throw err;
+			if(!doctor.length){
+				res.json({success:false,message:'No doctor found, Contact admin'});
+			}
+				
+			else{
 
-			res.json({success:true,message:'Doctor found',doctors:doctor});
-		}
-	});
+				res.json({success:true,message:'Doctor found',doctors:doctor});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'});
+	}
+	
 });
 
 //route for saving patient personal and other detaills, also change the bed status to occupied
 router.post('/nurse/patient', function(req,res){
-	var patient = new Patient();
-	patient.patientname= req.body.patientname;
-	patient.patientage= req.body.patientage;
-	patient.patientweight= req.body.patientweight;
-	patient.patientstatus = 'active';
-	patient.bedname = req.body.bedname;
-	patient.doctorname = req.body.doctorname;
-	patient.admittedon = req.body.admittedon;
-	patient.stationname = req.decoded.station;
-	patient._admin = req.decoded.admin;
-	// saving user to database
-	patient.save(function(err,patient){
-		if (err) {
-			console.log(err);
-			//responding error back to frontend
-			res.json({success:false,message:'Database error'});
-		}
-		else{
-			Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
-				if (err) return handleError(err);
-				bed.status = 'occupied';
-				bed._patient = patient._id;
-				bed.save(function (err) {
-					if(err) throw err;
+	console.log(req.body);
+		if(req.decoded.admin && req.decoded.station){
+				var patient = new Patient();
+				patient.patientname= req.body.patientname;
+				patient.patientage= req.body.patientage;
+				patient.patientweight= req.body.patientweight;
+				patient.patientstatus = 'active';
+				patient.bedname = req.body.bedname;
+				patient.doctorname = req.body.doctorname;
+				patient.admittedon = req.body.admittedon;
+				patient.stationname = req.decoded.station;
+				patient._admin = req.decoded.admin;
+				// saving user to database
+				patient.save(function(err,patient){
+					if (err) {
+						console.log(err);
+						//responding error back to frontend
+						res.json({success:false,message:'Database error'});
+					}
 					else{
-						Patient.collection.update({_id:patient._id},{$set:{_bed:bed._id}},{upsert:false});
-						res.json({success:true,message:'Patient added and bed status updated',patient:patient,bed:bed});
+						Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
+							if (err) return handleError(err);
+							if(!bed){
+								res.json({success:false,message:'Invalid Bed'});
+							}
+							else{
+								bed.status = 'occupied';
+								bed._patient = patient._id;
+								bed.save(function (err) {
+									if(err) throw err;
+									else{
+										Patient.collection.update({_id:patient._id},{$set:{_bed:bed._id}},{upsert:false});
+										res.json({success:true,message:'Patient added and bed status updated',patient:patient,bed:bed});
+									}
+								});
+
+							}
+						
+
+						});
 					}
 				});
-
-			});
 		}
-});
-
-});
-
-router.post('/nurse/medication', function(req,res){
-	var medicationObjArray=[{}];
-	var patientid;
-	for (var key in req.body) {
-		var medicationObj={};
-		medicationObj.medicinename = req.body[key].medicinename;
-		medicationObj.medicinerate = req.body[key].medicinerate;
-		medicationObj.medicinevolume = req.body[key].medicinevolume;
-		medicationObj.stationname = req.decoded.station;
-		medicationObj._admin = req.decoded.admin;
-		medicationObj._bed = ObjectId(req.body[key].bedid);
-		medicationObj._patient = ObjectId(req.body[key].patientid);
-		medicationObjArray[key] = medicationObj;
-		patientid = ObjectId(req.body[key].patientid);
-		bedid = ObjectId(req.body[key].bedid);
-
-	}
-	//created an array of object med with all details and inserting it into the database  
-	Medication.collection.insert(medicationObjArray, onInsert);
-	function onInsert(err,docs){
-		if(err) throw err;
 		else{
-			//update patient collection and insert thr refernce of medicine id
-			for (var key in medicationObjArray){
-				Patient.collection.update({_id:patientid},{$push:{_medication:medicationObjArray[key]._id}},{upsert:false});
-			}
-			//docs.ops has the data available and req.body.medications[].time has all the time associated with that medicine
-			timeObjArray=[{}];
-			var counter=0;
-			docs.ops.forEach(function callback(currentValue, index, array) {
-			    var timeArray=req.body[index].time;
-			    //creating an array of object based on the time data
-			    for(var j=0;j<timeArray.length;j++)
-			    {
-			         var timeObj={};
-			         timeObj.time=timeArray[j];
-			         timeObj.type='infusion';
-			         timeObj.priority = 0;
-			         timeObj.status='opened';
-			         timeObj.createdat=new Date();
-			         timeObj.infusedVolume =0;
-			         timeObj._patient=patientid;
-			         timeObj._bed=bedid;
-			         timeObj._medication=currentValue._id;
-			         timeObj._station=ObjectId(req.decoded.stationid);
-			         timeObjArray[counter]=timeObj;
-			         counter++;
-			    }
-			                            
-			});
-			Task.collection.insert(timeObjArray, onInsert);
-			function onInsert(err,times) {
-				if(err) throw err;
-				else{
-					for (var key in medicationObjArray) 
-					{
-					    for (var key2 in timeObjArray)
-					    if(medicationObjArray[key]._id===timeObjArray[key2]._medication)
-					    Medication.collection.update({_id:medicationObjArray[key]._id},{$push:{_task:timeObjArray[key2]._id}},{upsert:false});
-					}
+			res.json({success:false,message:'Decoded token has no station value'});
 
-				}
-			}
-		res.json({success:true,message:"medication added successfully"})
-
-		}//end of adding medication success
-	}//end of medication insert function
+		}	
 
 });
 
 //route for fetching all the patient details to nurse 
 router.get('/nurse/patient', function(req,res){
-	Patient.find({_admin: req.decoded.admin,stationname:req.decoded.station}).exec(function(err,patient) {	
-		if (err) throw err;
-		if(!patient.length){
-			res.json({success:false,message:'No patient found'});
-		}
-		else{
-			res.json({success:true,message:'Patients found',patients:patient});
-		}
-	});
+	if(req.decoded.admin && req.decoded.station){
+		Patient.find({_admin: req.decoded.admin,stationname:req.decoded.station}).exec(function(err,patient) {	
+			if (err) throw err;
+			if(!patient.length){
+				res.json({success:false,message:'No patient found'});
+			}
+			else{
+				res.json({success:true,message:'Patients found',patients:patient});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'});
+
+	}
+	
+});
+
+
+//route for edit patient 
+router.put('/nurse/patient',function (req,res) {
+	if(req.body._id){
+		//save updated patient info
+		Patient.findOne({_id: req.body._id}).exec(function(err,patient) {
+			if (err) throw err; // Throw error if cannot connect
+			if(!patient){
+				res.json({success:false,message:'Invalid patient id'})
+			}
+			else{
+				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname && req.body.oldbed && req.body.doctorname && req.body.admittedon){
+					patient.patientname= req.body.patientname;
+					patient.patientage= req.body.patientage;
+					patient.patientweight= req.body.patientweight;
+					patient.bedname= req.body.bedname;
+					patient.patientstatus = 'active';
+					patient.doctorname= req.body.doctorname;
+					patient.admittedon= req.body.admittedon;
+					patient.save(function(err) {
+						if (err) {
+								console.log(err);
+								res.json({success:false,message:'Failed to connect to database'})
+							} 
+						else {	
+								//update bed and medication if there is an bed chanege
+								if(req.body.oldbed !== req.body.bedname){
+									Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
+										if (err) return handleError(err);
+										if(!bed){
+											res.json({success:false,message:'Invalid Bed'})
+										}
+										else{
+											bed.status = 'occupied';
+											bed._patient = patient._id;
+											bed.save(function (err) {
+												if(err) throw err;
+												else{
+													Bed.findOne({username: req.decoded.admin,bedname: req.body.oldbed,stationname:req.decoded.station}).exec(function(err, oldbed) {
+														if (err) throw err;
+														if(!oldbed){
+															res.json({success:false,message:'Invalid OldBed name'})
+														}
+														else{
+															oldbed.status='unoccupied';
+															oldbed._patient = null;
+															oldbed.save(function (err) {
+																if(err) throw err;
+																else{
+																	Task.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+																	Patient.collection.update({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+																	Medication.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+																	res.json({success:true,message:'Patient details updated'});
+
+																}
+															});
+
+														}
+														
+											
+													});
+
+													}
+											});
+
+										}
+										
+									});
+								}
+								else{
+									res.json({success:true,message:'Patient details updated with no bed change'})
+								}
+							
+							}
+						});
+				}
+				else{
+					res.json({success:false,message:'Required field is empty'});
+
+				}
+				
+
+			}
+			
+			});
+
+	}
+	else{
+		res.json({success:false,message:'No patient id in req.body'})
+	}
 });
 
 //route for discharging a patient
 router.put('/nurse/dischargepatient', function(req,res){
-	var date = new Date();
-	Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged',dischargedon:date}},{upsert:false});
-	Task.collection.remove({_patient:ObjectId(req.body._id)});
-	Medication.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{_bed:""}});
-	res.json({success:true,message:'Patient discharged'});
+	if(req.body._id){
+		var date = new Date();
+		Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged',dischargedon:date}},{upsert:false});
+		Task.collection.remove({_patient:ObjectId(req.body._id)});
+		Medication.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{_bed:""}});
+		Bed.collection.update({_patient:ObjectId(req.body._id)},{$set:{status:'unoccupied',_patient:""}},{upsert:false});
+		res.json({success:true,message:'Patient discharged'});
+	}
+	else{
+		res.json({success:true,message:'No valid patient id provided'});
+	}
+	
 });
 
-//route for edit patient 
-router.put('/nurse/patient',function (req,res) {
-	//save updated patient info
-	Patient.findOne({_id: req.body._id}).exec(function(err,patient) {
-		if (err) throw err; // Throw error if cannot connect
-		patient.patientname= req.body.patientname;
-		patient.patientage= req.body.patientage;
-		patient.patientweight= req.body.patientweight;
-		patient.bedname= req.body.bedname;
-		patient.patientstatus = 'active';
-		patient.doctorname= req.body.doctorname;
-		patient.admittedon= req.body.admittedon;
-		patient.save(function(err) {
-			if (err) {
-					console.log(err);
-					res.json({success:false,message:'Failed to connect to database'})
-				} 
-			else {	
-					//update bed and medication if there is an bed chanege
-					if(req.body.oldbed !== req.body.bedname){
-						Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
-							if (err) return handleError(err);
-							bed.status = 'occupied';
-							bed._patient = patient._id;
-							bed.save(function (err) {
-								if(err) throw err;
-								else{
-									Bed.findOne({username: req.decoded.admin,bedname: req.body.oldbed,stationname:req.decoded.station}).exec(function(err, oldbed) {
-										oldbed.status='unoccupied';
-										oldbed._patient = null;
-										oldbed.save(function (err) {
-											if(err) throw err;
-											else{
-												Task.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
-												Patient.collection.update({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
-												Medication.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
-												res.json({success:true,message:'Patient details updated'});
+//route for adding medications
+router.post('/nurse/medication', function(req,res){
+	console.log(req.body);
+	if(req.body[0].medicinename && req.body[0].medicinerate && req.body[0].medicinevolume && req.body[0].patientid &&  req.body[0].bedid){
+		var medicationObjArray=[{}];
+		var patientid;
+		for (var key in req.body) {
+			if(req.body[key].medicinename && req.body[key].medicinerate && req.body[key].medicinevolume && req.body[key].patientid &&  req.body[key].bedid){
+				var medicationObj={};
+				medicationObj.medicinename = req.body[key].medicinename;
+				medicationObj.medicinerate = req.body[key].medicinerate;
+				medicationObj.medicinevolume = req.body[key].medicinevolume;
+				medicationObj.stationname = req.decoded.station;
+				medicationObj._admin = req.decoded.admin;
+				medicationObj._bed = ObjectId(req.body[key].bedid);
+				medicationObj._patient = ObjectId(req.body[key].patientid);
+				medicationObjArray[key] = medicationObj;
+				patientid = ObjectId(req.body[key].patientid);
+				bedid = ObjectId(req.body[key].bedid);
+			}
+			else{
+				res.json({success:false,message:"Required filed can't be empty"})
 
-											}
-										});
-				
-									});
+			}
+			
 
-									}
-							});
-						});
-					}
-					else{
-						res.json({success:true,message:'Patient details updated with no bed change'})
-					}
-				
+		}
+		//created an array of object med with all details and inserting it into the database  
+		Medication.collection.insert(medicationObjArray, onInsert);
+		function onInsert(err,docs){
+			if(err) throw err;
+			else{
+				//update patient collection and insert thr refernce of medicine id
+				for (var key in medicationObjArray){
+					Patient.collection.update({_id:patientid},{$push:{_medication:medicationObjArray[key]._id}},{upsert:false});
 				}
-			});
-		});
+				//docs.ops has the data available and req.body.medications[].time has all the time associated with that medicine
+				timeObjArray=[{}];
+				var counter=0;
+				docs.ops.forEach(function callback(currentValue, index, array) {
+				    var timeArray=req.body[index].time;
+				    //creating an array of object based on the time data
+				    for(var j=0;j<timeArray.length;j++)
+				    {
+				         var timeObj={};
+				         timeObj.time=timeArray[j];
+				         timeObj.type='infusion';
+				         timeObj.priority = 0;
+				         timeObj.status='opened';
+				         timeObj.createdat=new Date();
+				         timeObj.infusedVolume =0;
+				         timeObj._patient=patientid;
+				         timeObj._bed=bedid;
+				         timeObj._medication=currentValue._id;
+				         timeObj._station=ObjectId(req.decoded.stationid);
+				         timeObjArray[counter]=timeObj;
+				         counter++;
+				    }
+				                            
+				});
+				Task.collection.insert(timeObjArray, onInsert);
+				function onInsert(err,times) {
+					if(err) throw err;
+					else{
+						for (var key in medicationObjArray) 
+						{
+						    for (var key2 in timeObjArray)
+						    if(medicationObjArray[key]._id===timeObjArray[key2]._medication)
+						    Medication.collection.update({_id:medicationObjArray[key]._id},{$push:{_task:timeObjArray[key2]._id}},{upsert:false});
+						}
+
+					}
+				}
+			res.json({success:true,message:"medication added successfully"})
+
+			}//end of adding medication success
+		}//end of medication insert function
+	}
+	else{
+		res.json({success:false,message:"Required filed can't be empty"})
+	}
+
+
 });
 
 //route for retrieve medication data and serve to edit medication page
-router.post('/nurse/editmedication', function(req,res){
+router.get('/nurse/medication', function(req,res){
 	var editchoices=[{}];
-	Medication.find({_bed:req.body._bed}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
+	Medication.find({_bed:req.query.bedid}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
 		for (var key in medication) {
 			var editchoicesObj={};
 			editchoicesObj.medicineid = medication[key]._id;
@@ -1317,8 +1464,11 @@ router.post('/nurse/editmedication', function(req,res){
 
 	});
 });
-//route to update medication edits
-router.put('/nurse/editmedication', function(req,res){
+//route to update medication edits **tricky route
+router.put('/nurse/medication', function(req,res){
+	console.log(req.body);
+	
+	//fetching the patientid and bed id from request
 	var patientid = ObjectId(req.body[0].patientid);
 	var bedid = ObjectId(req.body[0].bedid);
 	Medication.find({_patient:req.body[0].patientid}).populate({path:'_task',model:'Task'}).exec(function (err,medication) {
@@ -1552,107 +1702,163 @@ router.get('/nurse/getopenedtask', function(req,res){
 	var hour=date.getHours();
 	var index =-1;
 	var skippedtaskArray =[];
-	// var stationid = ObjectId(req.decoded.stationid);
-	Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
-		if(task.length==0){
-			res.json({success:false,message:"no tasks found"});
+	if(req.decoded.station){
+		Task.find({_station:ObjectId(req.decoded.stationid),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
+				if(task.length==0){
+					res.json({success:false,message:"no tasks found"});
 
-		}
-		else if(task.length == 1){
-			res.json({success:true,openedtasks:task,times:[task[0].time]})
-		}
-		//reorder returned task array of object based on present time
-		else{
-			var nexthour = hour;
-			while(nexthour<24){ 
-				for(lp1=0;lp1<task.length;lp1++){
-					if(task[lp1].time == nexthour){
-						index = lp1;
-					}
 				}
-
-				if(index==-1){
-					if(nexthour == 23){
-						nexthour = 0;
-					}
-					else{
-						nexthour=nexthour+1;
-					}
+				else if(task.length == 1){
+					res.json({success:true,openedtasks:task,times:[task[0].time]})
 				}
+				//reorder returned task array of object based on present time
 				else{
-					break;
+					console.log(task);
+					var nexthour = hour;
+					while(nexthour<24){ 
+						for(lp1=0;lp1<task.length;lp1++){
+							if(task[lp1].time == nexthour){
+								index = lp1;
+							}
+						}
+
+						if(index==-1){
+							if(nexthour == 23){
+								nexthour = 0;
+							}
+							else{
+								nexthour=nexthour+1;
+							}
+						}
+						else{
+							break;
+						}
+					}
+				var prevtaskArray = task.slice(0,index);
+				var nexttaskArray = task.slice(index,(task.length));
+				var taskArray = nexttaskArray.concat(prevtaskArray);
+				var times = [];
+				for(var key in taskArray){
+					times.push(taskArray[key].time);
 				}
-			}
-		var prevtaskArray = task.slice(0,index);
-		var nexttaskArray = task.slice(index,(task.length));
-		var taskArray = nexttaskArray.concat(prevtaskArray);
-		var times = [];
-		for(var key in taskArray){
-			times.push(taskArray[key].time);
-		}
-		var timesArray=[];
-		var n=times.length;
-		var count=0;
-		for(var c=0;c<n;c++)
-		    { 
-		        for(var d=0;d<count;d++) 
-		        { 
-		            if(times[c]==timesArray[d]) 
-		                break; 
-		        } 
-		        if(d==count) 
-		        { 
-		            timesArray[count] = times[c]; 
-		            count++; 
-		        } 
-		    }
+				var timesArray=[];
+				var n=times.length;
+				var count=0;
+				for(var c=0;c<n;c++)
+				    { 
+				        for(var d=0;d<count;d++) 
+				        { 
+				            if(times[c]==timesArray[d]) 
+				                break; 
+				        } 
+				        if(d==count) 
+				        { 
+				            timesArray[count] = times[c]; 
+				            count++; 
+				        } 
+				    }
 
+					res.json({success:true,openedtasks:taskArray,times:timesArray})
+				}
+			});	
 
-			res.json({success:true,openedtasks:taskArray,times:timesArray})
-		}
-	});	
-
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'})
+	}
+	
 
 });
 
 //route to send all active tasks that is inprogress 
 router.get('/nurse/getinprogresstask', function(req,res){
-	Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,inprogresstask) {
-			if(inprogresstask.length==0){
-				res.json({success:false,message:"no tasks found"});
-			}
-			else{
-				res.json({success:true,inprogresstasks:inprogresstask})
+	if(req.decoded.station){
+		Task.find({_station:ObjectId(req.decoded.stationid),status:'inprogress'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,inprogresstask) {
+				if(inprogresstask.length==0){
+					res.json({success:false,message:"no tasks found"});
+				}
+				else{
+					res.json({success:true,inprogresstasks:inprogresstask})
 
-			}
-	});
+				}
+		});
+
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'})
+	}
 
 });
 
 //route to send all active tasks that is alerted tasks
 router.get('/nurse/getalertedtask', function(req,res){
-	Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
-			if(alertedtask.length==0){
-				res.json({success:false,message:"no tasks found"});
-			}
-			else{
-				res.json({success:true,alertedtasks:alertedtask})
+	if(req.decoded.station){
+		Task.find({_station:ObjectId(req.decoded.stationid),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
+				if(alertedtask.length==0){
+					res.json({success:false,message:"no tasks found"});
+				}
+				else{
+					res.json({success:true,alertedtasks:alertedtask})
 
-			}
-	});
+				}
+		});
 
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'})
+	}
+	
 });
 
 //route to skip a task 
-router.post('/nurse/skiptask', function(req,res){
-	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'skipped',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
-	res.json({success:true,message:'task skipped'})
+router.put('/nurse/skiptask', function(req,res){
+	if(req.body._id){
+		Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'skipped',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
+		res.json({success:true,message:'task skipped'})
+	}
+	else{
+		res.json({success:false,message:'task id not provided'})
+
+	}
+
 });
 
 //route to close a task 
-router.post('/nurse/closetask', function(req,res){
-	Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
-	res.json({success:true,message:'task closed'})
+router.put('/nurse/closetask', function(req,res){
+	if(req.body._id){
+		Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
+		res.json({success:true,message:'task closed'})
+
+	}
+	else{
+		res.json({success:false,message:'task id not provided'})
+
+	}
+
+});
+
+//route to provide patient details
+router.get('/nurse/patientdetails', function(req,res){
+	if(req.query.patientid){
+		Patient.find({_id:ObjectId(req.query.patientid)}).populate({path:'_medication',model:'Medication',populate:{path:'_infusionhistory',model:'Infusionhistory'}}).exec(function(err,patient) {
+			if(patient.length==0){
+				res.json({success:false,message:'Invalid Patient id in query'});
+
+			}
+			else{
+				res.json({success:true,patientdetails:patient});
+
+			}
+		});
+
+	}
+	else{
+		res.json({success:false,message:'Patient id not provided'});
+
+	}
+	
+
+
 });
 
 

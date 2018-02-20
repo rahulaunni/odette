@@ -1,7 +1,59 @@
 <div layout="column" layout-fill ng-cloak>
     <md-content>
         <md-tabs md-selected="myTabIndex" md-dynamic-height md-border-bottom md-swipe-content="false">
-        <md-tab  label="Patients" ng-click="reload();">
+        <md-tab label="Patient Details" ng-if="managePatient.showOnPatientDetails == true">
+            <md-button class="md-raised" ng-click="backToView();">
+                <md-icon class="material-icons">keyboard_return</md-icon>
+            </md-button>
+            <div layout="column" style="overflow:hidden;background: #ffffff;border-radius: 4px;
+                  box-shadow: 0px 0px 2px 0px rgba(117,117,117,1);margin-top: 2em">
+                  <div layout="row" layout-align="start center" layout-padding layout-fill style="background: rgba(0,0,0,.1);margin-bottom: 2em">
+                      <div class="md-body-2">Personal Details</div>
+                  </div>
+                <div layout="row" layout-align="center center" layout-padding="">
+                    <div flex="33">Patient Name: {{patientdetails[0].patientname}}</div>
+                    <div flex="33">Age: {{patientdetails[0].patientage}}</div>
+                    <div flex="33">Weight: {{patientdetails[0].patientweight}} Kg</div>
+                </div>
+                <div layout="row" layout-align="center center" layout-padding="">
+                    <div ng-if="patientdetails[0].patientstatus == 'active'" flex="33">Status: {{patientdetails[0].patientstatus}}</div>
+                    <div ng-if="patientdetails[0].patientstatus == 'discharged'" flex="33">Status: {{patientdetails[0].dischargedon}}</div>
+                    <div flex="33">Doctor: {{patientdetails[0].doctorname}}</div>
+                    <div flex="33">Admitted On: {{patientdetails[0].admittedon | date}}</div>
+                </div>
+                <div layout="row" layout-align="start center" layout-padding layout-fill style="background: rgba(0,0,0,.1);margin-bottom: 2em">
+                    <div class="md-body-2">Infusion Details</div>
+                </div>
+                <div ng-repeat="medication in patientdetails[0]._medication">
+                    <div layout="row" layout-padding="">
+                        <div flex="33">Medicine Name : {{medication.medicinename}}</div>
+                        <div flex="33">Rate : {{medication.medicinerate}}</div>
+                        <div flex="33">Volume : {{medication.medicinevolume}}</div>
+                    </div>
+                    <div ng-repeat="infusion in medication._infusionhistory">
+                        <md-button class="md-no-style md-button md-ink-ripple md-clickable" layout-padding="" layout="row" layout-align="start center" layout-padding layout-fill style="background: rgba(0,0,0,.5);margin-bottom: 2em" ng-click="showInfusionDetails(infusion._id,toggleView);">
+                                 Infusion {{$index+1}}
+                                 <md-tooltip>Click to see details</md-tooltip>
+                        </md-button>
+                        <div id="{{infusion._id}}" style="display:none">
+                            <div layout="row" layout-padding="">
+                                <div flex="33">Date : {{infusion.infdate | date}}</div>
+                                <div flex="33">Infusion Start time: {{infusion.infstarttime}}</div>
+                                <div flex="33">Infusion End time: {{infusion.infendtime}}</div>
+                            </div>
+                            <div ng-repeat="error in infusion.inferr">
+                                <div layout = "row" layout-align="center center" layout-padding="">
+                                    <div flex="50" layout-align="center center">{{error.errtype}}</div>
+                                    <div flex="50" layout-align="center center">{{error.errtime}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </md-tab>
+        <md-tab  label="Patients" ng-click="reload();" ng-if="managePatient.showOnPatientDetails == false">
         <div style="padding: 1%">
         <div layout=row class="md-headline" > List of Patients </div>
         <div layout=row class="md-headline" > &nbsp </div>
@@ -25,7 +77,7 @@
         <md-grid-list  md-cols="6" md-cols-sm="18" md-cols-md="18" md-cols-gt-md="24" md-cols-gt-lg="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
             <md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);" class="alertedgrid" id="alerted"  md-colspan="6"  ng-repeat="patient in patients | filter:{patientstatus: patientstatus} | filter:patientSearch" md-rowspan="5">
                 <div ng-if="patient.patientstatus=='active' || patient.patientstatus==''"  style="width:100%;height: 100%" layout="column" layout-align="center stretch" id="patientcard">
-                    <div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-title">{{patient.patientname}}</div>
+                    <md-button class="md-no-style md-button md-ink-ripple md-clickable" ng-click="showPatientDetails(patient);" flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-title">{{patient.patientname}}</md-button>
                     <div flex="100" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-body-2" ng-click="showDetails($event,alertedtask);">{{patient.bedname}}</div>
                     <div  flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;background: #616161">
                         <md-button class="md-no-style md-button md-ink-ripple md-clickable" layout="row" layout-align="center center" layout-padding flex="50" style="border-right: 1px solid #424242;height: 100%" class="md-body-1" layout="row" layout-align="center center" ng-click="managePatient.showEditPatient(patient);">

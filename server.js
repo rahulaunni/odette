@@ -413,6 +413,7 @@ client.on('message', function (topic, payload, packet) {
             var infusedVolume = messageArray[4];
             var timeRemaining = messageArray[5];
             var totalVolume = messageArray[6];
+            var deviceCharge = messageArray[7];
             var percentage = Math.trunc(((infusedVolume/totalVolume)*100));
             var infdate= new Date();
             var inftime=(new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds();
@@ -433,9 +434,10 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
                 });
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic,devicecharge:deviceCharge}});
                 Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
                     if(inf.length==0){
                     Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{date:newdate,infstarttime:inftime,infdate:infdate,}},{upsert:true});
@@ -462,9 +464,10 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
                 });
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,devicecharge:deviceCharge}});
 
 
             }//end of if status is infusing
@@ -486,7 +489,7 @@ client.on('message', function (topic, payload, packet) {
                     console.log("no task id");
                 }
                 else{
-                    Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                    Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,devicecharge:""}});
 
                 }
 
@@ -522,7 +525,7 @@ client.on('message', function (topic, payload, packet) {
                     'percentage':percentage
                 });
             
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic}});
               
 
             }
@@ -546,7 +549,7 @@ client.on('message', function (topic, payload, packet) {
                 var day = dateObj.getUTCDate();
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:"",devicecharge:""}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
             }//end of Empty_ACK
 
@@ -571,7 +574,20 @@ client.on('message', function (topic, payload, packet) {
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
-                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
+                    var inferrLength = inf[0].inferr.length-1;
+                    var lastTime = inf.inferr[inferrLength].errtime;
+                    var lastError = inf.inferr[inferrLength].errtype;
+                    var lasttimeInfoArray = lastTime.split(':');
+                    var lastMin = lasttimeInfoArray[1];
+                    console.log(lasttimeInfoArray);
+                    var presentMin = (new Date()).getMinutes();
+                    if(presentMin - lastMin > 2 && lastError != status){
+                        Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+
+                    }
+                });
+
 
             }//end of error
             else if(status == 'Complete'){
@@ -645,8 +661,11 @@ client.on('message', function (topic, payload, packet) {
 
             
         }
+
+
     });
     }//end of if mon
+
     if(topicinfoArray[2] == 'will'){
         var message = payload.toString();
         if(message == 'offline'){
@@ -664,7 +683,7 @@ client.on('message', function (topic, payload, packet) {
                         'totalVolume':task[0].totalVolume,
                         'percentage':task[0].percentage
                     });
-                    Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted'}});
+                    Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted',devicecharge:""}});
                 }
                
             });

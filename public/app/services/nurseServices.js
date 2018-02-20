@@ -34,13 +34,16 @@ angular.module('nurseServices',['authServices'])
 		return $http.put('/api/nurse/patient',editpatient);
 	}
 	nurseFactory.editMedication = function (editpatient) {
-		return $http.post('/api/nurse/editmedication',editpatient);
+		return $http.get('/api/nurse/medication',{params:{bedid:editpatient._bed}});
 	}
 	nurseFactory.editMedicationSave = function (editpatient) {
-		return $http.put('/api/nurse/editmedication',editpatient);
+		return $http.put('/api/nurse/medication',editpatient);
 	}
 	nurseFactory.deleteMedication = function (patientid) {
 		return $http.post('/api/nurse/deletemedication',patientid);
+	}
+	nurseFactory.showPatientDetails = function (patient) {
+		return $http.get('/api/nurse/patientdetails',{params:{patientid:patient._id}});
 	}
 
 	return nurseFactory;

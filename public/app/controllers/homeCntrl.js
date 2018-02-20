@@ -169,6 +169,7 @@ angular.module('homeController',['homeServices'])
               $scope.openedtasks[key].timeRemaining = data.timeRemaining;
               $scope.openedtasks[key].totalVolume = data.totalVolume;
               $scope.openedtasks[key].percentage = data.percentage;
+              $scope.openedtasks[key].devicecharge = data.deviceCharge;
               $scope.inprogresstasks.unshift($scope.openedtasks[key]);
               $scope.inprogresstasks[0].span=6;
               $scope.openedtasks.splice(key2,1);
@@ -177,17 +178,6 @@ angular.module('homeController',['homeServices'])
             if(key == $scope.openedtasks.length -1){
               for(var key2 in $scope.alertedtasks){
                 if($scope.alertedtasks[key2]._id == data.taskid){
-                  //get alerted
-                  Home.getalertedTasks().then(function (data) {
-                      if(data.data.success){
-                          $scope.alertedtasks = data.data.alertedtasks;
-
-                      }else{
-                         $scope.alertedtasks=[];
-                         $scope.noAlertedTasks = true;
-
-                      }
-                  });
                   $scope.noInprogressTasks=false;
                   $scope.alertedtasks[key2].status = 'inprogress';
                   $scope.alertedtasks[key2].infusionstatus = data.infusionstatus;
@@ -196,6 +186,7 @@ angular.module('homeController',['homeServices'])
                   $scope.alertedtasks[key2].timeRemaining = data.timeRemaining;
                   $scope.alertedtasks[key2].totalVolume = data.totalVolume;
                   $scope.alertedtasks[key2].percentage = data.percentage;
+                  $scope.alertedtasks[key].devicecharge = data.deviceCharge;
                   $scope.inprogresstasks.unshift($scope.alertedtasks[key2]);
                   $scope.inprogresstasks[0].span=6;
                   $scope.alertedtasks.splice(key2,1);
@@ -213,6 +204,7 @@ angular.module('homeController',['homeServices'])
                     $scope.inprogresstasks[key2].timeRemaining = data.timeRemaining;
                     $scope.inprogresstasks[key2].totalVolume = data.totalVolume;
                     $scope.inprogresstasks[key2].percentage = data.percentage;
+                    $scope.inprogresstasks[key].devicecharge = data.deviceCharge;
                   }
                 }
               }
@@ -231,6 +223,8 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.inprogresstasks[key].devicecharge = data.deviceCharge;
+
 
             }
           }
@@ -248,6 +242,7 @@ angular.module('homeController',['homeServices'])
                 $scope.inprogresstasks[key].percentage = data.percentage;
                 $scope.alertedtasks.unshift($scope.inprogresstasks[key]);
                 $scope.inprogresstasks.splice(key,1);
+                $scope.noAlertedTasks = false;
                 Home.getinprogressTasks().then(function (data) {
                     if(data.data.success){
                         $scope.inprogresstasks = data.data.inprogresstasks;
@@ -267,6 +262,17 @@ angular.module('homeController',['homeServices'])
 
                     }
                 });
+                //get alerted
+                Home.getalertedTasks().then(function (data) {
+                    if(data.data.success){
+                        $scope.alertedtasks = data.data.alertedtasks;
+
+                    }else{
+                       $scope.alertedtasks=[];
+                       $scope.noAlertedTasks = true;
+
+                    }
+                });
               }
             }
           }
@@ -280,6 +286,7 @@ angular.module('homeController',['homeServices'])
                   $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
                   $scope.inprogresstasks[key].totalVolume = data.totalVolume;
                   $scope.inprogresstasks[key].percentage = data.percentage;
+                  $scope.inprogresstasks[key].devicecharge = data.deviceCharge;
 
                 }
               }
@@ -297,6 +304,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.inprogresstasks[key].devicecharge = data.deviceCharge;
               drughi.play();
 
             }
@@ -313,6 +321,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.alertedtasks[key].devicecharge = data.deviceCharge;
               drughi.play();
 
             }
@@ -359,6 +368,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.alertedtasks[key].devicecharge = data.deviceCharge;
               drughi.play();
 
             }
@@ -378,6 +388,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.alertedtasks[key].devicecharge = data.deviceCharge;
               drugmed.play();
 
             }
@@ -396,6 +407,7 @@ angular.module('homeController',['homeServices'])
               $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
               $scope.inprogresstasks[key].totalVolume = data.totalVolume;
               $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.alertedtasks[key].devicecharge = data.deviceCharge;
 
             }
 
@@ -449,24 +461,26 @@ angular.module('homeController',['homeServices'])
 
 
   //acknowledging the alert
-  $scope.ackAlert = function(ev,task) {
+  $scope.ackAlert = function(ev,task) { 
     if(task.infusionstatus == 'Empty'){
       console.log(task);
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Empty_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Empty_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'_'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
     else if(task.infusionstatus == 'Device_Disconnected'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'_'+task.devicecharge});
 
     }
     else if(task.infusionstatus == 'Block' || task.infusionstatus == 'Rate_Err'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
+      console.log("clicked");
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'_'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
     else if(task.infusionstatus == 'Complete'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume});
+      console.log("clicked");
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'_'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }

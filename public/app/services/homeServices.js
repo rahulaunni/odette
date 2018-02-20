@@ -11,10 +11,10 @@ angular.module('homeServices',[])
 		return $http.get('/api/nurse/getalertedtask');
 	}
 	homeFactory.skipTask = function (task) {
-		return $http.post('/api/nurse/skiptask',task);
+		return $http.put('/api/nurse/skiptask',task);
 	}
 	homeFactory.closeTask = function (task) {
-		return $http.post('/api/nurse/closetask',task);
+		return $http.put('/api/nurse/closetask',task);
 	}
 
 	return homeFactory;

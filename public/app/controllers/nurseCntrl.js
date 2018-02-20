@@ -1,5 +1,5 @@
 angular.module('nurseController',['authServices','userServices','adminServices','nurseServices'])
-.controller('nurseCntrl',function ($http,$route,$scope,$rootScope,$window,$location,$timeout,$mdDialog,$scope,Auth,Admin,Nurse) {
+.controller('nurseCntrl',function ($http,$route,$routeParams,$scope,$rootScope,$window,$location,$timeout,$mdDialog,$scope,Auth,Admin,Nurse) {
 	var app = this;
 	//to provide all stations to nurse user
 	$scope.stations = [];
@@ -100,6 +100,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	app.editerrorMsg = false;
 	this.addPatient = function (patientData) {
 		Nurse.addPatient(this.patientData).then(function (data) {
+			console.log(data.data);
 			if(data.data.success){
 				app.successMsg = data.data.message;
 				app.loader = true;
@@ -529,7 +530,42 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 			app.showOnAddMedication = false;
 			app.showOnEditPatient = false;
 		}
+		
+		app.showOnPatientDetails = false;
+		$scope.showPatientDetails = function (patient) {
+			Nurse.showPatientDetails(patient).then(function (data) {
+				if(data.data.success){
+					$scope.patientdetails = data.data.patientdetails;
+					app.showOnPatientDetails = true;
+				}
+				else{
+					$scope.patientdetails = false;
+					app.showOnPatientDetails = false;
 
+				}
+			});
+			
+		}
+		$scope.toggleView = false;
+		$scope.showInfusionDetails = function (id,tv) {
+			if(tv == false){
+				$scope.toggleView = true;
+				var target = angular.element('#'+id);
+				target.css('display','block');
+			}
+			else{
+				$scope.toggleView = false;
+				var target = angular.element('#'+id);
+				target.css('display','none');
+			}
+
+
+		}
+		$scope.backToView = function () {
+			app.showOnPatientDetails = false;
+			$route.reload('/managepatients');
+			reload();
+		}
 
 
 });

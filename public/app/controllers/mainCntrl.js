@@ -111,7 +111,6 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 	$scope.isActive = function(viewLocation) {
 	    return viewLocation === $location.path();
 	};
-	$scope.ipaddress = false;
 	User.getType().then(function (data) {
 		if(data.data.success){
 			if(data.data.type == 'local'){
@@ -224,7 +223,7 @@ $rootScope.$on("$routeChangeStart",function () {
 		$scope.nurseselectedIndex = 0;
 
 	}
-	else if($location.path() == '/managepatients'){
+	else if($location.path() == '/managepatients' || $location.path() == '/patientdetails'){
 		$scope.nurseselectedIndex = 1;
 
 	}
@@ -267,5 +266,7 @@ $scope.nurseNav = function (link) {
 
 	  });
 	};
+
+	
 
 });
