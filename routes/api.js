@@ -637,7 +637,7 @@ router.put('/admin/station',function (req,res) {
 //routes for bed management starts from here
 router.post('/admin/bed',function (req,res) {
 	if(req.body.stationname && req.body.bedname){
-		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+		Station.findOne({_id: ObjectId(req.body.stationname),username:req.decoded.username}).exec(function(err,station) {
 		if(!station){
 			res.json({success:false,message:'Not a valid station'});
 
@@ -652,7 +652,7 @@ router.post('/admin/bed',function (req,res) {
 				var bedObj={};
 				bedObj.bedname=bedArray[key];
 				bedObj.username=req.decoded.username;
-				bedObj.stationname=req.body.stationname;
+				bedObj.stationname=station.stationname;
 				bedObj._user = ObjectId(req.decoded.uid);
 				bedObj._station = ObjectId(station._id);
 				bedObj.status = 'unoccupied'
@@ -949,7 +949,7 @@ router.get('/admin/getconnecteddripos', function(req,res){
 //routes for adding dripos
 router.post('/admin/dripo',function (req,res) {
 	if(req.body.stationname && req.body.dripoid){
-		Station.findOne({stationname: req.body.stationname,username:req.decoded.username}).exec(function(err,station) {
+		Station.findOne({_id: ObjectId(req.body.stationname),username:req.decoded.username}).exec(function(err,station) {
 			if(!station){
 				res.json({success:false,message:'Not a valid station'});
 			}
@@ -962,7 +962,7 @@ router.post('/admin/dripo',function (req,res) {
 					var dripoObj={};
 					dripoObj.dripoid=dripoArray[key];
 					dripoObj.username=req.decoded.username;
-					dripoObj.stationname=req.body.stationname;
+					dripoObj.stationname=station.stationname;
 					dripoObj._user = ObjectId(req.decoded.uid);
 					dripoObj._station = ObjectId(station._id);
 					dripoObjArray[key] = dripoObj;

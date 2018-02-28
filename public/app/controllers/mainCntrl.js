@@ -145,7 +145,6 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 		}
 	});
 	//function to get connected dripo clients to admin view
-	$interval(function () {
 	User.getConnectedDripos().then(function (data) {
 		if(data.data.success){
 			$scope.connecteddripo=data.data.clients;
@@ -156,7 +155,6 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 
 		}
 	});
-},30000)
 
 /********************* Admin Menu *********************************/
 $scope.adminMenuItems=[{menu:'Home',icon:'home',href:'/admin/home'},

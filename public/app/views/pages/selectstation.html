@@ -1,5 +1,5 @@
 
-<md-content flex="100" layout="row" layout-align="center center">
+<md-content style="height:100%;">
 	<md-card flex="30" flex-xs="90" style="padding:2%" ng-hide="nostation">
 	    <form name="selectstationForm" ng-submit='nurse.selectStation(selectstationData);' layout="column">
 	     	<md-input-container class="md-icon-float md-block">
@@ -19,9 +19,10 @@
 	     	</div>
 	    </form>
 	</md-card>
-	<div class="show-hide-message" ng-show="nostation">
+	<div class="show-hide-message" layout="column" ng-show="nostation" layout-align="center center">
 	   <div>No stations found, Contact Admin</div>
 	   <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+	   <md-button layout-align="center center" class="md-button md-no-style md-clickable md-ink-ripple" ng-click="main.logout();">Logout</md-button>	
 	</div>
 	<div class="show-hide-message" ng-show="password.successMsg">
 	   <div>{{password.successMsg}}</div>

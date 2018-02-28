@@ -8,7 +8,8 @@ infdate: Date,
 infstarttime:String,
 inftvol:String,
 infendtime:String,
-inferr:[{errtype:String,errtime:String}]
+inferr:[{errtype:String,errtime:String}],
+lasterr:{errtype:String,errtime:String}
 });
 
 

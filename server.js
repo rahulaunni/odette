@@ -270,7 +270,6 @@ client.on('message', function (topic, message) {
                             {
                                 df[key]=ivset[key].ivsetdpf;
                             }
-                            console.log(df);
                             var maxdf=18000/mlhr;
                             var index=0;
                             for(var key1 in df)
@@ -423,7 +422,6 @@ client.on('message', function (topic, payload, packet) {
             var year = dateObj.getUTCFullYear();
             var newdate = day + "/" + month + "/" + year;
             if(status == 'start'){
-                console.log(status);
                 io.emit('dripo',{
                     'topic':topic.toString(),
                     'payload':payload.toString(),
@@ -440,15 +438,20 @@ client.on('message', function (topic, payload, packet) {
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic,devicecharge:deviceCharge}});
                 Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
                     if(inf.length==0){
-                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{date:newdate,infstarttime:inftime,infdate:infdate,}},{upsert:true});
-                    Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,newinf){
-                        if(newinf.length !=0){
-                            Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:newinf[0]._id}},{upsert:true});    
-
-                        }
-
-                    });
-
+                        var infObj = new Infusionhistory();
+                        infObj.date = newdate;
+                        infObj.infstarttime = inftime;
+                        infObj.infdate = infdate;
+                        infObj.inferr = [];
+                        infObj._task = ObjectId(taskid);
+                        infObj.save(function (err,infcb) {
+                            
+                            if(err) throw err;
+                            else{
+                                Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:infcb._id}},{upsert:true});    
+                            }
+                        });
+                        
                     }
                 });
 
@@ -574,15 +577,22 @@ client.on('message', function (topic, payload, packet) {
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
-                Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
-                    var inferrLength = inf[0].inferr.length-1;
-                    var lastTime = inf.inferr[inferrLength].errtime;
-                    var lastError = inf.inferr[inferrLength].errtype;
-                    var lasttimeInfoArray = lastTime.split(':');
-                    var lastMin = lasttimeInfoArray[1];
-                    console.log(lasttimeInfoArray);
-                    var presentMin = (new Date()).getMinutes();
-                    if(presentMin - lastMin > 2 && lastError != status){
+                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                Infusionhistory.find({_task:ObjectId(taskid),'date':newdate}).exec(function(err,inf){
+                    if(inf[0].inferr.length != 0){
+                        // var inferrLength = inf[0].inferr.length-1;
+                        var lastTime = inf[0].lasterr.errtime;
+                        var lastError = inf[0].lasterr.errtype;
+                        var lasttimeInfoArray = lastTime.split(':');
+                        var lastMin = lasttimeInfoArray[1];
+                        var presentMin = (new Date()).getMinutes();
+                        if(presentMin - lastMin > 2 || lastError != status){
+                            Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+
+                        }
+
+                    }
+                    else{
                         Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
 
                     }

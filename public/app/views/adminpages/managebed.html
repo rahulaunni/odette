@@ -73,7 +73,7 @@
                                     <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
                                     <md-select type="text" aria-label="filter" ng-model="manageBed.bedData.stationname" name="station" required>
                                         <md-optgroup label="station">
-                                            <md-option ng-value="station.stationname" ng-repeat="station in stations">{{station.stationname}}</md-option>
+                                            <md-option ng-value="station._id" ng-repeat="station in stations">{{station.stationname}}</md-option>
                                             </md-optgroup>
                                     </md-select>
                                     <div ng-messages="form.addBed.station.$error" role="alert" multiple>
