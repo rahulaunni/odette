@@ -707,16 +707,16 @@ angular.module('adminController',['userServices','adminServices'])
 		                        var $actionsSection = $dialog.find('md-dialog-actions');
 		                        var $cancelButton = $actionsSection.children()[0];
 		                        var $confirmButton = $actionsSection.children()[1];
-		                        angular.element($confirmButton).addClass('md-raised md-warn');
-		                        angular.element($cancelButton).addClass('md-raised');
+		                        angular.element($confirmButton).addClass('md-raised ');
+		                        angular.element($cancelButton).addClass('md-raised md-warn');
 		                    }
 		            })
-			        .title('Are you sure you want to update server')
+			        .title('Are you sure you want to update server ?')
 			        .textContent('Warning! Make sure all device are offline')
 			        .ariaLabel('Lucky day')
 			        .targetEvent(ev)
-			        .ok('Yes, update!')
-			        .cancel('No, Cancel');
+			        .ok('UPDATE NOW')
+			        .cancel('CANCEL');
 
 			  $mdDialog.show(confirm).then(function() {
 			  		

@@ -214,9 +214,24 @@ position: fixed;
 
 /* Style for admin menu*/
 .selectedIndex {
-  background: rgb(255,87,34);
+
+  /*color: rgb(255,87,34);*/
+  color: #c95562;
+  border-right: 5px solid  #c95562;
+
 }
 
+.selectedIndex md-icon{
+  color: #c95562;
+  /*color: rgb(255,87,34);*/
+}
+
+.admin-icon{
+  color:#CCC;
+}
+.admin-icon md-icon{
+  color:#CCC;
+}
 /*stlye for nurse menu*/
 .nurseselectedIndex {
   background:rgba(255,64,129,0.87);
@@ -235,6 +250,12 @@ position: fixed;
 
 }
 
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px none inset;
 
+}
 
+.pop-color{
+  background-color: #FF0000;
+}
 

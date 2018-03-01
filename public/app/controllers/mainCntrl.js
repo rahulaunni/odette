@@ -67,6 +67,40 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 				if(data.data.permission === "admin"){
 					$timeout(function () {
 						$location.path('/admin/home')
+						User.getType().then(function (data) {
+							if(data.data.success){
+								if(data.data.type == 'local'){
+									//function to get ip address of server
+									User.getIp().then(function (data) {
+										if(data.data.success){
+											$scope.ipaddress = data.data.ip;
+										}
+									});
+								} 
+								else{
+									//function to get static ip address of server
+									User.getStaticIp().then(function (data) {
+										if(data.data.success){
+											$scope.ipaddress = data.data.ip;
+										}
+									});
+								}
+							}
+						});
+
+						
+						$scope.mqttserverstatus='running';
+						User.getConnectedDripos().then(function (data) {
+							if(data.data.success){
+								$scope.connecteddripo=data.data.clients;
+							}
+							else{
+								$scope.mqttserverstatus='stopped';
+								$scope.connecteddripo=data.data.clients;
+
+							}
+						});
+
 					},3000);
 				}
 				else if(data.data.permission === "nurse"){
@@ -111,6 +145,7 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 	$scope.isActive = function(viewLocation) {
 	    return viewLocation === $location.path();
 	};
+	
 	User.getType().then(function (data) {
 		if(data.data.success){
 			if(data.data.type == 'local'){
@@ -144,6 +179,9 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 
 		}
 	});
+
+	
+
 	//function to get connected dripo clients to admin view
 	User.getConnectedDripos().then(function (data) {
 		if(data.data.success){
@@ -241,7 +279,7 @@ $scope.nurseNav = function (link) {
 	  // Appending dialog to document.body to cover sidenav in docs app
 	  var confirm = $mdDialog.confirm({
 	  	onComplete: function afterShowAnimation() {
-                        var $dialog = angular.element(document.querySelector('md-dialog'));
+	  					var $dialog = angular.element(document.querySelectorAll('[aria-label="logout"]'));
                         var $actionsSection = $dialog.find('md-dialog-actions');
                         var $cancelButton = $actionsSection.children()[0];
                         var $confirmButton = $actionsSection.children()[1];
@@ -249,12 +287,12 @@ $scope.nurseNav = function (link) {
                         angular.element($cancelButton).addClass('md-raised');
                     }
             })
-	        .title('Are you sure You want to logout')
-	        .textContent('Warning!!!')
-	        .ariaLabel('Lucky day')
+	        .title('Are you sure you want to logout ?')
+	        .textContent("")
+	        .ariaLabel('logout')
 	        .targetEvent(ev)
-	        .ok('Yes, Logout!')
-	        .cancel('No, Continue');
+	        .ok('Yes')
+	        .cancel('No');
 
 	  $mdDialog.show(confirm).then(function() {
 	  		

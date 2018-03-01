@@ -98,7 +98,7 @@ angular.module('homeController',['homeServices'])
     $scope.showSkipConfirm = function(ev,task) {
       var confirm = $mdDialog.confirm({
         onComplete: function afterShowAnimation() {
-            var $dialog = angular.element(document.querySelector('md-dialog'));
+            var $dialog = angular.element(document.querySelectorAll('[aria-label="skip_task"]'));
             var $actionsSection = $dialog.find('md-dialog-actions');
             var $cancelButton = $actionsSection.children()[0];
             var $confirmButton = $actionsSection.children()[1];
@@ -106,12 +106,12 @@ angular.module('homeController',['homeServices'])
             angular.element($cancelButton).addClass('md-raised');
         }
       })
-      .title('Would you like to skip this '+task.type)
+      .title('Would you like to skip this '+task.type+' ?')
       .textContent('This will remove '+task.type+' permanantly')
-      .ariaLabel('Lucky day')
+      .ariaLabel('skip_task')
       .targetEvent(ev)
-      .ok('Yes, Skip!')
-      .cancel('No, Later');
+      .ok('SKIP')
+      .cancel('CANCEL');
 
       $mdDialog.show(confirm).then(function() {
         Home.skipTask(task).then(function (data) {
@@ -128,20 +128,22 @@ angular.module('homeController',['homeServices'])
     $scope.showCloseConfirm = function(ev,task) {
       var confirm = $mdDialog.confirm({
         onComplete: function afterShowAnimation() {
-            var $dialog = angular.element(document.querySelector('md-dialog'));
+            var $dialog = angular.element(document.querySelectorAll('[aria-label="done_task"]'));
+            //console.log($dialog.html());
             var $actionsSection = $dialog.find('md-dialog-actions');
+            //console.log($dialog.find('md-dialog-actions'));
             var $cancelButton = $actionsSection.children()[0];
             var $confirmButton = $actionsSection.children()[1];
-            angular.element($confirmButton).addClass('md-raised md-warn');
+            angular.element($confirmButton).addClass('md-raised md-warn')
             angular.element($cancelButton).addClass('md-raised');
         }
       })
-      .title('Done this task manually ')
-      .textContent('Are you sure you want to close this task?')
-      .ariaLabel('Lucky day')
+      .title('Are you sure you want to close this task ?')
+      .textContent('Was this task done this task manually !!!')
+      .ariaLabel('done_task')
       .targetEvent(ev)
-      .ok('Yes, Close!')
-      .cancel('No, Later');
+      .ok('YES')
+      .cancel('NO');
 
       $mdDialog.show(confirm).then(function() {
         Home.closeTask(task).then(function (data) {

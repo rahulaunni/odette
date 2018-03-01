@@ -55,7 +55,7 @@
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
     <!-- when login as admin -->
     <div ng-show="main.adminaccess" layout="row" layout-xs="column" layout-fill>
-        <div flex="none"  hide-lg hide-xl style="background: #333">
+        <div flex="none"  hide-lg hide-xl style="background: #1b1515">
             <md-toolbar class = "md-default"   hide-lg  hide-xl  style="background:rgba(0,0,0,0.87)">
                 <div class = "md-toolbar-tools" layout="row" layout-align="start center">
                     <div flex="none" ng-show="main.isLoggedIn"> 
@@ -67,8 +67,8 @@
             </md-toolbar>
             <div  hide-xs >
              <md-list>
-               <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
-                 <md-icon class="md-default-theme" class="material-icons" style="color: rgb(210,210,210);margin:auto;margin-bottom:.7em;margin-top:.7em;text-align: center;">{{adminMenuItem.icon}}</md-icon>
+               <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="adminNav(adminMenuItem.href)">
+                 <md-icon class="md-default-theme" class="material-icons" style="margin:auto;margin-bottom:.7em;margin-top:.7em;text-align: center;">{{adminMenuItem.icon}}</md-icon>
                </md-list-item>
                <md-list-item ng-click="main.showConfirmlogout($event)">
                    <md-icon class="md-default-theme" style="color: rgb(210,210,210);margin:auto;margin-bottom:.8em;margin-top:.8em;text-align: center; class="material-icons">&#xE8AC;</md-icon>
@@ -76,7 +76,7 @@
              </md-list>
             </div>
             <!-- Admin Sidenav for xs (mobile) and sm (raspberry pi touch) -->
-            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" style="background: #333">
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" style="background: #1b1515">
             <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2" style="background:rgba(0,0,0,0.87)">
                 <div class="md-toolbar-tools">
                     <h2>
@@ -89,11 +89,11 @@
                     </md-button>
                 </div>
             </md-toolbar> 
-            <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2"  style="background: #333">
+            <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2"  style="background: #1b1515">
                 <md-list>
-                    <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
-                      <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
-                      <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
+                    <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="adminNav(adminMenuItem.href)">
+                      <md-icon class="md-default-theme"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
+                      <p>{{adminMenuItem.menu}}</p>
                     </md-list-item>
                     <md-list-item ng-click="main.showConfirmlogout($event)">
                         <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
@@ -104,24 +104,26 @@
         </md-sidenav>
     </div>  
     <!-- Admin Side Nav for laptops and tabs which is always open -->
-    <div flex="20" hide-xs hide-sm hide-md class="lap-side-nav" style="background: #333">
+    <div flex="20" hide-xs hide-sm hide-md class="lap-side-nav" style="background: #1b1515">
         <md-toolbar layout="row"  style="background:rgba(0,0,0,0.87)">
             <div class="md-toolbar-tools">
+                <img style="transform: scale(.5);" src="../assets/img/logo.png">
+                <br>
                 <h2>
                     <span>Dashboard</span>
                 </h2>
                 <span flex></span>
             </div>
         </md-toolbar> 
-        <md-content style="background: #333" md-whiteframe-4dp>
-          <div style="padding: 1em;background: #616161">
-              <div class="md-body-2" style="color: rgb(230,230,230)" >Server IP :{{ipaddress}}</div>
-              <div class="md-body-2" style="color: rgb(230,230,230)">MQTT Server: {{mqttserverstatus}}</div>
+        <md-content style="background: #1b1515" md-whiteframe-4dp>
+          <div style="padding: 1em;border-bottom: 1px solid #000">
+              <div class="md-body-2" style="color: rgb(170,170,170)" >Server IP :{{ipaddress}}</div>
+              <div class="md-body-2" style="color: rgb(170,170,170)">MQTT Server: {{mqttserverstatus}}</div>
             </div>
             <md-list id="adminmenu">
-              <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index}" ng-click="adminNav(adminMenuItem.href)">
-                <md-icon class="md-default-theme" style="color: rgb(210,210,210)"  class="material-icons">{{adminMenuItem.icon}}</md-icon>
-                <p style="color: rgb(210,210,210)">{{adminMenuItem.menu}}</p>
+              <md-list-item data-ng-repeat="adminMenuItem in adminMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="adminNav(adminMenuItem.href)">
+                <md-icon class="material-icons" >{{adminMenuItem.icon}}</md-icon>
+                <p>{{adminMenuItem.menu}}</p>
               </md-list-item>
               <md-list-item ng-click="main.showConfirmlogout($event)">
                   <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
@@ -197,13 +199,13 @@
 <!-- this div is used to inject pages for nurse -->
         <div flex>
             <md-content ng-show="main.nurseaccess" class="nurseview" layout="column"  layout-fill>
-                <div ng-view ></div>
+                <div ng-view style="height: 100%;background-color: #f1f1f1" ></div>
             </md-content>
         </div>
     </div>
 <!-- for injecting page before login -->
-<md-content layout="column"  layout-fill ng-hide="main.isLoggedIn">
-  <div flex="100" ng-view layout="row" layout-align="center center"></div>
+<md-content style="height: 100%" layout="column"  layout-fill ng-hide="main.isLoggedIn">
+  <div flex="100" ng-view layout="row" layout-align="center center" style="height: 100%"></div>
 </md-content>
 </body>
 </html>

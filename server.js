@@ -359,22 +359,7 @@ client.on('message', function (topic, message) {
     });
 
 });
-//test encryption
-// var AESKey = 'B7EE7193E395F5ED016E48FF51FA1180';
-// var message = 'Online vannae';
-// var iv = CryptoJS.enc.Hex.parse('8F6BC245A46A1C5746D8959D20458FAA');
-// var key= CryptoJS.enc.Hex.parse(AESKey);
-// // Encrypt
-// var ciphertext = CryptoJS.AES.encrypt(message, key , { iv: iv } );
-// var ciphertext64 =ciphertext.toString(CryptoJS.enc.base64);
-// console.log("Cypher: " ,  ciphertext.toString(CryptoJS.enc.base64) );
-// var esp8266_msg  = ciphertext64;
-// // The AES encryption/decryption key to be used.
-// var bytes  = CryptoJS.AES.decrypt( esp8266_msg, key , { iv: iv} );
-// console.log(bytes);
-// var plaintext = bytes.toString(CryptoJS.enc.Base64);
-// var decoded_b64msg =  new Buffer(plaintext , 'base64').toString('ascii');
-// console.log("Decryptedage: ", decoded_b64msg);
+
 
 //socket.io config
  var io = require('socket.io')(server);
@@ -493,6 +478,7 @@ client.on('message', function (topic, payload, packet) {
                 }
                 else{
                     Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,devicecharge:""}});
+                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
 
                 }
 
@@ -585,8 +571,10 @@ client.on('message', function (topic, payload, packet) {
                         var lastError = inf[0].lasterr.errtype;
                         var lasttimeInfoArray = lastTime.split(':');
                         var lastMin = lasttimeInfoArray[1];
+                        var lastHour = lasttimeInfoArray[0];
                         var presentMin = (new Date()).getMinutes();
-                        if(presentMin - lastMin > 2 || lastError != status){
+                        var presentHour = (new Date()).getHours();
+                        if(presentHour-lastHour !=0 || presentMin - lastMin > 2 || lastError != status){
                             Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
 
                         }

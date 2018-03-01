@@ -1,31 +1,37 @@
-<md-content flex="100" layout="row" layout-align="center center">
-	<md-card ng-hide="main.successMsg" flex="30" flex-xs="90" style="padding:2%">
-		<form name="loginForm" ng-submit='main.loginUser(loginData);' layout="column">
-			<md-input-container>
-				<label>Username</label>
-				<md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
-				<input ng-model="main.loginData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'  required>
-				<md-tooltip md-direction="bottom">Enter Your registered email id</md-tooltip>
-				<div ng-messages="loginForm.email.$error" role="alert" multiple>
-					<div ng-message="required" class="my-message">This field is required</div>
-					<div ng-message="pattern" class="my-message">Please enter valid email address</div>
-				</div>
-				<div ng-show="main.errorMsgNU" ng-messages="main.errorMsgNU" role="alert">
-					<p>{{main.errorMsgNU}}</p>
-				</div>
-			</md-input-container>
-			<md-input-container>
-				<label>Password</label>
-				<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
-				<input ng-model="main.loginData.password" name="password" type="password" required>
-				<md-tooltip md-direction="bottom">Please enter your password</md-tooltip>
-				<div ng-messages="loginForm.password.$error" role="alert" multiple>
-					<div ng-message="required" class="my-message">This field is required</div>
-				</div>
-				<div ng-show="main.errorMsgWP" ng-messages="main.errorMsgWP" role="alert">
-					<p>{{main.errorMsgWP}}</p>
-				</div>
-			</md-input-container>
+<md-content flex="100" layout="column" style="height:100%;background: #5f2c82;background: -webkit-linear-gradient(to right, #49a09d, #5f2c82); background: linear-gradient(to right, #49a09d, #5f2c82);" layout-align="center center">
+	<div layout-padding class="md-display-1" style="text-align: center;color:#FFF">Synapse</div>
+	<div layout-padding class="md-title" style="text-align: center;color:#FFF">Easy Infusion Management !<br/><br/></div>
+	<div>
+	<div ng-hide="main.successMsg" style="padding:2%" layout-padding>
+		<form name="loginForm" ng-submit='main.loginUser(loginData);' layout="column" layout-padding>
+			<div layout="column" >
+				<md-input-container>
+					<label>Username</label>
+					<md-icon class="md-default-theme" class="material-icons">&#xE7FD;</md-icon>
+					<input ng-model="main.loginData.username" type="email" name="email" class="validate" ng-pattern = '/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'  required>
+					<md-tooltip md-direction="bottom">Enter Your registered email id</md-tooltip>
+					<div ng-messages="loginForm.email.$error" role="alert" multiple>
+						<div ng-message="required" class="my-message">This field is required</div>
+						<div ng-message="pattern" class="my-message">Please enter valid email address</div>
+					</div>
+					<div ng-show="main.errorMsgNU" ng-messages="main.errorMsgNU" role="alert">
+						<p>{{main.errorMsgNU}}</p>
+					</div>
+				</md-input-container>
+				<md-input-container>
+					<label>Password</label>
+					<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
+					<input ng-model="main.loginData.password" name="password" type="password" required>
+					<md-tooltip md-direction="bottom">Please enter your password</md-tooltip>
+					<div ng-messages="loginForm.password.$error" role="alert" multiple>
+						<div ng-message="required" class="my-message">This field is required</div>
+					</div>
+					<div ng-show="main.errorMsgWP" ng-messages="main.errorMsgWP" role="alert">
+						<p>{{main.errorMsgWP}}</p>
+					</div>
+				</md-input-container>
+				
+			</div>
 			<div md-theme="altTheme" layout="row" ng-hide="main.loader">
 				<md-button type="submit" class="md-raised md-warn" flex="100">Login</md-button>
 			</div>
@@ -34,17 +40,18 @@
 					<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 				</div>
 			</div>
-			<div layout="row" layout-align="center center" style="margin-top:20px">
-				<p><a ng-href="/forgotpassword" >Forgot Password </a></p>
+			<div layout="row" layout-align="center center" style="margin-top:20px;">
+				<p><a style="color:#FFF" ng-href="/forgotpassword" >Forgot Password </a></p>
 				<p>&nbsp&nbsp|&nbsp&nbsp</p>
-				<p><a ng-href="/register" > Register</a></p>
+				<p><a style="color:#FFF" ng-href="/register" > Register</a></p>
 			</div>
 			<div layout="row" layout-align="center center" style="margin-top:10px" ng-show="main.expired">
 				<p><a ng-href="/resend" >Resend Activation Link</a></p>
 			</div>
 		</form>
-	</md-card>
-	<div class="show-hide-message" ng-show="main.successMsg">
+	</div>
+	</div>
+	<div  class="show-hide-message" ng-show="main.successMsg">
 		<div>Sigining You in....</div>
 		<md-progress-linear md-mode="indeterminate"></md-progress-linear>
 	</div>

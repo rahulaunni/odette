@@ -1,7 +1,9 @@
 
-<md-content flex="100" layout="row" layout-align="center center">
-	<md-card ng-hide="register.hider" flex="30" flex-xs="90" style="padding:2%">
+<md-content style="height:100%;background: #5f2c82;background: -webkit-linear-gradient(to right, #49a09d, #5f2c82); background: linear-gradient(to right, #49a09d, #5f2c82);" flex="100" layout="column" layout-align="center center">
+	<div  layout-padding class="md-display-1" style="text-align: center;color:#FFF"><br/>Registration<br/></div>
+	<div ng-hide="register.hider" style="padding:2%">
 		<form name="userForm" ng-submit='register.registerUser(userData);' layout="column">
+		
 			<md-input-container>
 				<label>Hospital Name</label>
 				<md-icon class="md-default-theme" class="material-icons">&#xE548;</md-icon>
@@ -24,7 +26,9 @@
 					<p>{{register.errorMsg}}</p>
 				</div>
 			</md-input-container>
-			<md-input-container>
+		
+		
+			<md-input-container >
 				<label>Password</label>
 				<md-icon class="md-default-theme" class="material-icons">&#xE0DA;</md-icon>
 				<input ng-model="register.userData.password" type="password" name="password"  minlength="4" required>
@@ -43,9 +47,10 @@
 					<div ng-message="pattern" class="my-message">Passwords not matched!</div>
 				</div>
 			</md-input-container>
+	
 			<md-input-container class="md-block">
 			     <md-checkbox name="tos" ng-model="userForm.tos" required>
-			       I accept the <a ng-click="register.showTermsandConditions($event);"> terms and conditions</a> of service.
+			       I accept the <a style="color:#FFF" ng-click="register.showTermsandConditions($event);"> terms and conditions</a> of service.
 			     </md-checkbox>
 			     <div ng-messages="userForm.tos.$error" multiple md-auto-hide="false">
 			       <div ng-message="required">
@@ -57,13 +62,13 @@
 				<md-button type="submit" class="md-raised md-warn" ng-disabled="userForm.$invalid" flex="100">Register</md-button>
 			</div>
 			<div layout="row" layout-align="center center" style="margin-top:20px">
-				<p><a ng-href="/login" >Login</a></p>
+				<p><a ng-href="/login" style="color:#FFF">Go to Login Page</a></p>
 			</div>
 			<div md-theme="altTheme" layout="row" layout-align="center center" ng-show="register.loader">
 				<md-progress-circular md-mode="indeterminate"></md-progress-circular>
 			</div>
 		</form>
-	</md-card>
+	</div>
 	<div class="show-hide-message" ng-show="register.hider">
 		<div>{{register.successMsg}}</div>
 		<div>Redirecting...</div>
