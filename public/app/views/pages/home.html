@@ -6,7 +6,7 @@
         <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan="{{inprogresstask.span}}">
             <div class="title" ng-if="::inprogresstask.type=='infusion'">Infusion | {{inprogresstask.infusionstatus}}</div>
             <div class="title" ng-if="::inprogresstask.type =='nursecall'">Nurse Call | {{inprogresstask.nursecallstatus}}</div>
-            <div class="bedname">{{::inprogresstask._bed.bedname}}</div>
+            <div class="bedname" ng-click="showCloseConfirm($event,inprogresstask);">{{::inprogresstask._bed.bedname}}</div>
             <md-progress-linear ng-if="::inprogresstask.type=='infusion'" md-mode="determinate" value="{{inprogresstask.percentage}}"  class="md-primary"></md-progress-linear>
             <md-progress-linear ng-if="::inprogresstask.type=='nursecall'" md-mode="indeterminate" class="md-warn"></md-progress-linear>
             <div class="status">

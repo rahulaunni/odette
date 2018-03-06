@@ -494,7 +494,9 @@ client.on('message', function (topic, payload, packet) {
                         'infusedVolume':infusedVolume,
                         'timeRemaining':timeRemaining,
                         'totalVolume':totalVolume,
-                        'percentage':percentage
+                        'percentage':percentage,
+                        'deviceCharge':deviceCharge
+
                     });
                     Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:'Empty'}});
                 }
@@ -511,7 +513,9 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
+
                 });
             
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic}});
@@ -553,7 +557,9 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
+
                 });
                 var infdate= new Date();
                 var inftime=(new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds();
@@ -563,7 +569,6 @@ client.on('message', function (topic, payload, packet) {
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
-                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
                 Infusionhistory.find({_task:ObjectId(taskid),'date':newdate}).exec(function(err,inf){
                     if(inf[0].inferr.length != 0){
                         // var inferrLength = inf[0].inferr.length-1;
@@ -574,16 +579,20 @@ client.on('message', function (topic, payload, packet) {
                         var lastHour = lasttimeInfoArray[0];
                         var presentMin = (new Date()).getMinutes();
                         var presentHour = (new Date()).getHours();
+                        Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
                         if(presentHour-lastHour !=0 || presentMin - lastMin > 2 || lastError != status){
+                            console.log("inside");
                             Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
 
                         }
 
                     }
                     else{
+                        Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
                         Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
 
                     }
+
                 });
 
 
@@ -599,7 +608,9 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
+
                 });
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
 
@@ -616,7 +627,9 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
+
                 });
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
 
@@ -650,7 +663,9 @@ client.on('message', function (topic, payload, packet) {
                     'infusedVolume':infusedVolume,
                     'timeRemaining':timeRemaining,
                     'totalVolume':totalVolume,
-                    'percentage':percentage
+                    'percentage':percentage,
+                    'deviceCharge':deviceCharge
+
                 });
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
 
