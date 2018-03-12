@@ -480,7 +480,7 @@ angular.module('homeController',['homeServices'])
 
     }
     else if(task.infusionstatus == 'Complete'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'_'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
