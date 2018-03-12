@@ -648,7 +648,7 @@ client.on('message', function (topic, payload, packet) {
                     'totalVolume':totalVolume,
                     'percentage':percentage
                 });
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:'Connection_Lost'}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:'Connection_Lost'}});
 
 
             }//end of error ack
