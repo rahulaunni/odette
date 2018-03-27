@@ -6,6 +6,7 @@ var medication= new Schema({
 	medicinename:String,
 	medicinerate:Number,
 	medicinevolume:Number,
+	source:String,
 	stationname: String,
 	_admin:String,
 	_task:[{ type: Schema.ObjectId, ref: 'Task'}],

@@ -453,6 +453,54 @@ angular.module('homeController',['homeServices'])
           }
           
         }//end of device_disconnected
+
+        else if(data.infusionstatus == 'Device_Disconnected_ACK'){
+          for(var key in $scope.inprogresstasks){
+            if($scope.inprogresstasks[key]._id == data.taskid){
+              $scope.inprogresstasks[key].status = 'alerted';
+              $scope.inprogresstasks[key].infusionstatus = data.infusionstatus;
+              $scope.inprogresstasks[key].rate = data.rate;
+              $scope.inprogresstasks[key].infusedVolume = data.infusedVolume;
+              $scope.inprogresstasks[key].timeRemaining = data.timeRemaining;
+              $scope.inprogresstasks[key].totalVolume = data.totalVolume;
+              $scope.inprogresstasks[key].percentage = data.percentage;
+              $scope.alertedtasks.unshift($scope.inprogresstasks[key]);
+              $scope.inprogresstasks.splice(key,1);
+              $scope.noAlertedTasks = false;
+              Home.getinprogressTasks().then(function (data) {
+                  if(data.data.success){
+                      $scope.inprogresstasks = data.data.inprogresstasks;
+                      for(var key in data.data.inprogresstasks){
+                        if(data.data.inprogresstasks[key].type == 'infusion'){
+                          $scope.inprogresstasks[key].span = 6;
+                        }
+                        else{
+                          $scope.inprogresstasks[key].span = 4;
+                        }
+                        
+                      }
+
+                  }else{
+                     $scope.inprogresstasks=[{}];
+                     $scope.noInprogressTasks=true;
+
+                  }
+              });
+              //get alerted
+              Home.getalertedTasks().then(function (data) {
+                  if(data.data.success){
+                      $scope.alertedtasks = data.data.alertedtasks;
+
+                  }else{
+                     $scope.alertedtasks=[];
+                     $scope.noAlertedTasks = true;
+
+                  }
+              });
+            }
+          }
+          
+        }//end of Device_Disconnected_ACK
       
 
     });
@@ -473,12 +521,19 @@ angular.module('homeController',['homeServices'])
       socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
 
     }
-    else if(task.infusionstatus == 'Block' || task.infusionstatus == 'Rate_Err'){
+    else if(task.infusionstatus == 'Block'){
       console.log(task);
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Block_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
+    else if(task.infusionstatus == 'Rate_Err'){
+      console.log(task);
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Rate_Err_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
+
+    }
+
     else if(task.infusionstatus == 'Complete'){
       socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});

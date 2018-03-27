@@ -37,6 +37,7 @@ var Station = require('./models/stations');
 var Dripo = require('./models/dripos');
 var Bed = require('./models/beds');
 var Medication = require('./models/medications');
+var Patient = require('./models/patients');
 var Ivset = require('./models/ivsets');
 var Infusionhistory = require('./models/infusionhistories');
 
@@ -182,7 +183,7 @@ client.on('message', function (topic, message) {
         else{
             //for testing the device reason for restart
             if(topicinfoArray[2].toString() == 'will'){
-                var filePath = path.join(__dirname, '/public/logs/restart.txt');
+                var filePath = path.join(__dirname, '../laura_logs/restart.txt');
                 var messageStr = message.toString();
                 var messageArray = messageStr.split('-');
                 if(messageArray[0] == 'Online'){
@@ -350,6 +351,61 @@ client.on('message', function (topic, message) {
                 });
 
             }//end of rate_req
+            if(topicinfoArray[2]=='cretask_req'){
+                var msg = message.toString();
+                var msgArray = msg.split("-");
+                var bedid = ObjectId(msgArray[0]);
+                Bed.find({_id:ObjectId(msgArray[0])}).sort({time:1}).exec(function(err,bed){
+                    if(err) throw err;
+                    if(bed.length != 0){
+                        var medicationObj = new Medication();
+                        medicationObj.medicinename = 'unknown';
+                        medicationObj.medicinerate = 0;
+                        medicationObj.medicinevolume = msgArray[2];
+                        medicationObj.stationname = bed[0].stationname;
+                        medicationObj._bed = ObjectId(msgArray[0]);
+                        medicationObj._patient = ObjectId(bed[0]._patient);
+                        medicationObj.source = 'dripo';
+                        patientid =  ObjectId(bed[0]._patient);
+                        console.log(patientid);
+                        medicationObj.save(function (err,medcb) {
+                            if(err) throw err;
+                            else{
+                                Patient.collection.update({_id:medcb._patient},{$push:{_medication:medcb._id}},{upsert:true});
+                                var timeObj = new Task();
+                                timeObj.time=new Date().getHours();
+                                timeObj.type='infusion';
+                                timeObj.priority = 0;
+                                timeObj.status='opened';
+                                timeObj.createdat=new Date();
+                                timeObj.infusedVolume =0;
+                                timeObj._patient=patientid;
+                                timeObj._bed=bedid;
+                                timeObj._medication=ObjectId(medcb._id);
+                                timeObj._station=ObjectId(bed[0]._station);
+                                timeObj.save(function (err,timecb) {
+                                    if(err) throw err;
+                                    else{
+                                        Medication.collection.update({_id:ObjectId(medcb._id)},{$push:{_task:timecb._id}},{upsert:true});
+                                        var pub_cretask=timecb._id+'&'+medcb._id+'&';
+                                        client.publish('dripo/' + dripoid + '/cretaskreply',pub_cretask,{ qos: 1, retain: false });  
+
+                                    }
+                                });
+
+
+                                 
+                            }
+                        });
+                    }
+
+                });
+
+
+
+
+            }
+
            
 
 
@@ -420,15 +476,19 @@ client.on('message', function (topic, payload, packet) {
                     'percentage':percentage,
                     'deviceCharge':deviceCharge
                 });
+
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic,devicecharge:deviceCharge}});
-                Infusionhistory.find({_task:taskid,'date':newdate}).exec(function(err,inf){
+                Medication.collection.update({_id:ObjectId(medid),source:'dripo'},{$set:{medicinerate:rate}},{upsert:true});    
+                Infusionhistory.find({_task:taskid,date:newdate}).exec(function(err,inf){
                     if(inf.length==0){
+                        console.log("in");
                         var infObj = new Infusionhistory();
                         infObj.date = newdate;
                         infObj.infstarttime = inftime;
                         infObj.infdate = infdate;
                         infObj.inferr = [];
                         infObj._task = ObjectId(taskid);
+                        console.log(infObj);
                         infObj.save(function (err,infcb) {
                             
                             if(err) throw err;
@@ -439,6 +499,9 @@ client.on('message', function (topic, payload, packet) {
                         
                     }
                 });
+
+                var filePath = path.join(__dirname, '../laura_logs/time4rate2set.txt');
+                fs.appendFileSync(filePath,messageArray[3]+"-"+messageArray[8]+'\n', "UTF-8",{'flags': 'a+'});
 
             } //end of if status is start
             else if(status == 'infusing'){
@@ -569,28 +632,32 @@ client.on('message', function (topic, payload, packet) {
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status}});
-                Infusionhistory.find({_task:ObjectId(taskid),'date':newdate}).exec(function(err,inf){
-                    if(inf[0].inferr.length != 0){
-                        // var inferrLength = inf[0].inferr.length-1;
-                        var lastTime = inf[0].lasterr.errtime;
-                        var lastError = inf[0].lasterr.errtype;
-                        var lasttimeInfoArray = lastTime.split(':');
-                        var lastMin = lasttimeInfoArray[1];
-                        var lastHour = lasttimeInfoArray[0];
-                        var presentMin = (new Date()).getMinutes();
-                        var presentHour = (new Date()).getHours();
-                        Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
-                        if(presentHour-lastHour !=0 || presentMin - lastMin > 2 || lastError != status){
-                            console.log("inside");
-                            Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                Infusionhistory.find({_task:ObjectId(taskid),date:newdate}).exec(function(err,inf){
+                    if(err) throw err;
+                    if(inf.length !=0){
+                        if(inf[0].inferr.length != 0){
+                            console.log("err");
+                            // var inferrLength = inf[0].inferr.length-1;
+                            var lastTime = inf[0].lasterr.errtime;
+                            var lastError = inf[0].lasterr.errtype;
+                            var lasttimeInfoArray = lastTime.split(':');
+                            var lastMin = lasttimeInfoArray[1];
+                            var lastHour = lasttimeInfoArray[0];
+                            var presentMin = (new Date()).getMinutes();
+                            var presentHour = (new Date()).getHours();
+                            Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                            if(presentHour-lastHour !=0 || presentMin - lastMin > 2 || lastError != status){
+                                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+
+                            }
 
                         }
 
-                    }
-                    else{
-                        Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
-                        Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                        else{
+                            Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                            Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
 
+                        }
                     }
 
                 });
