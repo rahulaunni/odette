@@ -14,9 +14,6 @@
 						<div ng-message="required" class="my-message">This field is required</div>
 						<div ng-message="pattern" class="my-message">Please enter valid email address</div>
 					</div>
-					<div ng-show="main.errorMsgNU" ng-messages="main.errorMsgNU" role="alert">
-						<p>{{main.errorMsgNU}}</p>
-					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>Password</label>
@@ -26,11 +23,14 @@
 					<div ng-messages="loginForm.password.$error" role="alert" multiple>
 						<div ng-message="required" class="my-message">This field is required</div>
 					</div>
-					<div ng-show="main.errorMsgWP" ng-messages="main.errorMsgWP" role="alert">
-						<p>{{main.errorMsgWP}}</p>
-					</div>
 				</md-input-container>
 				
+			</div>
+			<div ng-show="main.errorMsgNU" ng-messages="main.errorMsgNU" role="alert">
+				<p>Incorrect credentials</p>
+			</div>
+			<div ng-show="main.errorMsgWP" ng-messages="main.errorMsgNU" role="alert">
+				<p>Incorrect credentials</p>
 			</div>
 			<div md-theme="altTheme" layout="row" ng-hide="main.loader">
 				<md-button type="submit" class="md-raised md-warn" flex="100">Login</md-button>
@@ -45,6 +45,7 @@
 				<p>&nbsp&nbsp|&nbsp&nbsp</p>
 				<p><a style="color:#FFF" ng-href="/register" > Register</a></p>
 			</div>
+		
 			<div layout="row" layout-align="center center" style="margin-top:10px" ng-show="main.expired">
 				<p><a ng-href="/resend" >Resend Activation Link</a></p>
 			</div>

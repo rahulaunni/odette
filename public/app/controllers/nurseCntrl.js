@@ -32,6 +32,8 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	//redirect user if no station selected
 	Auth.getUser().then(function (data) {
+		console.log("calling");
+		console.log(data);
 		if(!data.data.station){
 			$location.path('/selectstation')
 		}
@@ -40,6 +42,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 })
 .controller('managePatientCntrl',function ($http,$route,$scope,$rootScope,$window,$location,$timeout,$mdDialog,$scope,Auth,Admin,Nurse) {
+
 	var app = this;
 	$scope.nopatient = false;
 	$scope.patientstatus = 'active';
@@ -125,7 +128,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 							$scope.nopatient = true;
 						}
 					});
-					$location.path('/managepatients');
+					$route.reload('/managepatients');
 				},3000);
 			}
 			else{
@@ -464,7 +467,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 							$scope.nopatient = true;
 						}
 					});
-					$location.path('/managepatients');
+					$route.reload('/managepatients');
 				},2000);
 			}
 			else{

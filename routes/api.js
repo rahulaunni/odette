@@ -1258,7 +1258,7 @@ router.put('/nurse/patient',function (req,res) {
 				res.json({success:false,message:'Invalid patient id'})
 			}
 			else{
-				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname && req.body.oldbed && req.body.doctorname && req.body.admittedon){
+				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname && req.body.oldbed  && req.body.admittedon){
 					patient.patientname= req.body.patientname;
 					patient.patientage= req.body.patientage;
 					patient.patientweight= req.body.patientweight;
