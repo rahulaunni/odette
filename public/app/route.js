@@ -124,6 +124,13 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		controllerAs: 'help',
 		permission:['nurse']
 	})
+	.when('/localserverdetails',{
+		templateUrl:'app/views/su/localserverdetails.html',
+		authenticated:false,
+		controller: 'suCntrl',
+		controllerAs: 'su'
+
+	})
 	.otherwise({redirectTo:'/'});
 //function to remove defualut /#/ thing
 	$locationProvider

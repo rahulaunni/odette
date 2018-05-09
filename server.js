@@ -22,7 +22,7 @@ var mongoose = require('mongoose');
 var index = require('./routes/index');
 var router = express.Router();
 var api = require('./routes/api')(router);
-var port=4000;
+var port=80;
 var cron = require('node-cron');
 var ObjectId = require('mongodb').ObjectID;
 var CryptoJS = require("crypto-js");
@@ -40,6 +40,7 @@ var Medication = require('./models/medications');
 var Patient = require('./models/patients');
 var Ivset = require('./models/ivsets');
 var Infusionhistory = require('./models/infusionhistories');
+var Synapse = require('./models/synapselist');
 
 //for logging requests
 app.use(morgan('dev'));
@@ -105,6 +106,56 @@ app.post('/admin/update',function (req,res) {
     });
 
  });
+
+//route to get public ip and hostname of local servers installed
+app.put('/updatelocalip',function (req,res) {
+    console.log(req.query);
+    Synapse.findOne({hostname:req.query.hname}).select('hostname publicip').exec(function(err,synapse) {
+        if (err) throw err; // Throw error if cannot connect
+        if(synapse){
+            synapse.hostname= req.query.hname;
+            synapse.publicip= req.query.ip;
+            synapse.save(function(err) {
+                if (err) {
+                    console.log(err);
+                    res.json({success:false,message:'Failed'})
+                } else {
+                    res.json({ success: true, message: 'Success'}); 
+                }
+            });
+
+        }
+        else{
+            var nsynapse = new Synapse();
+            nsynapse.hostname= req.query.hname;
+            nsynapse.publicip= req.query.ip;
+            // saving user to database
+            nsynapse.save(function(err){
+                if (err) {
+                    console.log(err);
+                    //responding error back to frontend
+                    res.json({success:false,message:'Database error'});
+                }
+                else{
+
+                    res.json({success:true,message:'Success'});
+                }
+            });
+        }
+    });
+});
+app.get('/getsynapsedetails', function(req,res){
+        Synapse.find({}).exec(function(err,synapse) {
+            if(synapse.length==0){
+                res.json({success:false,message:'Nothing to show'});
+
+            }
+            else{
+                res.json({success:true,synapses:synapse});
+
+            }
+        });
+});
 
 //bodyparser
 app.use(bodyParser.json());
