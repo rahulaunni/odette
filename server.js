@@ -359,7 +359,9 @@ Station.find({}).exec(function (err,station) {
                                 for (var key2 in ivset)
                                 {
                                   pub_dff.push(ivset[key2].ivsetdpf); 
-                                  pub_dff.push('&'); 
+                                  pub_dff.push('&');
+                                  pub_dff.push(ivset[key2].ivsetdpf); 
+                                  pub_dff.push('&');  
 
                                 }
                                 var pub_df=pub_dff.join('');
@@ -372,8 +374,7 @@ Station.find({}).exec(function (err,station) {
                     }
                 }); 
 
-
-
+                
                 });
         }
 
@@ -407,7 +408,9 @@ client.on('message', function (topic, message) {
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            if(topicinfoArray[2] != 'will' && topicinfoArray[1] != 'station'){
+            if(topicinfoArray[2] != 'will' && topicinfoArray[1] != 'station' && topicinfoArray[2] != 'bed'
+                && topicinfoArray[2] != 'task' && topicinfoArray[2] != 'time' && topicinfoArray[2] != 'med' && topicinfoArray[2] != 'vol'
+                 && topicinfoArray[2] != 'rate' && topicinfoArray[2] != 'df'){
                 client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
                     console.log("DEVICE NOT ADDED");
                     if(err){
