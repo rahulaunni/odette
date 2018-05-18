@@ -337,17 +337,17 @@ Station.find({}).exec(function (err,station) {
 
                         }
                         var pub_bed=pubBed.join('');
-                        client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: false});
+                        client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: true});
                         var pub_taskid=pubTaskid.join('');
-                        client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: false});
+                        client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: true});
                         var pub_time=pubTime.join('');
-                        client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: false });
+                        client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: true });
                         var pub_med=pubMed.join('');
-                        client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: false });
+                        client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: true });
                         var pub_vol=pubVol.join('');
-                        client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: false });
+                        client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
                         var pub_rate=pubRate.join('');
-                        client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: false });
+                        client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
 
                         Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                             if(err) throw err;
@@ -363,7 +363,7 @@ Station.find({}).exec(function (err,station) {
 
                                 }
                                 var pub_df=pub_dff.join('');
-                                client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: false });
+                                client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
 
                             }
                         });
