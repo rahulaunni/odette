@@ -314,6 +314,19 @@ Station.find({}).exec(function (err,station) {
                                 count++; 
                             } 
                         }
+                        function tConvert (time) {
+                          if (time<12) { 
+                            return time+':00 AM';
+                    
+                          }
+                          else if(time ==12){
+                            return time+':00 PM';
+                          }
+                          else{
+                            return time-12+':00 PM'
+                          }
+                        }
+
                         var orderedTasks = alertedtask.concat(taskArray);
                         var pubBed=[];
                         var pubTaskid=[];
@@ -325,8 +338,10 @@ Station.find({}).exec(function (err,station) {
                             pubBed.push(orderedTasks[key1]._bed.bedname); 
                             pubBed.push('&'); 
                             pubTaskid.push(orderedTasks[key1]._id); 
-                            pubTaskid.push('&'); 
-                            pubTime.push(orderedTasks[key1].time); 
+                            pubTaskid.push('&');
+                            var timein24=  orderedTasks[key1].time;
+                            var timein12=tConvert(timein24);
+                            pubTime.push(timein12); 
                             pubTime.push('&'); 
                             pubMed.push(orderedTasks[key1]._medication.medicinename); 
                             pubMed.push('&');
