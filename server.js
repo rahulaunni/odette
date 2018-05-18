@@ -31,6 +31,9 @@ const url = require('url')
 var useragent = require('useragent');
 var fs =require('fs');
 var md5 = require('md5-file');
+const publicIp = require('public-ip');
+var os = require('os');
+var needle = require('needle');
 //Models 
 var Task = require('./models/tasks');
 var Station = require('./models/stations');
@@ -144,6 +147,28 @@ app.put('/updatelocalip',function (req,res) {
         }
     });
 });
+
+//function to send public ip and computer hostname to online server
+publicIp.v4().then(ip => {
+    var publicip = ip;
+    //=> '46.5.21.123'
+var hostname=os.hostname();
+var request = require('request');
+var nested = {
+  params: {
+    are: 'ok'
+  }
+}
+ 
+needle.put('http://dripo.care//updatelocalip?ip='+publicip+'&hname='+hostname, nested, function(err, resp) {
+    if(err){
+        console.log(err);
+    }
+});
+
+});
+
+//route to manage local synapse details hostname and public ip
 app.get('/getsynapsedetails', function(req,res){
         Synapse.find({}).exec(function(err,synapse) {
             if(synapse.length==0){
@@ -214,14 +239,175 @@ client.on('connect', function() {
 
 });
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//New code for sending data to all device while starting a server
+Station.find({}).exec(function (err,station) {
+    if(err) console.log(err);
+    if(station.length != 0){
+        for(var key in station){
+            stationid = station[key]._id.toString();
+            username = station[key].username;
+            var alertedtask =[];
+            Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
+                if(alertedtask.length==0){
+                    console.log("No alerted task found");
+                }
+                else{
+                    alertedtask = alertedtask;
+
+                }
+            var date=new Date();
+            var hour=date.getHours();
+            var index =-1;
+            var skippedtaskArray =[];
+            Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
+                    if(task.length==0){
+                        console.log("no task found");
+                        //do something if no task found
+                    }
+                    else if(task.length == 1){
+                        //if only one task is found send task
+                        console.log(task);
+                    }
+                    //reorder returned task array of object based on present time
+                    else{
+                        var nexthour = hour;
+                        while(nexthour<24){ 
+                            for(lp1=0;lp1<task.length;lp1++){
+                                if(task[lp1].time == nexthour){
+                                    index = lp1;
+                                }
+                            }
+
+                            if(index==-1){
+                                if(nexthour == 23){
+                                    nexthour = 0;
+                                }
+                                else{
+                                    nexthour=nexthour+1;
+                                }
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    var prevtaskArray = task.slice(0,index);
+                    var nexttaskArray = task.slice(index,(task.length));
+                    var taskArray = nexttaskArray.concat(prevtaskArray);
+                    var times = [];
+                    for(var key in taskArray){
+                        times.push(taskArray[key].time);
+                    }
+                    var timesArray=[];
+                    var n=times.length;
+                    var count=0;
+                    for(var c=0;c<n;c++)
+                        { 
+                            for(var d=0;d<count;d++) 
+                            { 
+                                if(times[c]==timesArray[d]) 
+                                    break; 
+                            } 
+                            if(d==count) 
+                            { 
+                                timesArray[count] = times[c]; 
+                                count++; 
+                            } 
+                        }
+                        var orderedTasks = alertedtask.concat(taskArray);
+                        var pubBed=[];
+                        var pubTaskid=[];
+                        var pubTime=[];
+                        var pubMed=[];
+                        var pubVol=[];
+                        var pubRate =[];
+                        for (var key1 in orderedTasks){
+                            pubBed.push(orderedTasks[key1]._bed.bedname); 
+                            pubBed.push('&'); 
+                            pubTaskid.push(orderedTasks[key1]._id); 
+                            pubTaskid.push('&'); 
+                            pubTime.push(orderedTasks[key1].time); 
+                            pubTime.push('&'); 
+                            pubMed.push(orderedTasks[key1]._medication.medicinename); 
+                            pubMed.push('&');
+                            pubVol.push(orderedTasks[key1]._medication.medicinevolume); 
+                            pubVol.push('&');
+                            pubRate.push(orderedTasks[key1]._medication.medicinerate); 
+                            pubRate.push('&');
+
+                        }
+                        var pub_bed=pubBed.join('');
+                        client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: false});
+                        var pub_taskid=pubTaskid.join('');
+                        client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: false});
+                        var pub_time=pubTime.join('');
+                        client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: false });
+                        var pub_med=pubMed.join('');
+                        client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: false });
+                        var pub_vol=pubVol.join('');
+                        client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: false });
+                        var pub_rate=pubRate.join('');
+                        client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: false });
+
+                        Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+                            if(err) throw err;
+                            if(!ivset.length){
+                                console.log("no iv set found in db");
+                            }
+                            else{
+                                var pub_dff=[];
+                                for (var key2 in ivset)
+                                {
+                                  pub_dff.push(ivset[key2].ivsetdpf); 
+                                  pub_dff.push('&'); 
+
+                                }
+                                var pub_df=pub_dff.join('');
+                                client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: false });
+
+                            }
+                        });
+
+
+                    }
+                }); 
+
+
+
+                });
+        }
+
+    }
+   
+})
+
+
+
 //function fired on recieving a message from device in topic dripo/
 client.on('message', function (topic, message) {
     var topicinfoArray = topic.split("/");
     var dripoid = topicinfoArray[1];
+    //to send station id back to requested device
+    if(topicinfoArray[1]=='station'){
+        var deviceid = message.toString();
+        Dripo.find({dripoid:deviceid}).exec(function(err,dripo){
+            var stationid=dripo[0]._station.toString();
+            client.publish('dripo/' + deviceid+'/station' ,stationid,function (err) {
+                if(err){
+                    console.log(err);
+                }
+            });
+
+
+        });
+
+
+    }
+
     Dripo.find({dripoid:dripoid}).exec(function(err,dripo){
         if(err) throw err;
         if(!dripo.length){
-            if(topicinfoArray[2] != 'will'){
+            if(topicinfoArray[2] != 'will' && topicinfoArray[1] != 'station'){
                 client.publish('error/' + dripoid ,'Device&Not&Added',function (err) {
                     console.log("DEVICE NOT ADDED");
                     if(err){
@@ -243,6 +429,7 @@ client.on('message', function (topic, message) {
                 }
 
             }
+
             //******************************************
             var stationid = ObjectId(dripo[0]._station);
             var userid =ObjectId(dripo[0]._user);

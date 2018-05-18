@@ -1,7 +1,16 @@
 <div layout="column" layout-padding="" layout-fill >
     <md-content class="md-padding" layout-xs="column" layout="column">
-    	<div layout = "row" data-ng-repeat="info in infos">
+    	<md-list>
+    	    <md-list-item class="md-3-line" ng-repeat="info in infos">
+    	        <div class="md-list-item-text">
+    	            <h3>{{info.hostname}}</h3>
+    	            <h4>{{info.publicip}}</h4>
+    	        </div>
+    	        <md-divider></md-divider>
+    	    </md-list-item>
+    	  </md-list>
+    	<!-- <div layout = "row" data-ng-repeat="info in infos">
     		<div layout="column">{{info.hostname}}  ___  {{info.publicip}}</div>
-    	</div>
+    	</div> -->
     </md-content>
 </div>

@@ -43,6 +43,9 @@
   <script src="app/controllers/nurseCntrl.js"></script> 
   <script src="app/controllers/homeCntrl.js"></script> 
   <script src="app/controllers/suCntrl.js"></script> 
+  <script src="app/controllers/suhomeCntrl.js"></script> 
+  <script src="app/controllers/dochomeCntrl.js"></script> 
+
 
   <!-- Angular Servies -->
   <script src="app/services/userServices.js"></script> 
@@ -50,11 +53,102 @@
   <script src="app/services/adminServices.js"></script>
   <script src="app/services/nurseServices.js"></script> 
   <script src="app/services/homeServices.js"></script>      
-  <script src="app/services/suServices.js"></script>      
+  <script src="app/services/suServices.js"></script>  
+  <script src="app/services/suhomeServices.js"></script>      
+  <script src="app/services/dochomeServices.js"></script>      
+    
 
 
 </head>
 <body  ng-app = "myApp" ng-controller="mainCntrl as main" ng-show="main.loadMe" ng-cloak>
+    <!-- when login as superuser -->
+    <div ng-show="main.suaccess" layout="row" layout-xs="column" layout-fill>
+        <div flex="none"  hide-lg hide-xl style="background: #1b1515">
+            <md-toolbar class = "md-default"   hide-lg  hide-xl  style="background:rgba(0,0,0,0.87)">
+                <div class = "md-toolbar-tools" layout="row" layout-align="start center">
+                    <div flex="none" ng-show="main.isLoggedIn"> 
+                        <md-button class="md-icon-button" ng-click="openSideNavPanelSu()">
+                            <md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-toolbar>
+            <div  hide-xs >
+             <md-list>
+               <md-list-item data-ng-repeat="suMenuItem in suMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="suNav(suMenuItem.href)">
+                 <md-icon class="md-default-theme" class="material-icons" style="margin:auto;margin-bottom:.7em;margin-top:.7em;text-align: center;">{{suMenuItem.icon}}</md-icon>
+               </md-list-item>
+               <md-list-item ng-click="main.showConfirmlogout($event)">
+                   <md-icon class="md-default-theme" style="color: rgb(210,210,210);margin:auto;margin-bottom:.8em;margin-top:.8em;text-align: center; class="material-icons">&#xE8AC;</md-icon>
+               </md-list-item>
+             </md-list>
+            </div>
+            <!-- Admin Sidenav for xs (mobile) and sm (raspberry pi touch) -->
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="suleft" style="background: #1b1515">
+            <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2" style="background:rgba(0,0,0,0.87)">
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span>SuperUser Toolbar</span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanelSu()">
+                        <md-tooltip>Close Side Panel</md-tooltip>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar> 
+            <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2"  style="background: #1b1515">
+                <md-list>
+                    <md-list-item data-ng-repeat="suMenuItem in suMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="suNav(suMenuItem.href)">
+                      <md-icon class="md-default-theme"  class="material-icons">{{suMenuItem.icon}}</md-icon>
+                      <p>{{suMenuItem.menu}}</p>
+                    </md-list-item>
+                    <md-list-item ng-click="main.showConfirmlogout($event)">
+                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
+                        <p style="color: rgb(210,210,210)">Logout</p>
+                    </md-list-item>
+                </md-list>        
+            </md-content> 
+        </md-sidenav>
+    </div>  
+    <!-- superuser Side Nav for laptops and tabs which is always open -->
+    <div flex="20" hide-xs hide-sm hide-md class="lap-side-nav" style="background: #1b1515">
+        <md-toolbar layout="row"  style="background:rgba(0,0,0,0.87)">
+            <div class="md-toolbar-tools">
+                <img style="transform: scale(.5);" src="../assets/img/logo.png">
+                <br>
+                <h2>
+                    <span>Dashboard SU</span>
+                </h2>
+                <span flex></span>
+            </div>
+        </md-toolbar> 
+        <md-content style="background: #1b1515" md-whiteframe-4dp>
+          <div style="padding: 1em;border-bottom: 1px solid #000">
+              <div class="md-body-2" style="color: rgb(170,170,170)" >Server IP :{{ipaddress}}</div>
+              <div class="md-body-2" style="color: rgb(170,170,170)">MQTT Server: {{mqttserverstatus}}</div>
+            </div>
+            <md-list id="adminmenu">
+              <md-list-item data-ng-repeat="suMenuItem in suMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="suNav(suMenuItem.href)">
+                <md-icon class="material-icons" >{{suMenuItem.icon}}</md-icon>
+                <p>{{suMenuItem.menu}}</p>
+              </md-list-item>
+              <md-list-item ng-click="main.showConfirmlogout($event)">
+                  <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
+                  <p><a href="/logout" style="color: rgb(210,210,210)">Logout</a></p>
+              </md-list-item>
+            </md-list>
+        </md-content>
+    </div>
+    <!-- this div is used to inject pages for superuser -->
+    <div flex="80" flex-xs="100" flex-sm="100" flex-md="95">
+        <md-content ng-show="main.suaccess" layout="column"  layout-fill>
+            <div flex="100" ng-view layout="row" layout-align="center center"></div>
+        </md-content>
+    </div>
+    </div>
+  
+
     <!-- when login as admin -->
     <div ng-show="main.adminaccess" layout="row" layout-xs="column" layout-fill>
         <div flex="none"  hide-lg hide-xl style="background: #1b1515">
@@ -142,7 +236,92 @@
     </div>
     </div>
 
-
+<!-- **************************************************************************************************************** -->
+    <!-- when login as doctor -->
+    <div ng-show="main.doctoraccess" layout="row" layout-xs="column" layout-fill>
+        <div flex="none"  hide-lg hide-xl style="background: #1b1515">
+            <md-toolbar class = "md-default"   hide-lg  hide-xl  style="background:rgba(0,0,0,0.87)">
+                <div class = "md-toolbar-tools" layout="row" layout-align="start center">
+                    <div flex="none" ng-show="main.isLoggedIn"> 
+                        <md-button class="md-icon-button" ng-click="openSideNavPanelDoctor()">
+                            <md-icon class="md-default-theme" class="material-icons">&#xE5D2;</md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-toolbar>
+            <div  hide-xs >
+             <md-list>
+               <md-list-item data-ng-repeat="doctorMenuItem in doctorMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="doctorNav(doctorMenuItem.href)">
+                 <md-icon class="md-default-theme" class="material-icons" style="margin:auto;margin-bottom:.7em;margin-top:.7em;text-align: center;">{{doctorMenuItem.icon}}</md-icon>
+               </md-list-item>
+               <md-list-item ng-click="main.showConfirmlogout($event)">
+                   <md-icon class="md-default-theme" style="color: rgb(210,210,210);margin:auto;margin-bottom:.8em;margin-top:.8em;text-align: center; class="material-icons">&#xE8AC;</md-icon>
+               </md-list-item>
+             </md-list>
+            </div>
+            <!-- Doctor Sidenav for xs (mobile) and sm (raspberry pi touch) -->
+            <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="docleft" style="background: #1b1515">
+            <md-toolbar layout="row" md-theme="dark" class = "md-accent md-hue-2" style="background:rgba(0,0,0,0.87)">
+                <div class="md-toolbar-tools">
+                    <h2>
+                        <span>Menu</span>
+                    </h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" aria-label="Close Side Panel" ng-click="closeSideNavPanelDoctor()">
+                        <md-tooltip>Close Side Panel</md-tooltip>
+                        <md-icon class="md-default-theme" class="material-icons">&#xE5CD;</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar> 
+            <md-content layout-padding="" md-theme="dark" class = "md-accent md-hue-2"  style="background: #1b1515">
+                <md-list>
+                    <md-list-item data-ng-repeat="doctorMenuItem in doctorMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="doctorNav(doctorMenuItem.href)">
+                      <md-icon class="md-default-theme"  class="material-icons">{{doctorMenuItem.icon}}</md-icon>
+                      <p>{{doctorMenuItem.menu}}</p>
+                    </md-list-item>
+                    <md-list-item ng-click="main.showConfirmlogout($event)">
+                        <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
+                        <p style="color: rgb(210,210,210)">Logout</p>
+                    </md-list-item>
+                </md-list>        
+            </md-content> 
+        </md-sidenav>
+    </div>  
+    <!-- superuser Side Nav for laptops and tabs which is always open -->
+    <div flex="20" hide-xs hide-sm hide-md class="lap-side-nav" style="background: #1b1515">
+        <md-toolbar layout="row"  style="background:rgba(0,0,0,0.87)">
+            <div class="md-toolbar-tools">
+                <img style="transform: scale(.5);" src="../assets/img/logo.png">
+                <br>
+                <h2>
+                    <span>Menu</span>
+                </h2>
+                <span flex></span>
+            </div>
+        </md-toolbar> 
+        <md-content style="background: #1b1515" md-whiteframe-4dp>
+          <div style="padding: 1em;border-bottom: 1px solid #000">
+              <div class="md-body-2" style="color: rgb(170,170,170)" >{{main.hospitalname}}</div>
+            </div>
+            <md-list id="adminmenu">
+              <md-list-item data-ng-repeat="doctorMenuItem in doctorMenuItems" ng-class="{selectedIndex: selectedIndex===$index,'admin-icon':selectedIndex!==$index}" ng-click="doctorNav(doctorMenuItem.href)">
+                <md-icon class="material-icons" >{{doctorMenuItem.icon}}</md-icon>
+                <p>{{doctorMenuItem.menu}}</p>
+              </md-list-item>
+              <md-list-item ng-click="main.showConfirmlogout($event)">
+                  <md-icon class="md-default-theme" style="color: rgb(210,210,210)" class="material-icons">&#xE8AC;</md-icon>
+                  <p><a href="/logout" style="color: rgb(210,210,210)">Logout</a></p>
+              </md-list-item>
+            </md-list>
+        </md-content>
+    </div>
+    <!-- this div is used to inject pages for superuser -->
+    <div flex="80" flex-xs="100" flex-sm="100" flex-md="95">
+        <md-content ng-show="main.doctoraccess" layout="column"  layout-fill>
+            <div flex="100" ng-view layout="row" layout-align="center center"></div>
+        </md-content>
+    </div>
+    </div>
     
 <!-- **************************************************************************************************************** -->
 <!-- when login as nurse -->

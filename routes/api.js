@@ -26,7 +26,9 @@ var nodemailer = require('nodemailer');
 var ObjectId = require('mongodb').ObjectID;
 var ip = require('ip');
 var request = require('request');
-
+//MQTT Configuration
+var mqtt = require('mqtt')
+var client = mqtt.connect('mqtt://localhost:1883',{clientId:"LauraClient"});
 module.exports = function(router) {
 
 //route to resgister new user
@@ -397,7 +399,7 @@ router.get('/permission',function (req,res) {
 
 router.get('/admin/gethost', function(req, res) {
 	var host = req.get('host');
-	if(host == 'localhost:3000'){
+	if(host == 'localhost:4000'){
 		res.json({success:true,type:'local'})
 	}
 	else{
@@ -423,7 +425,7 @@ router.get('/admin/getip', function(req, res) {
 
 
 router.get('/admin/getstaticip', function(req, res) {
-		res.json({success:true,ip:'3.127.153.164'});
+		res.json({success:true,ip:'13.127.153.164'});
 
 });
 
@@ -1678,7 +1680,11 @@ router.put('/nurse/medication', function(req,res){
 
 		}
 		
-
+	client.publish('dripo/station' ,"test",function (err) {
+	    if(err){
+	        console.log(err);
+	    }
+	});
 	res.json({success:true,message:"medication details updated"})	
 	});//end of find medication
 

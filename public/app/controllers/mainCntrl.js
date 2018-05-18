@@ -7,11 +7,23 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 	$scope.openSideNavPanelNurse = function() {
 		$mdSidenav('nurseleft').open();
 	};
+	$scope.openSideNavPanelSu = function() {
+		$mdSidenav('suleft').open();
+	};
+	$scope.openSideNavPanelDoctor = function() {
+		$mdSidenav('docleft').open();
+	};
 	$scope.closeSideNavPanel = function() {
 		$mdSidenav('left').close();
 	};
 	$scope.closeSideNavPanelNurse = function() {
 		$mdSidenav('nurseleft').close();
+	};
+	$scope.closeSideNavPanelSu = function() {
+		$mdSidenav('suleft').close();
+	};
+	$scope.closeSideNavPanelDoctor = function() {
+		$mdSidenav('docleft').close();
 	};
 	var app=this;
 	app.loadMe=false;
@@ -34,6 +46,10 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 					}
 					else if(data.data.permission === 'doctor'){
 						app.doctoraccess = true;
+						app.loadMe = true;
+					}
+					else if(data.data.permission === 'su'){
+						app.suaccess = true;
 						app.loadMe = true;
 					}
 					else{
@@ -106,6 +122,16 @@ angular.module('mainController',['authServices','userServices','nurseServices'])
 				else if(data.data.permission === "nurse"){
 					$timeout(function () {
 						$location.path('/selectstation')
+					},3000);
+				}
+				else if(data.data.permission === "doctor"){
+					$timeout(function () {
+						$location.path('/doc/home')
+					},3000);
+				}
+				else if(data.data.permission === "su"){
+					$timeout(function () {
+						$location.path('/su/home')
 					},3000);
 				}
 				
@@ -272,6 +298,51 @@ $rootScope.$on("$routeChangeStart",function () {
 $scope.nurseNav = function (link) {
 	$location.path(link);
 }
+
+/********************* Super User Menu *********************************/
+$scope.suMenuItems=[{menu:'Home',icon:'home',href:'/su/home'},
+					   {menu:'Manage Synapse',icon:'important_devices',href:'/su/managesynapse'},
+];
+//checking for the route change for changing the selected menu item
+$scope.selectedIndex = 0;
+$rootScope.$on("$routeChangeStart",function () {
+	if($location.path() == '/su/home'){
+		$scope.selectedIndex = 0;
+
+	}
+	if($location.path() == '/su/managesynapse'){
+		$scope.selectedIndex = 1;
+
+	}
+
+});
+//superuser menu navigation
+$scope.suNav = function (link) {
+	$location.path(link);
+}
+
+/********************* Doctor User Menu *********************************/
+$scope.doctorMenuItems=[{menu:'Home',icon:'home',href:'/doc/home'},
+					   {menu:'Patient Details',icon:'important_devices',href:'/doc/patientdetails'},
+];
+//checking for the route change for changing the selected menu item
+$scope.selectedIndex = 0;
+$rootScope.$on("$routeChangeStart",function () {
+	if($location.path() == '/doc/home'){
+		$scope.selectedIndex = 0;
+
+	}
+	if($location.path() == '/doc/patientdetails'){
+		$scope.selectedIndex = 1;
+
+	}
+
+});
+//superuser menu navigation
+$scope.doctorNav = function (link) {
+	$location.path(link);
+}
+
 
 //logout confirmation 
 	//function for deleteting an user by admin show a dialog box and delte on confirm
