@@ -314,6 +314,7 @@ Station.find({}).exec(function (err,station) {
                                 count++; 
                             } 
                         }
+                        //function to convert 24 hours time to 12 hours time
                         function tConvert (time) {
                           if (time<12) { 
                             return time+':00 AM';
@@ -325,6 +326,16 @@ Station.find({}).exec(function (err,station) {
                           else{
                             return time-12+':00 PM'
                           }
+                        }
+                        //function to slice medicine name to 8 characters
+                        function sliceMedicinename(med) {
+                            var len = med.length;
+                            if(len>8){
+                                return med.slice(0,8);
+                            }
+                            else{
+                                return med;
+                            }
                         }
 
                         var orderedTasks = alertedtask.concat(taskArray);
@@ -343,7 +354,8 @@ Station.find({}).exec(function (err,station) {
                             var timein12=tConvert(timein24);
                             pubTime.push(timein12); 
                             pubTime.push('&'); 
-                            pubMed.push(orderedTasks[key1]._medication.medicinename); 
+                            var slicedMedname = sliceMedicinename(orderedTasks[key1]._medication.medicinename);
+                            pubMed.push(slicedMedname); 
                             pubMed.push('&');
                             pubVol.push(orderedTasks[key1]._medication.medicinevolume); 
                             pubVol.push('&');
