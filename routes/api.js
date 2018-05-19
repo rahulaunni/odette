@@ -1431,6 +1431,8 @@ router.post('/nurse/medication', function(req,res){
 					}
 				}
 			res.json({success:true,message:"medication added successfully"})
+			var stationid = req.decoded.stationid.toString();
+			updateTaskdetails(stationid);
 
 			}//end of adding medication success
 		}//end of medication insert function
@@ -1607,6 +1609,7 @@ router.put('/nurse/medication', function(req,res){
 				// Task.collection.updateMany({_medication:medicineid},{$set:{status:'deleted'}},{upsert:false});
 				Task.collection.remove({_medication:medicineid},{upsert:false});
 
+
 			}
 		}
 		
@@ -1679,13 +1682,9 @@ router.put('/nurse/medication', function(req,res){
 
 
 		}
-		
-	client.publish('dripo/station' ,"test",function (err) {
-	    if(err){
-	        console.log(err);
-	    }
-	});
 	res.json({success:true,message:"medication details updated"})	
+	var stationid = req.decoded.stationid.toString();
+	updateTaskdetails(stationid);
 	});//end of find medication
 
 });
@@ -1698,6 +1697,8 @@ router.post('/nurse/deletemedication', function(req,res){
 	Medication.collection.updateMany({_patient:patientid},{$unset:{_task:""}},{upsert:false});
 	Task.collection.remove({_patient:patientid});
 	res.json({success:true,message:"deleted all medicine associated with patient"})
+	var stationid = req.decoded.stationid.toString();
+	updateTaskdetails(stationid);
 });
 
 
@@ -1719,7 +1720,6 @@ router.get('/nurse/getopenedtask', function(req,res){
 				}
 				//reorder returned task array of object based on present time
 				else{
-					console.log(task);
 					var nexthour = hour;
 					while(nexthour<24){ 
 						for(lp1=0;lp1<task.length;lp1++){
@@ -1854,6 +1854,7 @@ router.get('/nurse/patientdetails', function(req,res){
 			else{
 				res.json({success:true,patientdetails:patient});
 
+
 			}
 		});
 
@@ -1872,3 +1873,258 @@ router.get('/nurse/patientdetails', function(req,res){
 
 return router;
 }
+
+function updateTaskdetails(stationid) {
+	Station.find({_id:ObjectId(stationid)}).exec(function (err,station) {
+	    if(err) console.log(err);
+	    if(station.length != 0){
+	        for(var key in station){
+	        	console.log("inside loop");
+	            stationid = station[key]._id.toString();
+	            username = station[key].username;
+	            var alertedtask =[];
+	            Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
+	                if(alertedtask.length==0){
+	                    console.log("No alerted task found");
+	                }
+	                else{
+	                    alertedtask = alertedtask;
+
+	                }
+	            var date=new Date();
+	            var hour=date.getHours();
+	            var index =-1;
+	            var skippedtaskArray =[];
+	            Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
+	                    if(task.length==0){
+	                        console.log("no task found");
+	                        //do something if no task found
+	                    }
+	                    else if(task.length == 1){
+	                        //if only one task is found send task
+	                        //function to convert 24 hours time to 12 hours time
+	                        function tConvert (time) {
+	                          if (time<12) { 
+	                            return time+':00 AM';
+	                        
+	                          }
+	                          else if(time ==12){
+	                            return time+':00 PM';
+	                          }
+	                          else{
+	                            return time-12+':00 PM'
+	                          }
+	                        }
+	                        //function to slice medicine name to 8 characters
+	                        function sliceMedicinename(med) {
+	                            var len = med.length;
+	                            if(len>8){
+	                                return med.slice(0,8);
+	                            }
+	                            else{
+	                                return med;
+	                            }
+	                        }
+
+	                        var orderedTasks = task;
+	                        var pubBed=[];
+	                        var pubTaskid=[];
+	                        var pubTime=[];
+	                        var pubMed=[];
+	                        var pubVol=[];
+	                        var pubRate =[];
+	                        for (var key1 in orderedTasks){
+	                            pubBed.push(orderedTasks[key1]._bed.bedname); 
+	                            pubBed.push('&'); 
+	                            pubTaskid.push(orderedTasks[key1]._id); 
+	                            pubTaskid.push('&');
+	                            var timein24=  orderedTasks[key1].time;
+	                            var timein12=tConvert(timein24);
+	                            pubTime.push(timein12); 
+	                            pubTime.push('&'); 
+	                            var slicedMedname = sliceMedicinename(orderedTasks[key1]._medication.medicinename);
+	                            pubMed.push(slicedMedname); 
+	                            pubMed.push('&');
+	                            pubVol.push(orderedTasks[key1]._medication.medicinevolume); 
+	                            pubVol.push('&');
+	                            pubRate.push(orderedTasks[key1]._medication.medicinerate); 
+	                            pubRate.push('&');
+
+	                        }
+	                        var pub_bed=pubBed.join('');
+	                        client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: true});
+	                        var pub_taskid=pubTaskid.join('');
+	                        client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: true});
+	                        var pub_time=pubTime.join('');
+	                        client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: true });
+	                        var pub_med=pubMed.join('');
+	                        client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: true });
+	                        var pub_vol=pubVol.join('');
+	                        client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
+	                        var pub_rate=pubRate.join('');
+	                        client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
+	                        console.log("publishing");
+	                        Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+	                            if(err) throw err;
+	                            if(!ivset.length){
+	                                console.log("no iv set found in db");
+	                            }
+	                            else{
+	                                var pub_dff=[];
+	                                for (var key2 in ivset)
+	                                {
+	                                  pub_dff.push(ivset[key2].ivsetdpf); 
+	                                  pub_dff.push('&');
+	                                  pub_dff.push(ivset[key2].ivsetdpf); 
+	                                  pub_dff.push('&');  
+
+	                                }
+	                                var pub_df=pub_dff.join('');
+	                                client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
+
+	                            }
+	                        });
+	                        
+	                    }
+	                    //reorder returned task array of object based on present time
+	                    else{
+	                        var nexthour = hour;
+	                        while(nexthour<24){ 
+	                            for(lp1=0;lp1<task.length;lp1++){
+	                                if(task[lp1].time == nexthour){
+	                                    index = lp1;
+	                                }
+	                            }
+
+	                            if(index==-1){
+	                                if(nexthour == 23){
+	                                    nexthour = 0;
+	                                }
+	                                else{
+	                                    nexthour=nexthour+1;
+	                                }
+	                            }
+	                            else{
+	                                break;
+	                            }
+	                        }
+	                    var prevtaskArray = task.slice(0,index);
+	                    var nexttaskArray = task.slice(index,(task.length));
+	                    var taskArray = nexttaskArray.concat(prevtaskArray);
+	                    var times = [];
+	                    for(var key in taskArray){
+	                        times.push(taskArray[key].time);
+	                    }
+	                    var timesArray=[];
+	                    var n=times.length;
+	                    var count=0;
+	                    for(var c=0;c<n;c++)
+	                        { 
+	                            for(var d=0;d<count;d++) 
+	                            { 
+	                                if(times[c]==timesArray[d]) 
+	                                    break; 
+	                            } 
+	                            if(d==count) 
+	                            { 
+	                                timesArray[count] = times[c]; 
+	                                count++; 
+	                            } 
+	                        }
+	                        //function to convert 24 hours time to 12 hours time
+	                        function tConvert (time) {
+	                          if (time<12) { 
+	                            return time+':00 AM';
+	                    
+	                          }
+	                          else if(time ==12){
+	                            return time+':00 PM';
+	                          }
+	                          else{
+	                            return time-12+':00 PM'
+	                          }
+	                        }
+	                        //function to slice medicine name to 8 characters
+	                        function sliceMedicinename(med) {
+	                            var len = med.length;
+	                            if(len>8){
+	                                return med.slice(0,8);
+	                            }
+	                            else{
+	                                return med;
+	                            }
+	                        }
+
+	                        var orderedTasks = alertedtask.concat(taskArray);
+	                        var pubBed=[];
+	                        var pubTaskid=[];
+	                        var pubTime=[];
+	                        var pubMed=[];
+	                        var pubVol=[];
+	                        var pubRate =[];
+	                        for (var key1 in orderedTasks){
+	                            pubBed.push(orderedTasks[key1]._bed.bedname); 
+	                            pubBed.push('&'); 
+	                            pubTaskid.push(orderedTasks[key1]._id); 
+	                            pubTaskid.push('&');
+	                            var timein24=  orderedTasks[key1].time;
+	                            var timein12=tConvert(timein24);
+	                            pubTime.push(timein12); 
+	                            pubTime.push('&'); 
+	                            var slicedMedname = sliceMedicinename(orderedTasks[key1]._medication.medicinename);
+	                            pubMed.push(slicedMedname); 
+	                            pubMed.push('&');
+	                            pubVol.push(orderedTasks[key1]._medication.medicinevolume); 
+	                            pubVol.push('&');
+	                            pubRate.push(orderedTasks[key1]._medication.medicinerate); 
+	                            pubRate.push('&');
+
+	                        }
+	                        var pub_bed=pubBed.join('');
+	                        client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: true});
+	                        var pub_taskid=pubTaskid.join('');
+	                        client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: true});
+	                        var pub_time=pubTime.join('');
+	                        client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: true });
+	                        var pub_med=pubMed.join('');
+	                        client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: true });
+	                        var pub_vol=pubVol.join('');
+	                        client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
+	                        var pub_rate=pubRate.join('');
+	                        client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
+	                        console.log("publishing");
+	                        Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+	                            if(err) throw err;
+	                            if(!ivset.length){
+	                                console.log("no iv set found in db");
+	                            }
+	                            else{
+	                                var pub_dff=[];
+	                                for (var key2 in ivset)
+	                                {
+	                                  pub_dff.push(ivset[key2].ivsetdpf); 
+	                                  pub_dff.push('&');
+	                                  pub_dff.push(ivset[key2].ivsetdpf); 
+	                                  pub_dff.push('&');  
+
+	                                }
+	                                var pub_df=pub_dff.join('');
+	                                client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
+
+	                            }
+	                        });
+
+
+	                    }
+	                }); 
+
+	                
+	                });
+	        }
+
+	    }
+	}); 
+	   
+
+}
+
