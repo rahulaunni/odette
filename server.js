@@ -325,8 +325,7 @@ function sendTaskDetails() {
                                     return med;
                                 }
                             }
-
-                            var orderedTasks = task;
+                            var orderedTasks = alertedtask.concat(task);
                             var pubBed=[];
                             var pubTaskid=[];
                             var pubTime=[];
@@ -607,7 +606,7 @@ exports.updateTaskdetails = function (stationid) {
                                  }
                              }
 
-                             var orderedTasks = task;
+                             var orderedTasks = alertedtask.concat(task);
                              var pubBed=[];
                              var pubTaskid=[];
                              var pubTime=[];
