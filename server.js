@@ -255,12 +255,15 @@ function sendTaskDetails() {
                 stationid = station[key]._id.toString();
                 username = station[key].username;
                 var alertedtask =[];
+                var noAlertedtask=false; 
                 Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
                     if(alertedtask.length==0){
                         console.log("No alerted task found");
+                        noAlertedtask=true; 
                     }
                     else{
                         alertedtask = alertedtask;
+                        noAlertedtask=false
 
                     }
                 var date=new Date();
@@ -268,7 +271,7 @@ function sendTaskDetails() {
                 var index =-1;
                 var skippedtaskArray =[];
                 Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
-                        if(task.length==0){
+                        if(task.length==0 && noAlertedtask==true){
                             console.log("no task found");
                             //do something if no task found
 
@@ -535,12 +538,15 @@ exports.updateTaskdetails = function (stationid) {
                  stationid = station[key]._id.toString();
                  username = station[key].username;
                  var alertedtask =[];
+                 var noAlertedtask=false; 
                  Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
                      if(alertedtask.length==0){
                          console.log("No alerted task found");
+                         noAlertedtask=true; 
                      }
                      else{
                          alertedtask = alertedtask;
+                         noAlertedtask=false; 
 
                      }
                  var date=new Date();
@@ -548,7 +554,7 @@ exports.updateTaskdetails = function (stationid) {
                  var index =-1;
                  var skippedtaskArray =[];
                  Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
-                         if(task.length==0){
+                         if(task.length==0 && noAlertedtask==true){
                              console.log("no task found");
                              //send null to clear the retained message
 
