@@ -231,7 +231,7 @@ cron.schedule('59 * * * *', function(){
     Task.collection.updateMany({'time':time,'status':{ $in:['closed','skipped']}},{$set:{status:'opened'}});
 });
 //Task 3 : Send Task details in every hour in 1st min
-cron.schedule('01 * * * *', function(){
+cron.schedule('1 * * * *', function(){
     sendTaskDetails();
 });
 //MQTT Configuration
@@ -278,7 +278,26 @@ function sendTaskDetails() {
                             client.publish('dripo/'+stationid+'/med',"",{ qos: 1, retain: true });
                             client.publish('dripo/'+stationid+'/vol',"",{ qos: 1, retain: true });
                             client.publish('dripo/'+stationid+'/rate',"",{ qos: 1, retain: true });
-                            client.publish('dripo/'+stationid+'/df',"",{ qos: 1, retain: true });
+                            Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+                                if(err) throw err;
+                                if(!ivset.length){
+                                    console.log("no iv set found in db");
+                                }
+                                else{
+                                    var pub_dff=[];
+                                    for (var key2 in ivset)
+                                    {
+                                      pub_dff.push(ivset[key2].ivsetdpf); 
+                                      pub_dff.push('&');
+                                      pub_dff.push(ivset[key2].ivsetdpf); 
+                                      pub_dff.push('&');  
+
+                                    }
+                                    var pub_df=pub_dff.join('');
+                                    client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
+
+                                }
+                            });
 
                         }
                         else if(task.length == 1){
@@ -540,7 +559,26 @@ exports.updateTaskdetails = function (stationid) {
                              client.publish('dripo/'+stationid+'/med',"",{ qos: 1, retain: true });
                              client.publish('dripo/'+stationid+'/vol',"",{ qos: 1, retain: true });
                              client.publish('dripo/'+stationid+'/rate',"",{ qos: 1, retain: true });
-                             client.publish('dripo/'+stationid+'/df',"",{ qos: 1, retain: true });
+                             Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+                                 if(err) throw err;
+                                 if(!ivset.length){
+                                     console.log("no iv set found in db");
+                                 }
+                                 else{
+                                     var pub_dff=[];
+                                     for (var key2 in ivset)
+                                     {
+                                       pub_dff.push(ivset[key2].ivsetdpf); 
+                                       pub_dff.push('&');
+                                       pub_dff.push(ivset[key2].ivsetdpf); 
+                                       pub_dff.push('&');  
+
+                                     }
+                                     var pub_df=pub_dff.join('');
+                                     client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
+
+                                 }
+                             });
 
                          }
                          else if(task.length == 1){
