@@ -255,15 +255,15 @@ function sendTaskDetails() {
                 stationid = station[key]._id.toString();
                 username = station[key].username;
                 var alertedtask =[];
-                var noAlertedtask=false; 
+                var noAlertedTask;
                 Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
                     if(alertedtask.length==0){
                         console.log("No alerted task found");
-                        noAlertedtask=true; 
+                        var noAlertedTask = true;
                     }
                     else{
                         alertedtask = alertedtask;
-                        noAlertedtask=false
+                        var noAlertedTask = false;
 
                     }
                 var date=new Date();
@@ -271,7 +271,7 @@ function sendTaskDetails() {
                 var index =-1;
                 var skippedtaskArray =[];
                 Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
-                        if(task.length==0 && noAlertedtask==true){
+                        if(task.length==0 && noAlertedTask==true){
                             console.log("no task found");
                             //do something if no task found
 
@@ -328,7 +328,15 @@ function sendTaskDetails() {
                                     return med;
                                 }
                             }
-                            var orderedTasks = alertedtask.concat(task);
+                            var orderedTasks=[];
+                            if(noAlertedTask ==true){
+                                var orderedTasks = task;
+
+                            }
+                            else{
+                                orderedTasks = alertedtask.concat(task);
+
+                            }
                             var pubBed=[];
                             var pubTaskid=[];
                             var pubTime=[];
@@ -455,8 +463,14 @@ function sendTaskDetails() {
                                     return med;
                                 }
                             }
+                            var orderedTasks=[];
+                            if(noAlertedTask==true){
+                                orderedTasks=taskArray;
 
-                            var orderedTasks = alertedtask.concat(taskArray);
+                            }
+                            else{
+                                orderedTasks = alertedtask.concat(taskArray);
+                            }
                             var pubBed=[];
                             var pubTaskid=[];
                             var pubTime=[];
@@ -538,15 +552,15 @@ exports.updateTaskdetails = function (stationid) {
                  stationid = station[key]._id.toString();
                  username = station[key].username;
                  var alertedtask =[];
-                 var noAlertedtask=false; 
+                 var noAlertedTask;
                  Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
                      if(alertedtask.length==0){
                          console.log("No alerted task found");
-                         noAlertedtask=true; 
+                         noAlertedTask = true;
                      }
                      else{
+                        noAlertedTask = false;
                          alertedtask = alertedtask;
-                         noAlertedtask=false; 
 
                      }
                  var date=new Date();
@@ -554,7 +568,7 @@ exports.updateTaskdetails = function (stationid) {
                  var index =-1;
                  var skippedtaskArray =[];
                  Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
-                         if(task.length==0 && noAlertedtask==true){
+                         if(task.length==0 && noAlertedTask==true){
                              console.log("no task found");
                              //send null to clear the retained message
 
@@ -611,8 +625,15 @@ exports.updateTaskdetails = function (stationid) {
                                      return med;
                                  }
                              }
+                             var orderedTasks=[];
+                             if(noAlertedTask==true){
+                                 orderedTasks=task;
 
-                             var orderedTasks = alertedtask.concat(task);
+                             }
+                             else{
+                                 orderedTasks = alertedtask.concat(task);
+                             }
+
                              var pubBed=[];
                              var pubTaskid=[];
                              var pubTime=[];
@@ -740,8 +761,15 @@ exports.updateTaskdetails = function (stationid) {
                                      return med;
                                  }
                              }
+                             var orderedTasks=[];
+                             if(noAlertedTask==true){
+                                 orderedTasks=taskArray;
 
-                             var orderedTasks = alertedtask.concat(taskArray);
+                             }
+                             else{
+                                 orderedTasks = alertedtask.concat(taskArray);
+                             }
+
                              var pubBed=[];
                              var pubTaskid=[];
                              var pubTime=[];
