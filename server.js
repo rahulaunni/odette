@@ -303,6 +303,90 @@ function sendTaskDetails() {
                             });
 
                         }
+                        else if(task.length==0 && noAlertedTask==false){
+                            //function to convert 24 hours time to 12 hours time
+                            function tConvert (time) {
+                              if (time<12) { 
+                                return time+':00 AM';
+                            
+                              }
+                              else if(time ==12){
+                                return time+':00 PM';
+                              }
+                              else{
+                                return time-12+':00 PM'
+                              }
+                            }
+                            //function to slice medicine name to 8 characters
+                            function sliceMedicinename(med) {
+                                var len = med.length;
+                                if(len>8){
+                                    return med.slice(0,8);
+                                }
+                                else{
+                                    return med;
+                                }
+                            }
+                            var orderedTasks=alertedtask;
+                            var pubBed=[];
+                            var pubTaskid=[];
+                            var pubTime=[];
+                            var pubMed=[];
+                            var pubVol=[];
+                            var pubRate =[];
+                            for (var key1 in orderedTasks){
+                                pubBed.push(orderedTasks[key1]._bed.bedname); 
+                                pubBed.push('&'); 
+                                pubTaskid.push(orderedTasks[key1]._id); 
+                                pubTaskid.push('&');
+                                var timein24=  orderedTasks[key1].time;
+                                var timein12=tConvert(timein24);
+                                pubTime.push(timein12); 
+                                pubTime.push('&'); 
+                                var slicedMedname = sliceMedicinename(orderedTasks[key1]._medication.medicinename);
+                                pubMed.push(slicedMedname); 
+                                pubMed.push('&');
+                                pubVol.push(orderedTasks[key1]._medication.medicinevolume); 
+                                pubVol.push('&');
+                                pubRate.push(orderedTasks[key1]._medication.medicinerate); 
+                                pubRate.push('&');
+
+                            }
+                            var pub_bed=pubBed.join('');
+                            client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: true});
+                            var pub_taskid=pubTaskid.join('');
+                            client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: true});
+                            var pub_time=pubTime.join('');
+                            client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: true });
+                            var pub_med=pubMed.join('');
+                            client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: true });
+                            var pub_vol=pubVol.join('');
+                            client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
+                            var pub_rate=pubRate.join('');
+                            client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
+                            console.log("publishing");
+                            Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+                                if(err) throw err;
+                                if(!ivset.length){
+                                    console.log("no iv set found in db");
+                                }
+                                else{
+                                    var pub_dff=[];
+                                    for (var key2 in ivset)
+                                    {
+                                      pub_dff.push(ivset[key2].ivsetdpf); 
+                                      pub_dff.push('&');
+                                      pub_dff.push(ivset[key2].ivsetdpf); 
+                                      pub_dff.push('&');  
+
+                                    }
+                                    var pub_df=pub_dff.join('');
+                                    client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
+
+                                }
+                            });
+
+                        }
                         else if(task.length == 1){
                             //if only one task is found send task
                             //function to convert 24 hours time to 12 hours time
@@ -578,6 +662,90 @@ exports.updateTaskdetails = function (stationid) {
                              client.publish('dripo/'+stationid+'/med',"",{ qos: 1, retain: true });
                              client.publish('dripo/'+stationid+'/vol',"",{ qos: 1, retain: true });
                              client.publish('dripo/'+stationid+'/rate',"",{ qos: 1, retain: true });
+                             Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
+                                 if(err) throw err;
+                                 if(!ivset.length){
+                                     console.log("no iv set found in db");
+                                 }
+                                 else{
+                                     var pub_dff=[];
+                                     for (var key2 in ivset)
+                                     {
+                                       pub_dff.push(ivset[key2].ivsetdpf); 
+                                       pub_dff.push('&');
+                                       pub_dff.push(ivset[key2].ivsetdpf); 
+                                       pub_dff.push('&');  
+
+                                     }
+                                     var pub_df=pub_dff.join('');
+                                     client.publish('dripo/' + stationid+ '/df',pub_df,{ qos: 1, retain: true });
+
+                                 }
+                             });
+
+                         }
+                         else if(task.length==0 && noAlertedTask==false){
+                             //function to convert 24 hours time to 12 hours time
+                             function tConvert (time) {
+                               if (time<12) { 
+                                 return time+':00 AM';
+                             
+                               }
+                               else if(time ==12){
+                                 return time+':00 PM';
+                               }
+                               else{
+                                 return time-12+':00 PM'
+                               }
+                             }
+                             //function to slice medicine name to 8 characters
+                             function sliceMedicinename(med) {
+                                 var len = med.length;
+                                 if(len>8){
+                                     return med.slice(0,8);
+                                 }
+                                 else{
+                                     return med;
+                                 }
+                             }
+                             var orderedTasks=alertedtask;
+                             var pubBed=[];
+                             var pubTaskid=[];
+                             var pubTime=[];
+                             var pubMed=[];
+                             var pubVol=[];
+                             var pubRate =[];
+                             for (var key1 in orderedTasks){
+                                 pubBed.push(orderedTasks[key1]._bed.bedname); 
+                                 pubBed.push('&'); 
+                                 pubTaskid.push(orderedTasks[key1]._id); 
+                                 pubTaskid.push('&');
+                                 var timein24=  orderedTasks[key1].time;
+                                 var timein12=tConvert(timein24);
+                                 pubTime.push(timein12); 
+                                 pubTime.push('&'); 
+                                 var slicedMedname = sliceMedicinename(orderedTasks[key1]._medication.medicinename);
+                                 pubMed.push(slicedMedname); 
+                                 pubMed.push('&');
+                                 pubVol.push(orderedTasks[key1]._medication.medicinevolume); 
+                                 pubVol.push('&');
+                                 pubRate.push(orderedTasks[key1]._medication.medicinerate); 
+                                 pubRate.push('&');
+
+                             }
+                             var pub_bed=pubBed.join('');
+                             client.publish('dripo/'+stationid+'/bed',pub_bed,{ qos: 1, retain: true});
+                             var pub_taskid=pubTaskid.join('');
+                             client.publish('dripo/'+stationid+'/task',pub_taskid,{ qos: 1, retain: true});
+                             var pub_time=pubTime.join('');
+                             client.publish('dripo/'+stationid+'/time',pub_time,{ qos: 1, retain: true });
+                             var pub_med=pubMed.join('');
+                             client.publish('dripo/'+stationid+'/med',pub_med,{ qos: 1, retain: true });
+                             var pub_vol=pubVol.join('');
+                             client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
+                             var pub_rate=pubRate.join('');
+                             client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
+                             console.log("publishing");
                              Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                  if(err) throw err;
                                  if(!ivset.length){
