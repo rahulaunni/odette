@@ -1310,6 +1310,7 @@ client.on('message', function (topic, payload, packet) {
            
         }
         else{
+            var staid = dripo[0]._station;
             var message = payload.toString();
             var messageArray = message.split("-");
             var taskid = messageArray[0];
@@ -1353,7 +1354,6 @@ client.on('message', function (topic, payload, packet) {
                         infObj.infdate = infdate;
                         infObj.inferr = [];
                         infObj._task = ObjectId(taskid);
-                        console.log(infObj);
                         infObj.save(function (err,infcb) {
                             
                             if(err) throw err;
@@ -1361,7 +1361,6 @@ client.on('message', function (topic, payload, packet) {
                                 Task.findOne({_id:ObjectId(taskid)}).exec(function(err,taskdetails) {
                                     if(err) throw err;
                                     if(taskdetails.length != 0){
-                                        console.log(taskdetails);
                                         Medication.collection.update({_id:ObjectId(taskdetails._medication)},{$push:{_infusionhistory:infcb._id}},{upsert:true});    
 
                                     }
@@ -1374,6 +1373,8 @@ client.on('message', function (topic, payload, packet) {
 
                 var filePath = path.join(__dirname, '../laura_logs/time4rate2set.txt');
                 fs.appendFileSync(filePath,messageArray[3]+"-"+messageArray[8]+'\n', "UTF-8",{'flags': 'a+'});
+                var stationid = staid.toString();
+                exports.updateTaskdetails(stationid);
 
             } //end of if status is start
             else if(status == 'infusing'){
@@ -1411,10 +1412,13 @@ client.on('message', function (topic, payload, packet) {
                 if(!taskid){
                     console.log("no task id");
                 }
+
                 else{
                     Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,devicecharge:""}});
                     Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
 
+                    var stationid = staid.toString();
+                    exports.updateTaskdetails(stationid);
                 }
 
                 }
