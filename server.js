@@ -72,14 +72,12 @@ app.post('/admin/update',function (req,res) {
     var version = deviceVersionArray[2];
     var serverfirmwareInfoArray;
     var serverVersion;
-    console.log(version);
     var updatefolder = path.join(__dirname, '/public/dripo_firmware/scotch');
     fs.readdir(updatefolder, function(err, files) {
         if (err){res.sendStatus(304);}
         files.forEach(function(f) {
         serverfirmwareInfoArray = f.split('_');
         serverVersion = serverfirmwareInfoArray[2];
-        console.log(serverVersion);
         if(serverVersion != undefined){
             var full_path = path.join(__dirname,'/public/dripo_firmware/scotch/'+'scotch_v_'+serverVersion+'_ino.nodemcu.bin'); 
             if(version < serverVersion){
@@ -258,7 +256,6 @@ function sendTaskDetails() {
                 var noAlertedTask;
                 Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
                     if(alertedtask.length==0){
-                        console.log("No alerted task found");
                         var noAlertedTask = true;
                     }
                     else{
@@ -272,7 +269,6 @@ function sendTaskDetails() {
                 var skippedtaskArray =[];
                 Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
                         if(task.length==0 && noAlertedTask==true){
-                            console.log("no task found");
                             //do something if no task found
 
                             client.publish('dripo/'+stationid+'/bed',"",{ qos: 1, retain: true});
@@ -284,7 +280,7 @@ function sendTaskDetails() {
                             Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                 if(err) throw err;
                                 if(!ivset.length){
-                                    console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                 }
                                 else{
                                     var pub_dff=[];
@@ -364,11 +360,10 @@ function sendTaskDetails() {
                             client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
                             var pub_rate=pubRate.join('');
                             client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
-                            console.log("publishing");
                             Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                 if(err) throw err;
                                 if(!ivset.length){
-                                    console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                 }
                                 else{
                                     var pub_dff=[];
@@ -457,11 +452,10 @@ function sendTaskDetails() {
                             client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
                             var pub_rate=pubRate.join('');
                             client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
-                            console.log("publishing");
                             Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                 if(err) throw err;
                                 if(!ivset.length){
-                                    console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                 }
                                 else{
                                     var pub_dff=[];
@@ -595,7 +589,7 @@ function sendTaskDetails() {
                             Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                 if(err) throw err;
                                 if(!ivset.length){
-                                    console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                 }
                                 else{
                                     var pub_dff=[];
@@ -639,7 +633,6 @@ exports.updateTaskdetails = function (stationid) {
                  var noAlertedTask;
                  Task.find({_station:ObjectId(station[key]._id),status:'alerted'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,alertedtask) {
                      if(alertedtask.length==0){
-                         console.log("No alerted task found");
                          noAlertedTask = true;
                      }
                      else{
@@ -653,7 +646,6 @@ exports.updateTaskdetails = function (stationid) {
                  var skippedtaskArray =[];
                  Task.find({_station:ObjectId(station[key]._id),status:'opened'}).sort({time:1}).populate({path:'_bed',model:'Bed'}).populate({path:'_medication',model:'Medication'}).populate({path:'_patient',model:'Patient'}).exec(function(err,task) {
                          if(task.length==0 && noAlertedTask==true){
-                             console.log("no task found");
                              //send null to clear the retained message
 
                              client.publish('dripo/'+stationid+'/bed',"",{ qos: 1, retain: true});
@@ -665,7 +657,7 @@ exports.updateTaskdetails = function (stationid) {
                              Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                  if(err) throw err;
                                  if(!ivset.length){
-                                     console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                  }
                                  else{
                                      var pub_dff=[];
@@ -745,11 +737,10 @@ exports.updateTaskdetails = function (stationid) {
                              client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
                              var pub_rate=pubRate.join('');
                              client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
-                             console.log("publishing");
                              Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                  if(err) throw err;
                                  if(!ivset.length){
-                                     console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                  }
                                  else{
                                      var pub_dff=[];
@@ -838,11 +829,10 @@ exports.updateTaskdetails = function (stationid) {
                              client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
                              var pub_rate=pubRate.join('');
                              client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
-                             console.log("publishing");
                              Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                  if(err) throw err;
                                  if(!ivset.length){
-                                     console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                  }
                                  else{
                                      var pub_dff=[];
@@ -974,11 +964,10 @@ exports.updateTaskdetails = function (stationid) {
                              client.publish('dripo/'+stationid+'/vol',pub_vol,{ qos: 1, retain: true });
                              var pub_rate=pubRate.join('');
                              client.publish('dripo/'+stationid+'/rate',pub_rate,{ qos: 1, retain: true });
-                             console.log("publishing");
                              Ivset.find({username:username}).sort({ivsetdpf:1}).exec(function(err,ivset){
                                  if(err) throw err;
                                  if(!ivset.length){
-                                     console.log("no iv set found in db");
+                                    client.publish('dripo/' + stationid+ '/df',"",{ qos: 1, retain: true });
                                  }
                                  else{
                                      var pub_dff=[];
