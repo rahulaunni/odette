@@ -522,29 +522,29 @@ angular.module('homeController',['homeServices'])
   //acknowledging the alert
   $scope.ackAlert = function(ev,task) { 
     if(task.infusionstatus == 'Empty'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Empty_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._id+'-'+'Empty_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
     else if(task.infusionstatus == 'Device_Disconnected'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
 
     }
     else if(task.infusionstatus == 'Block'){
       console.log(task);
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Block_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._id+'-'+'Block_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
     else if(task.infusionstatus == 'Rate_Err'){
       console.log(task);
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+'Rate_Err_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._id+'-'+'Rate_Err_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }
 
     else if(task.infusionstatus == 'Complete'){
-      socket.emit('publish', {topic:task.topic+'mon',payload:task._medication._id+'-'+task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
+      socket.emit('publish', {topic:task.topic+'mon',payload:task._id+'-'+task.infusionstatus+'_ACK'+'-'+task.rate+'-'+task.infusedVolume+'-'+task.timeRemaining+'-'+task.totalVolume+'-'+task.devicecharge});
       socket.emit('publish', {topic:task.topic+'staAck',payload:'STA_ACK'});
 
     }

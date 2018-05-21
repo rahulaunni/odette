@@ -1312,14 +1312,13 @@ client.on('message', function (topic, payload, packet) {
         else{
             var message = payload.toString();
             var messageArray = message.split("-");
-            var medid = messageArray[0];
-            var taskid = messageArray[1];
-            var status = messageArray[2];
-            var rate = messageArray[3];
-            var infusedVolume = messageArray[4];
-            var timeRemaining = messageArray[5];
-            var totalVolume = messageArray[6];
-            var deviceCharge = messageArray[7];
+            var taskid = messageArray[0];
+            var status = messageArray[1];
+            var rate = messageArray[2];
+            var infusedVolume = messageArray[3];
+            var timeRemaining = messageArray[4];
+            var totalVolume = messageArray[5];
+            var deviceCharge = messageArray[6];
             var percentage = Math.trunc(((infusedVolume/totalVolume)*100));
             var infdate= new Date();
             var inftime=(new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds();
@@ -1344,7 +1343,7 @@ client.on('message', function (topic, payload, packet) {
                 });
 
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,topic:commonTopic,devicecharge:deviceCharge}});
-                Medication.collection.update({_id:ObjectId(medid),source:'dripo'},{$set:{medicinerate:rate}},{upsert:true});    
+                // Medication.collection.update({_id:ObjectId(medid),source:'dripo'},{$set:{medicinerate:rate}},{upsert:true});    
                 Infusionhistory.find({_task:taskid,date:newdate}).exec(function(err,inf){
                     if(inf.length==0){
                         console.log("in");
@@ -1359,7 +1358,14 @@ client.on('message', function (topic, payload, packet) {
                             
                             if(err) throw err;
                             else{
-                                Medication.collection.update({_id:ObjectId(medid)},{$push:{_infusionhistory:infcb._id}},{upsert:true});    
+                                Task.findOne({_id:ObjectId(taskid)}).exec(function(err,taskdetails) {
+                                    if(err) throw err;
+                                    if(taskdetails.length != 0){
+                                        console.log(taskdetails);
+                                        Medication.collection.update({_id:ObjectId(taskdetails._medication)},{$push:{_infusionhistory:infcb._id}},{upsert:true});    
+
+                                    }
+                                });
                             }
                         });
                         
