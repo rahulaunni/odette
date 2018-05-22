@@ -908,8 +908,9 @@ router.get('/admin/getconnecteddripos', function(req,res){
     var counter = 0;
     var driponames=[];
     request.get('http://localhost:18083/api/v2/nodes/emq@127.0.0.1/clients',function (request,response) {
+    	console.log(response);
         if(response){
-            var recObj=JSON.parse(response.body);
+            var recObj=JSON.parse(response);
             var clients=recObj.result.objects;
             for(var lp1=0;lp1<clients.length;lp1++){
             	var index = clients[lp1].client_id.search("DRIPO")

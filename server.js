@@ -1361,7 +1361,10 @@ client.on('message', function (topic, payload, packet) {
                 });
 
                 var filePath = path.join(__dirname, '../laura_logs/time4rate2set.txt');
-                fs.appendFileSync(filePath,messageArray[3]+"-"+messageArray[8]+'\n', "UTF-8",{'flags': 'a+'});
+                fs.appendFileSync(filePath,messageArray[3]+"-"+messageArray[7]+'\n', "UTF-8",{'flags': 'a+'});
+                var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
+                fs.appendFileSync(filePath,"Starting Battery check of device "+dripoid+'\n', "UTF-8",{'flags': 'a+'});
+                fs.appendFileSync(filePath,inftime+","+messageArray[6]+'\n', "UTF-8",{'flags': 'a+'});
                 var stationid = staid.toString();
                 exports.updateTaskdetails(stationid);
 
@@ -1381,7 +1384,8 @@ client.on('message', function (topic, payload, packet) {
                     'deviceCharge':deviceCharge
                 });
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,devicecharge:deviceCharge}});
-
+                var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
+                fs.appendFileSync(filePath,inftime+","+messageArray[6]+'\n', "UTF-8",{'flags': 'a+'});
 
             }//end of if status is infusing
             else if(status == 'stop'){
@@ -1408,7 +1412,11 @@ client.on('message', function (topic, payload, packet) {
 
                     var stationid = staid.toString();
                     exports.updateTaskdetails(stationid);
+
                 }
+                //for battery check
+                var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
+                fs.appendFileSync(filePath,inftime+","+messageArray[6]+'\n'+"End of infusion"+'\n', "UTF-8",{'flags': 'a+'});
 
                 }
                 else{
@@ -1427,7 +1435,12 @@ client.on('message', function (topic, payload, packet) {
 
                     });
                     Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'inprogress',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:'Empty'}});
+                //for battery check
+                var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
+                fs.appendFileSync(filePath,inftime+","+messageArray[6]+'\n'+"End of infusion"+'\n', "UTF-8",{'flags': 'a+'});
+
                 }
+
             }
 
             else if(status == 'Empty'){
@@ -1472,6 +1485,11 @@ client.on('message', function (topic, payload, packet) {
                 var newdate = day + "/" + month + "/" + year;
                 Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:"",devicecharge:""}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
+           //for battery check
+           var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
+           fs.appendFileSync(filePath,inftime+","+messageArray[6]+'\n'+"End of infusion"+'\n', "UTF-8",{'flags': 'a+'});
+
+
             }//end of Empty_ACK
 
             else if(status == 'Rate_Err'|| status=='Block'){
@@ -1526,6 +1544,9 @@ client.on('message', function (topic, payload, packet) {
                     }
 
                 });
+                //for battery check
+                var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
+                fs.appendFileSync(filePath,inftime+","+messageArray[6]+'\n', "UTF-8",{'flags': 'a+'});
 
 
             }//end of error
