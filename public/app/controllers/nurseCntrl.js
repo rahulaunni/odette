@@ -32,8 +32,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 
 	//redirect user if no station selected
 	Auth.getUser().then(function (data) {
-		console.log("calling");
-		console.log(data);
 		if(!data.data.station){
 			$location.path('/selectstation')
 		}
@@ -103,7 +101,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	app.editerrorMsg = false;
 	this.addPatient = function (patientData) {
 		Nurse.addPatient(this.patientData).then(function (data) {
-			console.log(data.data);
 			if(data.data.success){
 				app.successMsg = data.data.message;
 				app.loader = true;
@@ -363,7 +360,6 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 								$scope.nopatient = true;
 							}
 						});
-						console.log("obj");
 						$location.path('/managepatients');
 						app.editmedloader = false;
 					},2000);
@@ -567,7 +563,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		$scope.backToView = function () {
 			app.showOnPatientDetails = false;
 			$route.reload('/managepatients');
-			reload();
+			app.showOnEditMedication = false;
+			app.showOnAddMedication = false;
+			app.showOnEditPatient = false;
 		}
 
 

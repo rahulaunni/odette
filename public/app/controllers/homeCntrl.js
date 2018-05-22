@@ -2,8 +2,6 @@ angular.module('homeController',['homeServices'])
 .controller('homeCntrl',function ($http,$route,$scope,$rootScope,$interval,$window,$location,$timeout,$mdDialog,$scope,Home,socket,Auth) {
     //redirect user if no station selected
     Auth.getUser().then(function (data) {
-      console.log("calling");
-      console.log(data);
       if(!data.data.station){
         $location.path('/selectstation')
       }

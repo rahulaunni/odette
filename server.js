@@ -222,12 +222,12 @@ cron.schedule('59 * * * *', function(){
  	Task.collection.updateMany({'time':hour,'status':'opened'},{$set:{status:'alerted'}});
 });
 //Task 2: Change status of task from closed/skipped to opened in 59th minute
-cron.schedule('59 * * * *', function(){
-    var date = new Date();
-    var hour = date.getHours();
-    var time = Math.abs(hour-12);
-    Task.collection.updateMany({'time':time,'status':{ $in:['closed','skipped']}},{$set:{status:'opened'}});
-});
+// cron.schedule('59 * * * *', function(){
+//     var date = new Date();
+//     var hour = date.getHours();
+//     var time = Math.abs(hour-12);
+//     Task.collection.updateMany({'time':time,'status':{ $in:['closed','skipped']}},{$set:{status:'opened'}});
+// });
 //Task 3 : Send Task details in every hour in 1st min
 cron.schedule('1 * * * *', function(){
     sendTaskDetails();
@@ -1611,31 +1611,31 @@ client.on('message', function (topic, payload, packet) {
     });
     }//end of if mon
 
-    if(topicinfoArray[2] == 'will'){
-        var message = payload.toString();
-        if(message == 'offline'){
-            Task.find({topic:commonTopic}).exec(function(err,task){
-                if(task.length != 0){
-                    io.emit('dripo',{
-                        'topic':topic.toString(),
-                        'payload':payload.toString(),
-                        'infusionstatus':'Device_Disconnected',
-                        'status':'inprogress',
-                        'taskid':task[0]._id,
-                        'rate':task[0].rate,
-                        'infusedVolume':task[0].infusedVolume,
-                        'timeRemaining':task[0].timeRemaining,
-                        'totalVolume':task[0].totalVolume,
-                        'percentage':task[0].percentage
-                    });
-                    Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted',devicecharge:""}});
-                }
+    // if(topicinfoArray[2] == 'will'){
+    //     var message = payload.toString();
+    //     if(message == 'offline'){
+    //         Task.find({topic:commonTopic}).exec(function(err,task){
+    //             if(task.length != 0){
+    //                 io.emit('dripo',{
+    //                     'topic':topic.toString(),
+    //                     'payload':payload.toString(),
+    //                     'infusionstatus':'Device_Disconnected',
+    //                     'status':'inprogress',
+    //                     'taskid':task[0]._id,
+    //                     'rate':task[0].rate,
+    //                     'infusedVolume':task[0].infusedVolume,
+    //                     'timeRemaining':task[0].timeRemaining,
+    //                     'totalVolume':task[0].totalVolume,
+    //                     'percentage':task[0].percentage
+    //                 });
+    //                 Task.collection.update({_id:task[0]._id},{$set:{infusionstatus:"Device_Disconnected",status:'alerted',devicecharge:""}});
+    //             }
                
-            });
+    //         });
 
-        }        
+    //     }        
 
-    }
+    // }
 });
 
 
