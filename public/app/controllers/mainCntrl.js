@@ -301,7 +301,9 @@ $scope.nurseNav = function (link) {
 
 /********************* Super User Menu *********************************/
 $scope.suMenuItems=[{menu:'Home',icon:'home',href:'/su/home'},
-					   {menu:'Manage Synapse',icon:'important_devices',href:'/su/managesynapse'},
+					{menu:'Manage Synapse',icon:'important_devices',href:'/su/managesynapse'},
+					{menu:'Data Analysis',icon:'timeline',href:'/su/analysis'},
+
 ];
 //checking for the route change for changing the selected menu item
 $scope.selectedIndex = 0;
@@ -314,6 +316,11 @@ $rootScope.$on("$routeChangeStart",function () {
 		$scope.selectedIndex = 1;
 
 	}
+	if($location.path() == '/su/analysis'){
+		$scope.selectedIndex = 2;
+
+	}
+
 
 });
 //superuser menu navigation

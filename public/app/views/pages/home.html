@@ -90,13 +90,12 @@
 <div style="padding: 2%" ng-if="noOpenedTasks == false">
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Upcoming Tasks</div>
 
-<md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="30" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" ng-repeat="time in times" >
-	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">{{::time}}:00</div>
-	<md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);"  md-colspan="6"  data-ng-repeat="openedtask in openedtasks" md-rowspan="4"  ng-if="openedtask.time==time" ng-click="showDetails($event,openedtask);">
+<md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="30" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%">
+	<md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);"  md-colspan="6"  data-ng-repeat="openedtask in openedtasks" md-rowspan="4"   ng-click="showDetails($event,openedtask);">
 			<div style="width:100%;height: 100%" layout="column" layout-align="center stretch">
 				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.type}} | Upcoming</div>
 				<div flex="100" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-title" ng-click="showDetails($event,alertedtask);">{{::openedtask._bed.bedname}}</div>
-				<div flex="100" layout="column" style="color:#cccccc;background: #616161" layout-align="center center" ng-click="showDetails($event,alertedtask);">
+				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.timeampm}}</div>				<div flex="100" layout="column" style="color:#cccccc;background: #616161" layout-align="center center" ng-click="showDetails($event,alertedtask);">
 					<div class="md-subhead">{{openedtask._medication.medicinename}}</div>
 					<div class="md-subhead">{{openedtask._medication.medicinevolume}} ml</div>
 				</div>	
@@ -125,9 +124,82 @@
 </div>
 
 <!-- button for adding patient -->
-<md-button href="/managepatients" class="md-fab md-fab-bottom-right  md-button md-ink-ripple scrolling">
-	<md-icon class="material-icons">&#xE145;</md-icon>
+<md-button  ng-click="showAddtask($event)"  class="md-fab md-fab-bottom-right  md-button md-ink-ripple scrolling">
+	Task
 </md-button>
+
+
+<div style="visibility: hidden">
+  <div class="md-dialog-container" id="myDialog">
+    <md-dialog layout-padding>
+		<md-content layout-padding="">	
+			<form name="taskForm" ng-submit='addTask(data);'>
+				<md-subheader class="md-no-sticky">Add Task</md-subheader>
+				  <div layout-padding>
+				  <div layout="column" layout-fill layout-xs="column">
+				      <md-input-container class="md-icon-float md-block" flex>
+				          <label>Time</label>
+				          <md-icon class="md-default-theme" class="material-icons">alarm</md-icon>
+				          <md-select type="text" aria-label="filter" ng-model="data.tasktime" name="tasktime" required>
+				            <md-optgroup label="tasktime">
+				            <md-option ng-value="tasktime.val"  ng-repeat="tasktime in tasktimes"> {{tasktime.disp}}</md-option>
+				            </md-optgroup>
+				           </md-select>
+				      </md-input-container>
+				      <div layout="row" layout-fill layout-xs="column">
+				      <md-input-container class="md-icon-float md-block" flex>
+				          <label>Bed</label>
+				          <md-icon class="md-default-theme" class="material-icons">hotel</md-icon>
+						  <md-select type="text" aria-label="filter" ng-model="data.bedname" name="bed" required>
+						      <md-optgroup label="bed">
+						          <md-option ng-value="bed._id"  ng-repeat="bed in beds"> {{bed.bedname}} | {{bed._patient.patientname}}</md-option>
+						      </md-optgroup>
+						  </md-select>
+				      </md-input-container>
+				      <md-input-container class="md-icon-float md-block" flex>
+				          <label>Medicine Name</label>
+				          <md-icon class="md-default-theme" class="material-icons">opacity</md-icon>
+				          <input ng-model="data.medicinename" type="text" name="medicinename" required>
+				          <div ng-messages="taskForm.medicinename.$error" role="alert" multiple>
+				              <div ng-message="required" class="my-message">This field is required</div>
+				          </div>
+				      </md-input-container>
+				  		</div>
+				  		    <div layout="row" layout-fill layout-xs="column">
+				  		    	<md-input-container class="md-icon-float md-block" flex>
+				  		    	     <label>Rate(ml/hr)</label>
+				  		    	    <md-icon class="md-default-theme" class="material-icons">timeline</md-icon>
+				  		    	    <input ng-model="data.medicinerate" type="number" name="medicinerate" ng-min="5" ng-max="1000" min="5" max="1000" required>
+				  		    	    <div ng-messages="taskForm.medicinerate.$error" role="alert" multiple>
+				  		    	         <div ng-message="required" class="my-message">This field is required</div>
+				  		    	        <div ng-message="min" class="my-message">Dripo can't be used for this rate</div>
+				  		    	        <div ng-message="max" class="my-message">Dripo can't be used for this rate</div>
+				  		    	    </div>
+				  		    	</md-input-container>
+				  		    	<md-input-container class="md-icon-float md-block" flex>
+				  		    	     <label>Volume(ml)</label>
+				  		    	     <md-icon class="md-default-theme" class="material-icons">local_drink</md-icon>
+				  		    	     <input ng-model="data.medicinevolume" type="number" name="medicinevolume" required ng-min="0" min="0">
+				  		    	     <div ng-messages="taskForm.medicinevolume.$error" role="alert" multiple>
+				  		    	         <div ng-message="required" class="my-message">This field is required</div>
+				  		    	         <div ng-message="min" class="my-message">Volume can't be negative</div>
+				  		    	     </div>
+				  		    	</md-input-container>
+				  			</div>
+				  </div>
+				</div>
+				<md-button type="submit" ng-disabled="taskForm.$invalid" class="md-raised md-warn">Submit</md-button>
+			</form>
+		</md-content>
+    </md-dialog>
+  </div>
+</div>
+
+
+
+
+
+
 
 <!-- audio alert -->
 <audio id="drugmed">

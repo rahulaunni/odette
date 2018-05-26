@@ -1,0 +1,16 @@
+<div layout="column" layout-padding="" layout-fill>
+    <md-content>
+    	<md-input-container class="md-icon-float md-block" flex="50">
+    	    <label>Select Synapse</label>
+    	    <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
+    	    <md-select type="text" aria-label="filter" ng-model="synapase" name="synapse">
+    	        <md-optgroup label="Hostname">
+    	            <md-option ng-value="" ng-selected="true">All Synapses</md-option>
+    	            <md-option ng-value="synapse.hostname" ng-repeat="synapse in synapses"> {{synapse.hostname}} </md-option>
+    	            </md-optgroup>
+    	    </md-select>
+    	    <md-button flex="50" ng-click="getData(synapse);" class="md-primary">get data</md-button>
+
+    	</md-input-container>
+    </md-content>
+</div>

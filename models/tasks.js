@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var task= new Schema({
 time:Number,
+timeampm:String,
 type:String,
 status:String,
 priority:Number,

@@ -552,5 +552,41 @@ angular.module('homeController',['homeServices'])
 
 
 
+//add task functions and variables
+$scope.showAddtask = function(ev) {
+  $mdDialog.show({
+    contentElement: '#myDialog',
+    parent: angular.element(document.body),
+    targetEvent: ev,
+    clickOutsideToClose: true
+  });
+};
+$scope.tasktimes=[{disp:'12 AM',val:0},{disp:'1 AM',val:1},{disp:'2 AM',val:2},{disp:'3 AM',val:3},{disp:'4 AM',val:4},{disp:'5 AM',val:5},{disp:'6 AM',val:6}
+,{disp:'7 AM',val:7},{disp:'8 AM',val:8},{disp:'9 AM',val:9},{disp:'10 AM',val:10},{disp:'11 AM',val:11},{disp:'12 PM',val:12},{disp:'1 PM',val:13},{disp:'2 PM',val:14}
+,{disp:'3 PM',val:15},{disp:'4 PM',val:16},{disp:'5 PM',val:17},{disp:'6 PM',val:18},{disp:'7 PM',val:19},{disp:'8 PM',val:20},{disp:'9 PM',val:21},{disp:'10 PM',val:22},{disp:'11 PM',val:23}];
+
+$scope.beds = [];
+$scope.nobed=false;
+//function called on page load gives all the stations associated with the user to frontend
+Home.viewBed().then(function (data) {
+  if(data.data.success){
+    $scope.beds=data.data.beds;
+
+  }
+  else{
+    $scope.nobed=true;
+
+  }
+});
+
+$scope.addTask = function (ipdata) {
+  Home.addTask(ipdata).then(function (data) {
+    if(data.data.success){
+      $route.reload('/');
+    }
+  })
+
+}
+
 });
  

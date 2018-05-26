@@ -20,6 +20,8 @@ var Dripo = require('../models/dripos');
 var Patient = require('../models/patients');
 var Medication = require('../models/medications');
 var Task = require('../models/tasks');
+var Synapse = require('../models/synapselist');
+
 var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
 var nodemailer = require('nodemailer');
@@ -62,7 +64,7 @@ router.post('/register', function(req,res){
 			//link for the mail for activation of account
 			var link="http://"+req.get('host')+"/activate/"+user.tempToken; 
 			var ipaddress = ip.address();
-			var offlinelink = "http://"+ipaddress+":3000"+"/activate/"+user.tempToken; 
+			var offlinelink = "http://"+ipaddress+":4000"+"/activate/"+user.tempToken; 
 			//activation mail object
 			var mailOptions = {
 			  from: 'dripocare@gmail.com',
@@ -131,7 +133,7 @@ router.put('/resend', function(req, res) {
 				var host=req.get('host');
 				var link="http://"+req.get('host')+"/activate/"+user.tempToken; 
 				var ipaddress = ip.address();
-				var offlinelink = "http://"+ipaddress+":3000"+"/activate/"+user.tempToken; 
+				var offlinelink = "http://"+ipaddress+":4000"+"/activate/"+user.tempToken; 
 				var mailOptions = {
 				  from: 'dripocare@gmail.com',
 				  to: user.userName,
@@ -176,7 +178,7 @@ router.put('/forgotpassword', function(req, res) {
 					var host=req.get('host');
 					var link="http://"+req.get('host')+"/resetpassword/"+user.resetToken; 
 					var ipaddress = ip.address();
-					var offlinelink = "http://"+ipaddress+":3000"+"/resetpassword/"+user.resetToken; 
+					var offlinelink = "http://"+ipaddress+":4000"+"/resetpassword/"+user.resetToken; 
 					var mailOptions = {
 					  from: 'dripocare@gmail.com',
 					  to: user.userName,
@@ -1158,6 +1160,29 @@ router.get('/nurse/viewbed', function(req,res){
 	
 });
 
+
+//route for fetching all occupied the bed details to nurse while adding task
+router.get('/nurse/viewoccupiedbed', function(req,res){
+	if(req.decoded.admin && req.decoded.station){
+		Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'occupied'}).populate
+		({path:'_patient',model:'Patient'}).exec(function(err,bed) {	
+			if (err) throw err;
+			if(!bed.length){
+				res.json({success:false,message:'No bed found'});
+			}
+				
+			else{
+
+				res.json({success:true,message:'bed found',beds:bed});
+			}
+		});
+	}
+	else{
+		res.json({success:false,message:'Decoded token has no station value'});
+	}
+	
+});
+
 //route for fetching all the doctor accout details to nurse while adding patient
 router.get('/nurse/viewdoctor', function(req,res){
 	if(req.decoded.admin){
@@ -1358,10 +1383,81 @@ router.put('/nurse/dischargepatient', function(req,res){
 	}
 	
 });
+//route for adding task
+router.post('/nurse/task', function(req,res){
+	var timeinampm;
+	var timein24 = req.body.tasktime;
+	if(timein24 < 12){
+		console.log(timein24);
+		var timeinampm = timein24.toString() + ' AM'
+	}
+	else{
+		console.log(timein24);
+
+		var timeinampm = (timein24 -12).toString() + ' PM';
+	}
+	Bed.findOne({_id:ObjectId(req.body.bedname)}).exec(function(err,bed) {
+		if(err) throw err;
+		if(bed.length !=0){
+			var med = {};
+			med.medicinename = req.body.medicinename;
+			med.medicinerate = req.body.medicinerate;
+			med.medicinevolume = req.body.medicinevolume;
+			med.stationname = req.decoded.station;
+			med._admin = req.decoded.admin;
+			med._bed = ObjectId(req.body.bedname);
+			med._patient = ObjectId(bed._patient);
+			patientid = ObjectId(bed._patient);
+			bedid = ObjectId(req.body.bedname);
+			// saving user to database
+			Medication.collection.insert(med, onInsert);
+			function onInsert(err,docs){
+				if(err) throw err;
+				else{
+					var timeObj={};
+					//update patient collection and insert thr refernce of medicine id
+					Patient.collection.update({_id:patientid},{$push:{_medication:med._id}},{upsert:false});
+					//docs.ops has the data available and req.body.medications[].time has all the time associated with that medicine
+					docs.ops.forEach(function callback(currentValue, index, array) {
+					         timeObj.time=req.body.tasktime;
+					         timeObj.timeampm=timeinampm;
+					         timeObj.type='infusion';
+					         timeObj.priority = 0;
+					         timeObj.status='opened';
+					         timeObj.createdat=new Date();
+					         timeObj.infusedVolume =0;
+					         timeObj._patient=patientid;
+					         timeObj._bed=bedid;
+					         timeObj._medication=currentValue._id;
+					         timeObj._station=ObjectId(req.decoded.stationid);
+					                            
+					});
+					Task.collection.insert(timeObj, onInsert);
+					function onInsert(err,times) {
+						if(err) throw err;
+						else{
+	
+							 Medication.collection.update({_id:med._id},{$push:{_task:timeObj._id}},{upsert:false});
+
+						}
+					}
+				res.json({success:true,message:"task added successfully"})
+
+				}//end of adding medication success
+			}//end of medication insert function
+
+
+		}
+		
+	})
+
+
+
+})
+
 
 //route for adding medications
 router.post('/nurse/medication', function(req,res){
-	console.log(req.body);
 	if(req.body[0].medicinename && req.body[0].medicinerate && req.body[0].medicinevolume && req.body[0].patientid &&  req.body[0].bedid){
 		var medicationObjArray=[{}];
 		var patientid;
@@ -1871,6 +1967,20 @@ router.get('/nurse/patientdetails', function(req,res){
 
 });
 
+//route to provide hostname of all local synapses linked with online server
+router.get('/su/hostname', function(req,res){
+	Synapse.find({}).exec(function(err, synapse) {	
+			if (err) throw err;
+			if(!synapse.length){
+				res.json({success:false,message:'No synapse found'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Synapses found',synapses:synapse});
+			}
+	});
+});
 
 
 

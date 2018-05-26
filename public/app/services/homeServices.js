@@ -16,6 +16,12 @@ angular.module('homeServices',[])
 	homeFactory.closeTask = function (task) {
 		return $http.put('/api/nurse/closetask',task);
 	}
+	homeFactory.viewBed = function () {
+		return $http.get('/api/nurse/viewoccupiedbed');
+	}
+	homeFactory.addTask = function (ipdata) {
+		return $http.post('/api/nurse/task',ipdata);
+	}
 
 	return homeFactory;
 });

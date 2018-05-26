@@ -12,4 +12,25 @@ angular.module('suController',['suServices'])
 		
 	})
 
+})
+
+.controller('suAnalysisCntrl',function ($http,$window,$location,$timeout,$mdDialog,$scope,Su) {
+	$scope.synapses={}
+	$scope.nosynapse = false;
+	Su.getHostname().then(function (data) {
+		if(data.data.success){
+			$scope.synapses = data.data.synapses;
+			$scope.nosynapse = false;
+		}
+		else{
+			$scope.synapses = {};
+			$scope.nosynapse = true;
+		}
+	});
+	$scope.getData = function (synapse) {
+		console.log(synapse);
+	}
+
+
+
 });

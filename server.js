@@ -44,9 +44,27 @@ var Patient = require('./models/patients');
 var Ivset = require('./models/ivsets');
 var Infusionhistory = require('./models/infusionhistories');
 var Synapse = require('./models/synapselist');
+var Analysis = require('./models/analysis');
+
+var ip = require('ip');
 
 //for logging requests
 app.use(morgan('dev'));
+//for parsing json body
+app.use(bodyParser.json({extended : true}));
+
+var serverType;
+var ipaddress= ip.address();
+if(ipaddress == '13.127.153.164'){
+    serverType = "online";
+}
+else{
+    serverType = "local";
+
+}
+
+
+
 
 //for updating app
 app.post('/admin/update',function (req,res) {
@@ -110,7 +128,6 @@ app.post('/admin/update',function (req,res) {
 
 //route to get public ip and hostname of local servers installed
 app.put('/updatelocalip',function (req,res) {
-    console.log(req.query);
     Synapse.findOne({hostname:req.query.hname}).select('hostname publicip').exec(function(err,synapse) {
         if (err) throw err; // Throw error if cannot connect
         if(synapse){
@@ -157,7 +174,9 @@ var nested = {
     are: 'ok'
   }
 }
- 
+
+
+//sending hostname and publicip to the online server when local server starts
 needle.put('http://dripo.care//updatelocalip?ip='+publicip+'&hname='+hostname, nested, function(err, resp) {
     if(err){
         console.log(err);
@@ -179,6 +198,37 @@ app.get('/getsynapsedetails', function(req,res){
             }
         });
 });
+
+
+//save the data from various local servers
+app.post('/analysis',function (req,res) {
+   res.writeHeader(200);  
+   var Data = req.body.data;
+    for(var key in req.body.data){
+       var infObj = new Analysis();
+       infObj.date = Data[key].newdate;
+       infObj.infstarttime = Data[key].infstarttime;
+       infObj.infendtime = Data[key].infendtime;
+       infObj.infdate = Data[key].infdate;
+       infObj.inferr = Data[key].inferr;
+       infObj.dripoid = Data[key].dripoid;
+       infObj.batcharge_start = Data[key].batcharge_start;
+       infObj.batcharge_stop = Data[key].batcharge_stop;
+       infObj.batcharge_err = Data[key].batcharge_err;
+       infObj.hostname = Data[key].hostname;
+       infObj.save(function (err,infcb) {
+           
+           if(err) throw err;
+           else{
+                   console.log("success");
+                   res.end();
+                }
+           });
+    }
+})
+
+
+
 
 //bodyparser
 app.use(bodyParser.json());
@@ -232,6 +282,11 @@ cron.schedule('59 * * * *', function(){
 cron.schedule('1 * * * *', function(){
     sendTaskDetails();
 });
+
+cron.schedule('55 23 * * *', function(){
+    sendAnalysis();
+});
+
 //MQTT Configuration
 var mqtt = require('mqtt')
 var client = mqtt.connect('mqtt://localhost:1883',{clientId:"LauraClient"});
@@ -240,6 +295,41 @@ client.on('connect', function() {
     client.subscribe('dripo/#',{ qos: 1});
 
 });
+
+
+//sending infusion and device performance data to online server
+function sendAnalysis() {
+    var dateObj = new Date();
+    var month = dateObj.getUTCMonth() + 1; //months from 1-12
+    var day = dateObj.getUTCDate();
+    var year = dateObj.getUTCFullYear();
+    var newdate = day + "/" + month + "/" + year;
+    Infusionhistory.find({date:newdate}).exec(function (err,inf) {
+        if(err) throw err;
+        if(inf.length !=0){
+            var options = {
+              uri: 'http://dripo.care/analysis',
+              method: 'POST',
+              json: {
+                data:inf
+              }
+            };
+
+            request(options, function (error, response, body) {
+              if (!error && response.statusCode == 200) {
+                console.log("success"); 
+              }
+              else{
+                console.log("call function again");
+              }
+            });
+        }
+
+    });
+}
+
+
+
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //New code for sending data to all device while starting a server
@@ -621,7 +711,7 @@ function sendTaskDetails() {
     
 }
 
-
+//function to update the task details for a particular station
 exports.updateTaskdetails = function (stationid) {
      Station.find({_id:ObjectId(stationid)}).exec(function (err,station) {
          if(err) console.log(err);
@@ -998,6 +1088,8 @@ exports.updateTaskdetails = function (stationid) {
            
 };
 
+
+
 //function fired on recieving a message from device in topic dripo/
 client.on('message', function (topic, message) {
     var topicinfoArray = topic.split("/");
@@ -1048,6 +1140,7 @@ client.on('message', function (topic, message) {
             }
 
             //******************************************
+            //old req,response device -server communnication code
             var stationid = ObjectId(dripo[0]._station);
             var userid =ObjectId(dripo[0]._user);
             if(topicinfoArray[2]=='bed_req'){
@@ -1271,7 +1364,8 @@ client.on('message', function (topic, message) {
 
 });
 
-
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//Code for monitoring forwarding the live infusion deails to frontend via socketio and updating database
 //socket.io config
  var io = require('socket.io')(server);
 io.on('connection', function (socket) {
@@ -1343,6 +1437,9 @@ client.on('message', function (topic, payload, packet) {
                         infObj.infdate = infdate;
                         infObj.inferr = [];
                         infObj._task = ObjectId(taskid);
+                        infObj.dripoid = dripoid;
+                        infObj.batcharge_start = deviceCharge;
+                        infObj.hostname = os.hostname();
                         infObj.save(function (err,infcb) {
                             
                             if(err) throw err;
@@ -1408,7 +1505,7 @@ client.on('message', function (topic, payload, packet) {
 
                 else{
                     Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'alerted',rate:rate,infusedVolume:infusedVolume,timeRemaining:timeRemaining,totalVolume:totalVolume,percentage:percentage,infusionstatus:status,devicecharge:""}});
-                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
+                    Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume,batcharge_stop:deviceCharge}},{upsert:true}); 
 
                     var stationid = staid.toString();
                     exports.updateTaskdetails(stationid);
@@ -1483,7 +1580,7 @@ client.on('message', function (topic, payload, packet) {
                 var day = dateObj.getUTCDate();
                 var year = dateObj.getUTCFullYear();
                 var newdate = day + "/" + month + "/" + year;
-                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:"",devicecharge:""}});
+                Task.collection.update({_id:ObjectId(taskid)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:"",devicecharge:"",batcharge_stop:deviceCharge}});
                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{infendtime:inftime,inftvol:infusedVolume}},{upsert:true}); 
            //for battery check
            var filePath = path.join(__dirname, '../laura_logs/batterycharge.txt');
@@ -1531,6 +1628,8 @@ client.on('message', function (topic, payload, packet) {
                             Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
                             if(presentHour-lastHour !=0 || presentMin - lastMin > 2 || lastError != status){
                                 Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                                Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{batcharge_err:{errtime:inftime,batcharge:deviceCharge}}},{upsert:true}); 
+
 
                             }
 
@@ -1539,6 +1638,8 @@ client.on('message', function (topic, payload, packet) {
                         else{
                             Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$set:{lasterr:{errtype:status,errtime:inftime}}},{upsert:true}); 
                             Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{inferr:{errtype:status,errtime:inftime}}},{upsert:true}); 
+                            Infusionhistory.collection.update({_task:ObjectId(taskid),date:newdate},{$push:{batcharge_err:{errtime:inftime,batcharge:deviceCharge}}},{upsert:true}); 
+
 
                         }
                     }

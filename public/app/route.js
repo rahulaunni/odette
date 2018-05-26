@@ -140,6 +140,14 @@ var app = angular.module('appRoutes', ['ngRoute'])
 		permission:['su']
 
 	})
+	.when('/su/analysis',{
+		templateUrl:'app/views/su/analysis.html',
+		authenticated:true,
+		controller: 'suAnalysisCntrl',
+		controllerAs: 'analysis',
+		permission:['su']
+
+	})
 	.when('/doc/home',{
 		templateUrl:'app/views/doc/home.html',
 		authenticated:true,
