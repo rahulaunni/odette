@@ -1215,7 +1215,7 @@ router.post('/nurse/patient', function(req,res){
 				patient.patientstatus = 'active';
 				patient.bedname = req.body.bedname;
 				patient.doctorname = req.body.doctorname;
-				patient.admittedon = req.body.admittedon;
+				patient.admittedon = new Date();
 				patient.stationname = req.decoded.station;
 				patient._admin = req.decoded.admin;
 				// saving user to database

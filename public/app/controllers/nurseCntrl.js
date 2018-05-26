@@ -427,52 +427,52 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 	}
 	app.showOnEditPatient = false;
 	//function to provide edit patient tab and hide add patient
-	this.showEditPatient = function (patient) {
-		app.oldbed = patient.bedname;
-		$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
-		app.showOnEditMedication = false;
-		app.showOnAddMedication = false;
-		app.showOnEditPatient = true;
-		app.editpatient = patient;
-	};
-	app.editpatloader = false;
-	//form submission after edit
-	this.editPatient = function (editpatient) {
-		this.editpatient.oldbed = app.oldbed;
-		Nurse.editPatient(this.editpatient).then(function(data) {
-			if(data.data.success){
-				app.editpatloader = true;
-				app.editsuccessMsg = data.data.message;
-				$timeout(function () {
-					app.editpatloader = false;
-					$scope.myTabIndex = 0;
-					Nurse.viewPatient().then(function (data) {
-						if(data.data.success){
-							app.patient=data.data.patient;
-							$scope.patients=data.data.patients;
-							for(var key in $scope.patients){
-								if(!$scope.patients[key]._medication.length){
-									$scope.patients[key].add=true;
-								}
-								else{
-									$scope.patients[key].add=false;
-								}
-							}
-						}
-						else{
-							$scope.nopatient = true;
-						}
-					});
-					$route.reload('/managepatients');
-				},2000);
-			}
-			else{
-				app.editerrorMsg=data.data.message;
-				app.editloader = false;
-			}
-		});
+	// this.showEditPatient = function (patient) {
+	// 	app.oldbed = patient.bedname;
+	// 	$scope.myTabIndex = $scope.myTabIndex +1; //to move tp next tab
+	// 	app.showOnEditMedication = false;
+	// 	app.showOnAddMedication = false;
+	// 	app.showOnEditPatient = true;
+	// 	app.editpatient = patient;
+	// };
+	// app.editpatloader = false;
+	// //form submission after edit
+	// this.editPatient = function (editpatient) {
+	// 	this.editpatient.oldbed = app.oldbed;
+	// 	Nurse.editPatient(this.editpatient).then(function(data) {
+	// 		if(data.data.success){
+	// 			app.editpatloader = true;
+	// 			app.editsuccessMsg = data.data.message;
+	// 			$timeout(function () {
+	// 				app.editpatloader = false;
+	// 				$scope.myTabIndex = 0;
+	// 				Nurse.viewPatient().then(function (data) {
+	// 					if(data.data.success){
+	// 						app.patient=data.data.patient;
+	// 						$scope.patients=data.data.patients;
+	// 						for(var key in $scope.patients){
+	// 							if(!$scope.patients[key]._medication.length){
+	// 								$scope.patients[key].add=true;
+	// 							}
+	// 							else{
+	// 								$scope.patients[key].add=false;
+	// 							}
+	// 						}
+	// 					}
+	// 					else{
+	// 						$scope.nopatient = true;
+	// 					}
+	// 				});
+	// 				$route.reload('/managepatients');
+	// 			},2000);
+	// 		}
+	// 		else{
+	// 			app.editerrorMsg=data.data.message;
+	// 			app.editloader = false;
+	// 		}
+	// 	});
 		
-	};
+	// };
 	
 
 
@@ -567,6 +567,41 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 			app.showOnAddMedication = false;
 			app.showOnEditPatient = false;
 		}
+
+
+//add patient functions
+$scope.showAddPatient = function(ev) {
+  $mdDialog.show({
+    contentElement: '#addPatient',
+    parent: angular.element(document.body),
+    targetEvent: ev,
+    clickOutsideToClose: true
+  });
+};
+$scope.cancelAddPatient=function () {
+  $route.reload('/managepatients');
+}
+$scope.addPatient = function (ipdata) {
+	Nurse.addPatient(ipdata).then(function (data) {
+		if(data.data.success){
+			$route.reload('/managepatients');
+		}
+	})
+}
+//edit patient functions
+$scope.editpatData={};
+$scope.oldbed;
+$scope.showEditPatient = function(ev,patient) {
+	$scope.oldbed = patient.bedname;
+	$scope.editpatData = patient;
+	console.log($scope.editpatData);
+  $mdDialog.show({
+    contentElement: '#editPatient',
+    parent: angular.element(document.body),
+    targetEvent: ev,
+    clickOutsideToClose: true
+  });
+};
 
 
 });

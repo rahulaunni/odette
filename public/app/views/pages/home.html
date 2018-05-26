@@ -125,7 +125,7 @@
 
 <!-- button for adding patient -->
 <md-button  ng-click="showAddtask($event)"  class="md-fab md-fab-bottom-right  md-button md-ink-ripple scrolling">
-	Task
+	<md-icon class="md-default-theme" class="material-icons">add</md-icon>
 </md-button>
 
 
@@ -188,7 +188,10 @@
 				  			</div>
 				  </div>
 				</div>
-				<md-button type="submit" ng-disabled="taskForm.$invalid" class="md-raised md-warn">Submit</md-button>
+				<div layout="row" layout-fill layout-xs="column">
+					<md-button  ng-click="cancelAddTask();"  class="md-raised md-warn">cancel</md-button>
+					<md-button type="submit" ng-disabled="taskForm.$invalid" class="md-raised md-accent">Submit</md-button>
+				</div>
 			</form>
 		</md-content>
     </md-dialog>

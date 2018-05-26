@@ -578,7 +578,9 @@ Home.viewBed().then(function (data) {
 
   }
 });
-
+$scope.cancelAddTask=function () {
+  $route.reload('/');
+}
 $scope.addTask = function (ipdata) {
   Home.addTask(ipdata).then(function (data) {
     if(data.data.success){
