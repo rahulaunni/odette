@@ -33,6 +33,9 @@ angular.module('nurseServices',['authServices'])
 	nurseFactory.editPatient = function (editpatient) {
 		return $http.put('/api/nurse/patient',editpatient);
 	}
+	nurseFactory.readdPatient = function (editpatient) {
+		return $http.put('/api/nurse/readdpatient',editpatient);
+	}
 	nurseFactory.editMedication = function (editpatient) {
 		return $http.get('/api/nurse/medication',{params:{bedid:editpatient._bed}});
 	}

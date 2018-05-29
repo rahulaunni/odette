@@ -573,9 +573,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 $scope.showAddPatient = function(ev) {
   $mdDialog.show({
     contentElement: '#addPatient',
+    clickOutsideToClose: false,
     parent: angular.element(document.body),
     targetEvent: ev,
-    clickOutsideToClose: true
   });
 };
 $scope.cancelAddPatient=function () {
@@ -588,20 +588,224 @@ $scope.addPatient = function (ipdata) {
 		}
 	})
 }
+
 //edit patient functions
-$scope.editpatData={};
-$scope.oldbed;
-$scope.showEditPatient = function(ev,patient) {
-	$scope.oldbed = patient.bedname;
-	$scope.editpatData = patient;
-	console.log($scope.editpatData);
-  $mdDialog.show({
-    contentElement: '#editPatient',
-    parent: angular.element(document.body),
-    targetEvent: ev,
-    clickOutsideToClose: true
-  });
-};
+
+$scope.editPatient = function (editpatData) {
+	Nurse.editPatient(editpatData).then(function(data) {
+		if(data.data.success){
+			$route.reload('/managepatients');
+		}
+	})
+}
+
+
+
+$scope.showEditPatient= function(ev,patDet) {
+              $mdDialog.show ({
+              	locals: { editpatData: patDet,oldbed:patDet.bedname,olddoc:patDet.doctorname},
+              	targetEvent: ev,
+                 clickOutsideToClose: false,
+                 scope: $scope,        
+                 preserveScope: true,           
+                 template: '<md-dialog layout-padding>'+
+        					'<md-content layout-padding="">'+  
+     '        <form name="patientForm" ng-submit="editPatient(editpatData)";'+
+ '                <md-subheader class="md-no-sticky">Edit Patient</md-subheader>'+
+ '                  <div layout-padding>'+
+ '                  <div layout="column" layout-fill layout-xs="column">'+
+ '                    <div layout="row" layout-fill layout-xs="column">'+
+ '                        <md-input-container class="md-icon-float md-block" flex>'+
+ '                            <label>Patient Name</label>'+
+ '                            <md-icon class="md-default-theme" class="material-icons">&#xE87C;</md-icon>'+
+ '                            <input ng-model="editpatData.patientname" type="text" name="patientname" required>'+
+ '                            <div ng-messages="patientForm.patientname.$error" role="alert" multiple>'+
+ '                                <div ng-message="required" class="my-message">This field is required</div>'+
+ '                            </div>'+
+ '                        </md-input-container>'+
+'                        <md-input-container class="md-icon-float md-block" flex>'+
+'                            <label>Bed</label>'+
+'                            <md-icon class="md-default-theme" class="material-icons">hotel</md-icon>'+
+'                            <md-select type="text" aria-label="filter" ng-model="editpatData.bedname" name="bed" required>'+
+'                                <md-optgroup label="bed">'+
+'                                    <md-option ng-value="oldbed"  ng-selected="true"> {{oldbed}}</md-option>'+
+'                                    <md-option ng-value="bed.bedname"  ng-repeat="bed in beds"> {{bed.bedname}}</md-option>'+
+'                                </md-optgroup>'+
+'                            </md-select>'+
+'                        </md-input-container>'+
+'                    </div>'+
+'                      <div layout="row" layout-fill layout-xs="column">'+
+'                        <md-input-container class="md-icon-float md-block" flex>'+
+'                            <label>Age</label>'+
+'                            <md-icon class="md-default-theme" class="material-icons">child_care</md-icon>'+
+'                            <input ng-model="editpatData.patientage" type="number" name="patientage" required ng-min="10" min="0">'+
+'                            <div ng-messages="patientForm.patientage.$error" role="alert" multiple>'+
+'                                <div ng-message="required" class="my-message">This field is required</div>'+
+'                                <div ng-message="min" class="my-message">Age cant be negative</div>'+
+'                            </div>'+
+'                        </md-input-container>'+
+'                        <md-input-container class="md-icon-float md-block" flex>'+
+'                            <label>Weight</label>'+
+'                            <md-icon class="md-default-theme" class="material-icons">person_pin_circle</md-icon>'+
+'                            <input ng-model="editpatData.patientweight" type="number" name="patientweight" required ng-min="0" min="0" ng-value="0">'+
+'                            <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>'+
+'                                <div ng-message="required" class="my-message">This field is required</div>'+
+'                                <div ng-message="min" class="my-message">Weight cant be negative</div>'+
+'                            </div>'+
+'                        </md-input-container>'+
+'                        </div>'+
+'                        <md-input-container class="md-icon-float md-block" flex>'+
+'                            <label>Select Doctor</label>'+
+'                            <md-icon class="md-default-theme" class="material-icons">person</md-icon>'+
+'                            <md-select type="text" aria-label="filter" ng-model="editpatData.doctorname" name="doctor" required>'+
+'                                <md-optgroup label="doctor">'+
+'                                    <md-option ng-value="doctor.userName"  ng-repeat="doctor in doctors"> {{doctor.userName}}</md-option>'+
+'                                	 <md-option ng-value="null">Dont assign doctor</md-option>'+
+'                                </md-optgroup>'+
+'                            </md-select>'+
+'                            <div ng-messages="patientForm.doctor.$error" role="alert" multiple>'+
+'                                <div ng-message="required" class="my-message">This field is required</div>'+
+'                            </div>'+
+'                        </md-input-container>'+
+'                  </div>'+
+'                </div>'+
+'                <div layout="row" layout-fill layout-xs="column">'+
+'                    <md-button  ng-click="cancelAddPatient();"  class="md-raised md-warn">cancel</md-button>'+
+'                    <md-button type="submit" ng-disabled="taskForm.$invalid" class="md-raised md-accent">Submit</md-button>'+
+'                </div>'+
+'            </form>'+
+'        </md-content>'+
+'    </md-dialog>',
+                 controller: function DialogController($scope, $mdDialog,editpatData,oldbed,olddoc) {
+                 	$scope.editpatData = editpatData;
+                 	$scope.oldbed = oldbed;
+                 	$scope.olddoc = olddoc;
+                    $scope.closeDialog = function() {
+                       $mdDialog.hide();
+                    }
+                 }
+             })
+
+           };
+
+
+
+  //function for re-admitting patient
+  $scope.showreadmittPatient = function(ev,patient) {
+    // Appending dialog to document.body to cover sidenav in docs app
+    var confirm = $mdDialog.confirm({
+    	onComplete: function afterShowAnimation() {
+    		var $dialog = angular.element(document.querySelector('md-dialog'));
+    		var $actionsSection = $dialog.find('md-dialog-actions');
+    		var $cancelButton = $actionsSection.children()[0];
+    		var $confirmButton = $actionsSection.children()[1];
+    		angular.element($confirmButton).addClass('md-raised md-warn');
+    		angular.element($cancelButton).addClass('md-raised');
+    	}
+    })
+    .title('Would you like to Re-admit '+patient.patientname)
+    .textContent('This will add '+patient.patientname)
+    .ariaLabel('Lucky day')
+    .targetEvent(ev)
+    .ok('Yes, Add!')
+    .cancel('No, Cancel');
+
+    $mdDialog.show(confirm).then(function() {
+ 		              $mdDialog.show ({
+ 		              	locals: { editpatData: patient,olddoc:patient.doctorname},
+ 		              	targetEvent: ev,
+ 		                 clickOutsideToClose: false,
+ 		                 scope: $scope,        
+ 		                 preserveScope: true,           
+ 		                 template: '<md-dialog layout-padding>'+
+ 		        					'<md-content layout-padding="">'+  
+ 		     '        <form name="patientForm" ng-submit="readdPatient(editpatData)";'+
+ 		 '                <md-subheader class="md-no-sticky">Edit Patient</md-subheader>'+
+ 		 '                  <div layout-padding>'+
+ 		 '                  <div layout="column" layout-fill layout-xs="column">'+
+ 		 '                    <div layout="row" layout-fill layout-xs="column">'+
+ 		 '                        <md-input-container class="md-icon-float md-block" flex>'+
+ 		 '                            <label>Patient Name</label>'+
+ 		 '                            <md-icon class="md-default-theme" class="material-icons">&#xE87C;</md-icon>'+
+ 		 '                            <input ng-model="editpatData.patientname" type="text" name="patientname" required>'+
+ 		 '                            <div ng-messages="patientForm.patientname.$error" role="alert" multiple>'+
+ 		 '                                <div ng-message="required" class="my-message">This field is required</div>'+
+ 		 '                            </div>'+
+ 		 '                        </md-input-container>'+
+ 		'                        <md-input-container class="md-icon-float md-block" flex>'+
+ 		'                            <label>Bed</label>'+
+ 		'                            <md-icon class="md-default-theme" class="material-icons">hotel</md-icon>'+
+ 		'                            <md-select type="text" aria-label="filter" ng-model="editpatData.bedname" name="bed" required>'+
+ 		'                                <md-optgroup label="bed">'+
+ 		'                                    <md-option ng-value="bed.bedname"  ng-repeat="bed in beds"> {{bed.bedname}}</md-option>'+
+ 		'                                </md-optgroup>'+
+ 		'                            </md-select>'+
+ 		'                        </md-input-container>'+
+ 		'                    </div>'+
+ 		'                      <div layout="row" layout-fill layout-xs="column">'+
+ 		'                        <md-input-container class="md-icon-float md-block" flex>'+
+ 		'                            <label>Age</label>'+
+ 		'                            <md-icon class="md-default-theme" class="material-icons">child_care</md-icon>'+
+ 		'                            <input ng-model="editpatData.patientage" type="number" name="patientage" required ng-min="10" min="0">'+
+ 		'                            <div ng-messages="patientForm.patientage.$error" role="alert" multiple>'+
+ 		'                                <div ng-message="required" class="my-message">This field is required</div>'+
+ 		'                                <div ng-message="min" class="my-message">Age cant be negative</div>'+
+ 		'                            </div>'+
+ 		'                        </md-input-container>'+
+ 		'                        <md-input-container class="md-icon-float md-block" flex>'+
+ 		'                            <label>Weight</label>'+
+ 		'                            <md-icon class="md-default-theme" class="material-icons">person_pin_circle</md-icon>'+
+ 		'                            <input ng-model="editpatData.patientweight" type="number" name="patientweight" required ng-min="0" min="0" ng-value="0">'+
+ 		'                            <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>'+
+ 		'                                <div ng-message="required" class="my-message">This field is required</div>'+
+ 		'                                <div ng-message="min" class="my-message">Weight cant be negative</div>'+
+ 		'                            </div>'+
+ 		'                        </md-input-container>'+
+ 		'                        </div>'+
+ 		'                        <md-input-container class="md-icon-float md-block" flex>'+
+ 		'                            <label>Select Doctor</label>'+
+ 		'                            <md-icon class="md-default-theme" class="material-icons">person</md-icon>'+
+ 		'                            <md-select type="text" aria-label="filter" ng-model="editpatData.doctorname" name="doctor" required>'+
+ 		'                                <md-optgroup label="doctor">'+
+ 		'                                    <md-option ng-value="doctor.userName"  ng-repeat="doctor in doctors"> {{doctor.userName}}</md-option>'+
+ 		'                                	 <md-option ng-value="null">Dont assign doctor</md-option>'+
+ 		'                                </md-optgroup>'+
+ 		'                            </md-select>'+
+ 		'                            <div ng-messages="patientForm.doctor.$error" role="alert" multiple>'+
+ 		'                                <div ng-message="required" class="my-message">This field is required</div>'+
+ 		'                            </div>'+
+ 		'                        </md-input-container>'+
+ 		'                  </div>'+
+ 		'                </div>'+
+ 		'                <div layout="row" layout-fill layout-xs="column">'+
+ 		'                    <md-button  ng-click="cancelAddPatient();"  class="md-raised md-warn">cancel</md-button>'+
+ 		'                    <md-button type="submit" ng-disabled="taskForm.$invalid" class="md-raised md-accent">Submit</md-button>'+
+ 		'                </div>'+
+ 		'            </form>'+
+ 		'        </md-content>'+
+ 		'    </md-dialog>',
+ 		                 controller: function DialogController($scope, $mdDialog,editpatData,olddoc) {
+ 		                 	$scope.editpatData = editpatData;
+ 		                 	$scope.olddoc = olddoc;
+ 		                    $scope.closeDialog = function() {
+ 		                       $mdDialog.hide();
+ 		                    }
+ 		                 }
+ 		             })
+
+
+    }, function() {
+
+    });
+  };
+
+  $scope.readdPatient = function (editpatData) {
+  	Nurse.readdPatient(editpatData).then(function(data) {
+  		if(data.data.success){
+  			$route.reload('/managepatients');
+  		}
+  	})
+  }
 
 
 });

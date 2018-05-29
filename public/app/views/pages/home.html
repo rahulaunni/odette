@@ -63,25 +63,6 @@
 				</md-button>
 			</div>	
 		</div>
-			<!-- hidden details -->
-			<div style="visibility: hidden">
-			    <div class="md-dialog-container" id="myDialog{{alertedtask._id}}" layout-padding>
-			        <md-dialog layout="column" layout-align="center center">
-			            <div class="md-subhead">Type :{{alertedtask.type}}</div>
-			            <div class="md-subhead">Time :{{alertedtask.time}}:00</div>
-			            <md-divider></md-divider>
-			            <div class="md-headline">Patient Details</div>
-			            <div class="md-subhead">Patient :{{alertedtask._patient.patientname}}</div>
-			            <div class="md-subhead">Age :{{alertedtask._patient.patientage}}</div> 
-			            <div class="md-subhead">Weight :{{alertedtask._patient.patientweight}}</div> 
-			            <md-divider></md-divider>
-			            <div class="md-headline">Medication Details</div>
-			            <div class="md-subhead">Medication :{{alertedtask._medication.medicinename}}</div>
-			            <div class="md-subhead">Rate :{{alertedtask._medication.medicinerate}} ml/hr</div> 
-			            <div class="md-subhead">Volume :{{alertedtask._medication.medicinevolume}} ml</div> 
-			        </md-dialog>
-			    </div>
-			  </div> 
 		</md-grid-tile>
 </md-grid-list>
 </div>
@@ -94,30 +75,12 @@
 	<md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);"  md-colspan="6"  data-ng-repeat="openedtask in openedtasks" md-rowspan="4"   ng-click="showDetails($event,openedtask);">
 			<div style="width:100%;height: 100%" layout="column" layout-align="center stretch">
 				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.type}} | Upcoming</div>
-				<div flex="100" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-title" ng-click="showDetails($event,alertedtask);">{{::openedtask._bed.bedname}}</div>
-				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.timeampm}}</div>				<div flex="100" layout="column" style="color:#cccccc;background: #616161" layout-align="center center" ng-click="showDetails($event,alertedtask);">
+				<div flex="100" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-title">{{::openedtask._bed.bedname}}</div>
+				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.timeampm}}</div>				<div flex="100" layout="column" style="color:#cccccc;background: #616161" layout-align="center center">
 					<div class="md-subhead">{{openedtask._medication.medicinename}}</div>
 					<div class="md-subhead">{{openedtask._medication.medicinevolume}} ml</div>
 				</div>	
 			</div>
-			<div style="visibility: hidden">
-			    <div class="md-dialog-container" id="myDialog{{openedtask._id}}">
-			        <md-dialog layout="column" layout-align="center center">
-			            <div class="md-subhead">Type :{{openedtask.type}}</div>
-			            <div class="md-subhead">Time :{{openedtask.time}}:00</div>
-			            <md-divider></md-divider>
-			            <div class="md-headline">Patient Details</div>
-			            <div class="md-subhead">Patient :{{openedtask._patient.patientname}}</div>
-			            <div class="md-subhead">Age :{{openedtask._patient.patientage}}</div> 
-			            <div class="md-subhead">Weight :{{openedtask._patient.patientweight}}</div> 
-			            <md-divider></md-divider>
-			            <div class="md-headline">Medication Details</div>
-			            <div class="md-subhead">Medication :{{openedtask._medication.medicinename}}</div>
-			            <div class="md-subhead">Rate :{{openedtask._medication.medicinerate}} ml/hr</div> 
-			            <div class="md-subhead">Volume :{{openedtask._medication.medicinevolume}} ml</div> 
-			        </md-dialog>
-			    </div>
-			  </div> 
 		</md-grid-tile>
 </md-grid-list>
 </div>

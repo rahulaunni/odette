@@ -72,14 +72,14 @@ angular.module('homeController',['homeServices'])
    
 
     //to show the card details as dialog box
-    $scope.showDetails = function(ev,task) {
-       $mdDialog.show({
-         contentElement: '#myDialog'+task._id,
-         parent: angular.element(document.body),
-         targetEvent: ev,
-         clickOutsideToClose: true
-       });
-     }
+    // $scope.showDetails = function(ev,task) {
+    //    $mdDialog.show({
+    //      contentElement: '#myDialog'+task._id,
+    //      parent: angular.element(document.body),
+    //      targetEvent: ev,
+    //      clickOutsideToClose: true
+    //    });
+    //  }
 
     //function to change opened task to alerted in front end
     $interval(function () {
@@ -96,8 +96,52 @@ angular.module('homeController',['homeServices'])
             }
         }
         else if(currentDate.getMinutes() == 0){ //sync with database
-            $window.location.reload('/');
-        }
+          Home.getopenedTasks().then(function (data) {
+              if(data.data.success){
+                  $scope.openedtasks = data.data.openedtasks;
+                  $scope.times = data.data.times;
+
+              }
+              else{
+                $scope.openedtasks = [{}];
+                $scope.noOpenedTasks = true;
+
+              }
+             
+          });
+
+          //on page reload get all active tasks from db
+          Home.getinprogressTasks().then(function (data) {
+              if(data.data.success){
+                  $scope.inprogresstasks = data.data.inprogresstasks;
+                  for(var key in data.data.inprogresstasks){
+                    if(data.data.inprogresstasks[key].type == 'infusion'){
+                      $scope.inprogresstasks[key].span = 6;
+                    }
+                    else{
+                      $scope.inprogresstasks[key].span = 4;
+                    }
+                    
+                  }
+
+              }else{
+                 $scope.inprogresstasks=[{}];
+                 $scope.noInprogressTasks=true;
+
+              }
+          });
+          //get alerted
+          Home.getalertedTasks().then(function (data) {
+              if(data.data.success){
+                  $scope.alertedtasks = data.data.alertedtasks;
+
+              }else{
+                 $scope.alertedtasks=[];
+                 $scope.noAlertedTasks = true;
+
+              }
+          });
+                  }
 
     },60000)
 
@@ -589,6 +633,44 @@ $scope.addTask = function (ipdata) {
   })
 
 }
+
+
+
+//show task details on click
+$scope.showDetails= function(ev,task) {
+              $mdDialog.show ({
+                locals: { task: task},
+                targetEvent: ev,
+                 clickOutsideToClose: true,
+                 scope: $scope,        
+                 preserveScope: true,           
+                 template:
+           '      <md-dialog layout="column" layout-align="center center">'+
+'                  <div class="md-subhead">Type :{{task.type}}</div>'+
+'                  <div class="md-subhead">Time :{{task.time}}:00</div>'+
+'                  <md-divider></md-divider>'+
+'                  <div class="md-headline">Patient Details</div>'+
+'                  <div class="md-subhead">Patient :{{task._patient.patientname}}</div>'+
+'                  <div class="md-subhead">Age :{{task._patient.patientage}}</div> '+
+'                  <div class="md-subhead">Weight :{{task._patient.patientweight}}</div> '+
+'                  <md-divider></md-divider>'+
+'                  <div class="md-headline">Medication Details</div>'+
+'                  <div class="md-subhead">Medication :{{task._medication.medicinename}}</div>'+
+'                  <div class="md-subhead">Rate :{{task._medication.medicinerate}} ml/hr</div> '+
+'                  <div class="md-subhead">Volume :{{task._medication.medicinevolume}} ml</div> '+
+'              </md-dialog> ',
+                 controller: function DialogController($scope, $mdDialog,task) {
+                  $scope.task = task;
+                    $scope.closeDialog = function() {
+                       $mdDialog.hide();
+                    }
+                 }
+             })
+
+           };
+
+
+
 
 });
  

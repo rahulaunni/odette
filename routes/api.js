@@ -1287,22 +1287,22 @@ router.put('/nurse/patient',function (req,res) {
 				res.json({success:false,message:'Invalid patient id'})
 			}
 			else{
-				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname && req.body.oldbed  && req.body.admittedon){
+				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname){
 					patient.patientname= req.body.patientname;
 					patient.patientage= req.body.patientage;
 					patient.patientweight= req.body.patientweight;
-					patient.bedname= req.body.bedname;
 					patient.patientstatus = 'active';
 					patient.doctorname= req.body.doctorname;
-					patient.admittedon= req.body.admittedon;
 					patient.save(function(err) {
 						if (err) {
 								console.log(err);
 								res.json({success:false,message:'Failed to connect to database'})
 							} 
 						else {	
+								console.log(patient.bedname);
+								console.log(req.body.bedname);
 								//update bed and medication if there is an bed chanege
-								if(req.body.oldbed !== req.body.bedname){
+								if(patient.bedname !== req.body.bedname){
 									Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
 										if (err) return handleError(err);
 										if(!bed){
@@ -1314,7 +1314,7 @@ router.put('/nurse/patient',function (req,res) {
 											bed.save(function (err) {
 												if(err) throw err;
 												else{
-													Bed.findOne({username: req.decoded.admin,bedname: req.body.oldbed,stationname:req.decoded.station}).exec(function(err, oldbed) {
+													Bed.findOne({username: req.decoded.admin,bedname:patient.bedname ,stationname:req.decoded.station}).exec(function(err, oldbed) {
 														if (err) throw err;
 														if(!oldbed){
 															res.json({success:false,message:'Invalid OldBed name'})
@@ -1326,6 +1326,7 @@ router.put('/nurse/patient',function (req,res) {
 																if(err) throw err;
 																else{
 																	Task.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
+																	Patient.collection.update({_bed:ObjectId(oldbed._id)},{$set:{bedname:req.body.bedname}},{upsert:false});
 																	Patient.collection.update({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
 																	Medication.collection.updateMany({_bed:ObjectId(oldbed._id)},{$set:{_bed:bed._id}},{upsert:false});
 																	res.json({success:true,message:'Patient details updated'});
@@ -1372,7 +1373,7 @@ router.put('/nurse/patient',function (req,res) {
 router.put('/nurse/dischargepatient', function(req,res){
 	if(req.body._id){
 		var date = new Date();
-		Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{patientstatus:'discharged',dischargedon:date}},{upsert:false});
+		Patient.collection.update({_id:ObjectId(req.body._id)},{$set:{bedname:"",patientstatus:'discharged',dischargedon:date}},{upsert:false});
 		Task.collection.remove({_patient:ObjectId(req.body._id)});
 		Medication.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{_bed:""}});
 		Bed.collection.update({_patient:ObjectId(req.body._id)},{$set:{status:'unoccupied',_patient:""}},{upsert:false});
@@ -1383,6 +1384,56 @@ router.put('/nurse/dischargepatient', function(req,res){
 	}
 	
 });
+
+
+//route for readding patient
+router.put('/nurse/readdpatient', function(req,res){
+	console.log(req.body);
+	Patient.findOne({_id:ObjectId(req.body._id)}).exec(function (err,patient) {
+		if(err) throw err;
+		patient.patientname= req.body.patientname;
+		patient.patientage= req.body.patientage;
+		patient.patientweight= req.body.patientweight;
+		patient.bedname = req.body.bedname;
+		patient.patientstatus = 'active';
+		patient.doctorname= req.body.doctorname;
+		patient.save(function(err) {
+							if (err) {
+									console.log(err);
+									res.json({success:false,message:'Failed to connect to database'})
+								} 
+							else {
+								Bed.findOne({username: req.decoded.admin,bedname: req.body.bedname,stationname:req.decoded.station}).exec(function(err, bed) {
+									if (err) return handleError(err);
+									if(!bed){
+										res.json({success:false,message:'Invalid Bed'})
+									}
+									else{
+										bed.status = 'occupied';
+										bed._patient = patient._id;
+										bed.save(function (err) {
+											if(err) throw err;
+											else{
+												res.json({success:true,message:'Patient details updated with no bed change'})
+
+											}
+										})
+									}
+								});
+
+							}
+		})
+
+	})
+
+
+});
+
+
+
+
+
+
 //route for adding task
 router.post('/nurse/task', function(req,res){
 	var timeinampm;
