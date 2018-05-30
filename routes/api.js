@@ -1212,6 +1212,7 @@ router.post('/nurse/patient', function(req,res){
 				patient.patientname= req.body.patientname;
 				patient.patientage= req.body.patientage;
 				patient.patientweight= req.body.patientweight;
+				patient.gender= req.body.gender;
 				patient.patientstatus = 'active';
 				patient.bedname = req.body.bedname;
 				patient.doctorname = req.body.doctorname;
@@ -1290,6 +1291,7 @@ router.put('/nurse/patient',function (req,res) {
 				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname){
 					patient.patientname= req.body.patientname;
 					patient.patientage= req.body.patientage;
+					patient.gender= req.body.gender;
 					patient.patientweight= req.body.patientweight;
 					patient.patientstatus = 'active';
 					patient.doctorname= req.body.doctorname;

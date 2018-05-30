@@ -1,4 +1,7 @@
-<div layout="column" layout-fill ng-cloak>
+
+
+
+<div layout="column" layout-fill ng-if="pageloaded==true">
   <md-content>
     <div style="padding: 1%" ng-if="managePatient.showOnPatientDetails == false">
         <div layout=row class="md-headline" > List of Patients </div>
@@ -55,7 +58,7 @@
                 </div>
                 <div flex="100" layout="row" style="color:#cccccc;background: #616161" layout-align="center center" style="margin:0px;">
                     <md-button  class="md-no-style md-button md-ink-ripple md-clickable" layout="row" layout-align="center center" layout-padding style="color:rgb(230,230,230);width: 100%;height:100%;" class="md-body-1" ng-click="showreadmittPatient($event,patient);" class="md-no-style md-button md-ink-ripple md-clickable">
-                        <md-icon class="material-icons" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;color:rgb(76,175,80);transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">remove_red_eye
+                        <md-icon class="material-icons" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;color:rgb(76,175,80);transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">add
                         </md-icon>
                         <div>Admit</div>
                     </md-button>
@@ -77,6 +80,7 @@
               </div>
             <div layout="row" layout-align="center center" layout-padding="">
                 <div flex="33">Patient Name: {{patientdetails[0].patientname}}</div>
+                <div flex="33">Sex: {{patientdetails[0].gender}}</div>
                 <div flex="33">Age: {{patientdetails[0].patientage}}</div>
                 <div flex="33">Weight: {{patientdetails[0].patientweight}} Kg</div>
             </div>
@@ -119,6 +123,10 @@
         </div>
     </div>
 </md-content>
+</div>
+
+<div layout="row" layout-fill layout-align="center center" ng-if="pageloaded==false">
+    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
 </div>
 
 
@@ -176,6 +184,15 @@
                                 <div ng-message="required" class="my-message">This field is required</div>
                                 <div ng-message="min" class="my-message">Weight can't be negative</div>
                             </div>
+                        </md-input-container>
+                        <md-input-container class="md-icon-float md-block" flex>
+                            <label>Gender</label>
+                            <md-icon class="md-default-theme" class="material-icons">perm_identity</md-icon>
+                            <md-select type="text" aria-label="gender" ng-model="data.gender" name="gender" required>
+                                <md-optgroup label="gender">
+                                    <md-option ng-value="gender"  ng-repeat="gender in genders"> {{gender}}</md-option>
+                                </md-optgroup>
+                            </md-select>
                         </md-input-container>
                         </div>
                         <md-input-container class="md-icon-float md-block" flex>

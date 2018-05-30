@@ -1,6 +1,6 @@
-<div style=background:#f1f1f1;" ng-cloak md-theme="default">
+<div style=background:#f1f1f1;" ng-cloak md-theme="default" ng-if="pageloaded==true">
 <!-- grid for inprogress tasks -->
-<div style="padding: 2%" ng-if="noInprogressTasks == false">
+<div style="padding: 2%" ng-if="noInprogressTasks == false" ng-cloak>
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Ongoing Tasks</div>
 	<md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="24" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
         <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan="{{inprogresstask.span}}">
@@ -25,7 +25,7 @@
 	            		<div class="slider">
 	            			<p style="width: 25%;text-align: right;" layout="row" layout-align="right center"><md-icon class="material-icons" style="color: #FFFFFF">&#xE91C;</md-icon></p>
 	            			<p style="width: 50%;font-size: 2em" layout="column" layout-wrap layout-align="center center"><span style="border-bottom: 1px solid #FFFFFF">{{inprogresstask.infusedVolume}}</span><span>{{inprogresstask.totalVolume}}</span></p>
-	            			<p style="width: 25%;font-size: 1em;text-align: left;" layout="column" layout-wrap layout-align="center center">ml</p></p>
+	            			<p style="width: 25%;font-size: 1em;text-align: left;" layout="column" layout-wrap layout-align="center center">ml</p>
 	            			
 	            		</div>
 		            </slick>
@@ -40,7 +40,7 @@
     </md-grid-list>
 </div>
 
-<div style="padding: 2%" ng-if="noAlertedTasks == false">
+<div style="padding: 2%" ng-if="noAlertedTasks == false" ng-cloak>
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Tasks Due</div>
 
 <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="30" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%" >
@@ -68,7 +68,7 @@
 </div>
 
 <!-- upcoming tasks -->
-<div style="padding: 2%" ng-if="noOpenedTasks == false">
+<div style="padding: 2%" ng-if="noOpenedTasks == false" ng-cloak>
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Upcoming Tasks</div>
 
 <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="30" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%">
@@ -84,7 +84,20 @@
 		</md-grid-tile>
 </md-grid-list>
 </div>
+
+
 </div>
+
+
+
+<div layout="row" layout-fill layout-align="center center" ng-if="pageloaded==false">
+    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+</div>
+
+
+
+
+
 
 <!-- button for adding patient -->
 <md-button  ng-click="showAddtask($event)"  class="md-fab md-fab-bottom-right  md-button md-ink-ripple scrolling">

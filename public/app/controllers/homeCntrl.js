@@ -23,11 +23,13 @@ angular.module('homeController',['homeServices'])
     $scope.noOpenedTasks = false;
     $scope.noInprogressTasks=false;
     $scope.noAlertedTasks = false;
+    $scope.pageloaded=false;
     //on page reload get all tasks from db
     Home.getopenedTasks().then(function (data) {
         if(data.data.success){
             $scope.openedtasks = data.data.openedtasks;
             $scope.times = data.data.times;
+
 
         }
         else{
@@ -62,24 +64,17 @@ angular.module('homeController',['homeServices'])
     Home.getalertedTasks().then(function (data) {
         if(data.data.success){
             $scope.alertedtasks = data.data.alertedtasks;
+            $scope.pageloaded=true;
+
 
         }else{
            $scope.alertedtasks=[];
            $scope.noAlertedTasks = true;
-
+           $scope.pageloaded=true;
         }
     });
    
 
-    //to show the card details as dialog box
-    // $scope.showDetails = function(ev,task) {
-    //    $mdDialog.show({
-    //      contentElement: '#myDialog'+task._id,
-    //      parent: angular.element(document.body),
-    //      targetEvent: ev,
-    //      clickOutsideToClose: true
-    //    });
-    //  }
 
     //function to change opened task to alerted in front end
     $interval(function () {
@@ -647,7 +642,7 @@ $scope.showDetails= function(ev,task) {
                  template:
            '      <md-dialog layout="column" layout-align="center center">'+
 '                  <div class="md-subhead">Type :{{task.type}}</div>'+
-'                  <div class="md-subhead">Time :{{task.time}}:00</div>'+
+'                  <div class="md-subhead">Time :{{task.timeampm}}</div>'+
 '                  <md-divider></md-divider>'+
 '                  <div class="md-headline">Patient Details</div>'+
 '                  <div class="md-subhead">Patient :{{task._patient.patientname}}</div>'+

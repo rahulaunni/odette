@@ -8,6 +8,7 @@ var Patient = new Schema({
     patientweight:Number,
     patientstatus:String,
     bedname:String,
+    gender:String,
     doctorname:String,
     admittedon:Date,
     dischargedon:Date,
