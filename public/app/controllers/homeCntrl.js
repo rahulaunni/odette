@@ -51,6 +51,12 @@ angular.module('homeController',['homeServices'])
             	else{
             		$scope.inprogresstasks[key].span = 4;
             	}
+              if(data.data.inprogresstasks[key].status=='start' || data.data.inprogresstasks[key].status=='infusing'){
+                $scope.inprogresstasks[key].prgbar = 'md-primary';
+              }
+              else{
+                $scope.inprogresstasks[key].prgbar = 'md-warn';
+              }
             	
             }
 
@@ -152,11 +158,11 @@ angular.module('homeController',['homeServices'])
             angular.element($cancelButton).addClass('md-raised');
         }
       })
-      .title('Would you like to skip this '+task.type+' ?')
+      .title('Would you like to  delete this '+task.type+' ?')
       .textContent('This will remove '+task.type+' permanantly')
       .ariaLabel('skip_task')
       .targetEvent(ev)
-      .ok('SKIP')
+      .ok('DELETE')
       .cancel('CANCEL');
 
       $mdDialog.show(confirm).then(function() {
@@ -184,8 +190,8 @@ angular.module('homeController',['homeServices'])
             angular.element($cancelButton).addClass('md-raised');
         }
       })
-      .title('Are you sure you want to close this task ?')
-      .textContent('Was this task done this task manually !!!')
+      .title('Have you done this task with out dripo ?')
+      .textContent('Select yes to add this task to patients infusion history')
       .ariaLabel('done_task')
       .targetEvent(ev)
       .ok('YES')

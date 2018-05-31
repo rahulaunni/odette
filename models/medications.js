@@ -9,10 +9,10 @@ var medication= new Schema({
 	source:String,
 	stationname: String,
 	_admin:String,
-	_task:[{ type: Schema.ObjectId, ref: 'Task'}],
+	_task:{ type: Schema.ObjectId, ref: 'Task'},
 	_bed:{ type: Schema.ObjectId, ref: 'Bed'},
 	_patient:{ type: Schema.ObjectId, ref: 'Patient'},
-	_infusionhistory:[{ type: Schema.ObjectId, ref: 'Infusionhistory'}],
+	_infusionhistory:{ type: Schema.ObjectId, ref: 'Infusionhistory'},
 });
 
 

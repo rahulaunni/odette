@@ -1098,14 +1098,18 @@ client.on('message', function (topic, message) {
     if(topicinfoArray[1]=='station'){
         var deviceid = message.toString();
         Dripo.find({dripoid:deviceid}).exec(function(err,dripo){
-            var stationid=dripo[0]._station.toString();
-            client.publish('dripo/' + deviceid+'/station' ,stationid,function (err) {
-                if(err){
-                    console.log(err);
-                }
-            });
+            if(err) throw err;
+            if(dripo.length !=0){
+                var stationid=dripo[0]._station.toString();
+                client.publish('dripo/' + deviceid+'/station' ,stationid,function (err) {
+                    if(err){
+                        console.log(err);
+                    }
+                });
 
 
+            }
+            
         });
 
 

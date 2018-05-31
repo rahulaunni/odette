@@ -1380,6 +1380,8 @@ router.put('/nurse/dischargepatient', function(req,res){
 		Medication.collection.updateMany({_patient:ObjectId(req.body._id)},{$set:{_bed:""}});
 		Bed.collection.update({_patient:ObjectId(req.body._id)},{$set:{status:'unoccupied',_patient:""}},{upsert:false});
 		res.json({success:true,message:'Patient discharged'});
+		serv.updateTaskdetails(stationid);
+
 	}
 	else{
 		res.json({success:true,message:'No valid patient id provided'});
@@ -1490,11 +1492,13 @@ router.post('/nurse/task', function(req,res){
 						if(err) throw err;
 						else{
 	
-							 Medication.collection.update({_id:med._id},{$push:{_task:timeObj._id}},{upsert:false});
+							 Medication.collection.update({_id:med._id},{$set:{_task:timeObj._id}},{upsert:false});
 
 						}
 					}
+
 				res.json({success:true,message:"task added successfully"})
+				serv.updateTaskdetails(stationid);
 
 				}//end of adding medication success
 			}//end of medication insert function
@@ -1971,8 +1975,11 @@ router.get('/nurse/getalertedtask', function(req,res){
 //route to skip a task 
 router.put('/nurse/skiptask', function(req,res){
 	if(req.body._id){
-		Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'skipped',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
-		res.json({success:true,message:'task skipped'})
+		Task.collection.remove({_id:ObjectId(req.body._id)});
+		Medication.collection.update({_task:ObjectId(req.body._id)},{$set:{_task:""}});
+		res.json({success:true,message:'task delted'})
+		serv.updateTaskdetails(stationid);
+
 	}
 	else{
 		res.json({success:false,message:'task id not provided'})
@@ -1986,6 +1993,7 @@ router.put('/nurse/closetask', function(req,res){
 	if(req.body._id){
 		Task.collection.update({_id:ObjectId(req.body._id)},{$set:{status:'closed',rate:"",infusedVolume:"",timeRemaining:"",totalVolume:"",percentage:"",infusionstatus:"",topic:""}});
 		res.json({success:true,message:'task closed'})
+		serv.updateTaskdetails(stationid);
 
 	}
 	else{

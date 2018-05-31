@@ -6,8 +6,8 @@
         <md-grid-tile class=" gridtile {{inprogresstask.type}} {{inprogresstask.infusionstatus}} "  md-colspan="6"  data-ng-repeat="inprogresstask in inprogresstasks" md-rowspan="{{inprogresstask.span}}">
             <div class="title" ng-if="::inprogresstask.type=='infusion'">Infusion | {{inprogresstask.infusionstatus}}</div>
             <div class="title" ng-if="::inprogresstask.type =='nursecall'">Nurse Call | {{inprogresstask.nursecallstatus}}</div>
-            <div class="bedname" ng-click="showCloseConfirm($event,inprogresstask);">{{::inprogresstask._bed.bedname}}</div>
-            <md-progress-linear ng-if="::inprogresstask.type=='infusion'" md-mode="determinate" value="{{inprogresstask.percentage}}"  class="md-primary"></md-progress-linear>
+            <div class="bedname">{{::inprogresstask._bed.bedname}}</div>
+            <md-progress-linear ng-if="inprogresstask.type=='infusion'" md-mode="determinate" value="{{inprogresstask.percentage}}"  class="{{inprogresstask.prgbar}}"></md-progress-linear>
             <md-progress-linear ng-if="::inprogresstask.type=='nursecall'" md-mode="indeterminate" class="md-warn"></md-progress-linear>
             <div class="status">
 	            <div style="height: 100%" ng-if="::inprogresstask.type =='infusion'" >
@@ -34,8 +34,11 @@
 	                call
 	            </div>
             </div>
+            <div layout="row" layout-align="center center" class="delete" style="color:#fcfcfc;background: #424242"  class="md-button md-no-style md-clickable md-ink-ripple" ng-click="showCloseConfirm($event,inprogresstask);">
+            	<md-icon class="material-icons md-warn" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE5CD;</md-icon>
+            	DONE  
+            </div>	
             <div class="action" ng-click="ackAlert($event,inprogresstask)">ACKNOWLEDGE</div>
-          	{{inprogresstask.devicecharge}}
         </md-grid-tile>
     </md-grid-list>
 </div>
@@ -56,7 +59,7 @@
 			<div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;background: #616161">
 				<md-button flex="50" class="md-button md-no-style md-clickable md-ink-ripple" style="border-right: 1px solid #424242;height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showSkipConfirm($event,alertedtask);"><md-icon class="material-icons md-warn" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE5CD;</md-icon>
 					<div  style="padding-left: .5em;">
-						Skip
+						DELETE
 					</div>
 				</md-button>
 				<md-button flex="50" class="md-button md-no-style md-clickable md-ink-ripple" style="height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showCloseConfirm($event,alertedtask);"><md-icon class="material-icons" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;color:rgb(76,175,80);transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE876;</md-icon><div style="padding-left: .5em;">Done</div>
@@ -72,13 +75,22 @@
 	<div layout="row" class="md-title" style="color:#818181;margin-bottom: 20px; padding-bottom:.5em;border-bottom: 1px dashed #CCCCCC">Upcoming Tasks</div>
 
 <md-grid-list  md-cols="12" md-cols-sm="18" md-cols-md="30" md-cols-gt-md="30" md-row-height-md="1:1.2" md-row-height-gt-md="1:1.2" md-row-height="2:2" md-gutter="2%">
-	<md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);"  md-colspan="6"  data-ng-repeat="openedtask in openedtasks" md-rowspan="4"   ng-click="showDetails($event,openedtask);">
+	<md-grid-tile style="border-radius: 4px; overflow:hidden; box-shadow: 0px 0px 1px 1px rgba(0,0,0,.1);"  md-colspan="6"  data-ng-repeat="openedtask in openedtasks" md-rowspan="5">
 			<div style="width:100%;height: 100%" layout="column" layout-align="center stretch">
-				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.type}} | Upcoming</div>
-				<div flex="100" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-title">{{::openedtask._bed.bedname}}</div>
-				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.timeampm}}</div>				<div flex="100" layout="column" style="color:#cccccc;background: #616161" layout-align="center center">
-					<div class="md-subhead">{{openedtask._medication.medicinename}}</div>
-					<div class="md-subhead">{{openedtask._medication.medicinevolume}} ml</div>
+				<div flex="100" layout="row" style="color:#CCCCCC;background: #616161" layout-align="center center" class="md-body-2">{{::openedtask.type}} | Upcoming
+				</div>
+				<div flex="100" class="md-button md-no-style md-clickable md-ink-ripple" layout="row" layout-align="center center" style="color:#EEEEEE;background: #424242" class="md-title" ng-click="showDetails($event,openedtask);">{{::openedtask._bed.bedname}}</div>
+				<div flex="100" class="md-button md-no-style md-clickable md-ink-ripple" layout="column" style="color:#CCCCCC;background: #424242" layout-align="center center" class="md-body-2" ng-click="showDetails($event,openedtask);">
+					<div class="md-body-1">{{::openedtask.timeampm}} </div>
+					<div class="md-body-1">{{::openedtask._medication.medicinename}} </div>
+				</div>
+
+				<div flex="100" layout="row" layout-align="center center" style="color:#fcfcfc;background: #616161">
+					<md-button flex="100" class="md-button md-no-style md-clickable md-ink-ripple" style="border-right: 1px solid #424242;height: 100%" class="md-body-2" layout="row" layout-align="center center" ng-click="showSkipConfirm($event,openedtask);"><md-icon class="material-icons md-warn" style="border:1px dashed rgba(255,255,255,.2);border-radius:1em;margin:0px;transform:scale(1);padding:.3em;font-size:1em;font-weight:bold;">&#xE5CD;</md-icon>
+						<div  style="padding-left: .5em;">
+							DELETE
+						</div>
+					</md-button>
 				</div>	
 			</div>
 		</md-grid-tile>

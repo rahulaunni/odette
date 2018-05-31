@@ -144,7 +144,11 @@ figure{
   height:20%;
 }
 .infusion .status{
-  height:65%;
+  height:45%;
+  flex-flow: row;
+}
+.infusion .delete{
+  height:20%;
   flex-flow: row;
 }
 
@@ -158,12 +162,19 @@ display: none;
 height: 0%;
 }
 
+
 .Block .status,.Rate_Err .status,.Empty .status,.Device_Disconnected .status,.Complete .status{
   height:45%;
 }
 .Block .action,.Rate_Err .action,.Empty .action,.Device_Disconnected .action,.Complete .action{
     height:20%;
     display: flex;
+}
+
+
+
+.Block .delete,.Rate_Err .delete,.Empty .delete,.Device_Disconnected .delete,.Complete .delete{
+    display:none;
 }
 
 .md-tab-item {
