@@ -177,7 +177,7 @@ var nested = {
 
 
 //sending hostname and publicip to the online server when local server starts
-needle.put('http://dripo.care//updatelocalip?ip='+publicip+'&hname='+hostname, nested, function(err, resp) {
+needle.put('http://dripo.care/updatelocalip?ip='+publicip+'&hname='+hostname, nested, function(err, resp) {
     if(err){
         console.log(err);
     }
@@ -210,6 +210,7 @@ app.post('/analysis',function (req,res) {
        infObj.infstarttime = Data[key].infstarttime;
        infObj.infendtime = Data[key].infendtime;
        infObj.infdate = Data[key].infdate;
+       infObj.date = Data[key].date;
        infObj.inferr = Data[key].inferr;
        infObj.dripoid = Data[key].dripoid;
        infObj.batcharge_start = Data[key].batcharge_start;

@@ -27,10 +27,40 @@ angular.module('suController',['suServices'])
 			$scope.nosynapse = true;
 		}
 	});
+
+$scope.noinfs =false;
+$scope.infs={};
 	$scope.getData = function (synapse) {
-		console.log(synapse);
+		var day = synapse.date.getDate()+'/'+(synapse.date.getMonth()+1)+'/'+synapse.date.getFullYear();
+		synapse.day=day;
+		Su.getInfdetails(synapse).then(function (data) {
+			console.log(data.data);
+			if(data.data.success){
+				$scope.infs=data.data.infs;
+				$scope.noinfs =false;
+			}
+			else{
+				$scope.noinfs =true;
+
+			}
+		})
 	}
 
+	$scope.toggleView = false;
+	$scope.showInfusionDetails = function (id,tv) {
+		if(tv == false){
+			$scope.toggleView = true;
+			var target = angular.element('#'+id);
+			target.css('display','block');
+		}
+		else{
+			$scope.toggleView = false;
+			var target = angular.element('#'+id);
+			target.css('display','none');
+		}
+
+
+	}
 
 
 });

@@ -1,16 +1,63 @@
 <div layout="column" layout-padding="" layout-fill>
     <md-content>
+        <form name="myForm" ng-submit='getData(data);'>
+            <div layout="row" layout-fill layout-xs="column">
     	<md-input-container class="md-icon-float md-block" flex="50">
     	    <label>Select Synapse</label>
     	    <md-icon class="md-default-theme" class="material-icons">&#xE912;</md-icon>
-    	    <md-select type="text" aria-label="filter" ng-model="synapase" name="synapse">
+    	    <md-select type="text" aria-label="filter" ng-model="data.synapse" name="synapse" required>
     	        <md-optgroup label="Hostname">
-    	            <md-option ng-value="" ng-selected="true">All Synapses</md-option>
     	            <md-option ng-value="synapse.hostname" ng-repeat="synapse in synapses"> {{synapse.hostname}} </md-option>
     	            </md-optgroup>
     	    </md-select>
-    	    <md-button flex="50" ng-click="getData(synapse);" class="md-primary">get data</md-button>
-
     	</md-input-container>
+        <md-input-container class="md-icon-float md-block" flex="50">
+            <label>Date</label>
+            <md-datepicker required ng-model="data.date" ng-model-options="{ timezone: 'utc'}"></md-datepicker>
+        </md-input-container>
+    </div>
+        <md-button flex="50" type="submit" class="md-primary md-raised">get data</md-button>
+
+        </form>
+
+
+
+<div ng-repeat="inf in infs" ng-if="noinfs==false">
+    <md-button class="md-no-style md-button md-ink-ripple md-clickable" layout-padding="" layout="row" layout-align="start center" layout-padding layout-fill style="background: rgba(0,0,0,.5);margin-bottom: 2em" ng-click="showInfusionDetails(inf._id,toggleView);">
+             Infusion {{$index+1}}
+             <md-tooltip>Click to see details</md-tooltip>
+    </md-button>
+    <div id="{{inf._id}}" style="display:none">
+        <div layout="row" layout-padding="">
+            <div flex="33">Date : {{inf.infdate | date}}</div>
+            <div flex="33">Infusion Start time: {{inf.infstarttime}}</div>
+            <div flex="33">Infusion End time: {{inf.infendtime}}</div>
+        </div>
+        <div ng-repeat="error in inf.inferr">
+            <div layout = "row" layout-align="center center" layout-padding="">
+                <div flex="50" layout-align="center center">{{error.errtype}}</div>
+                <div flex="50" layout-align="center center">{{error.errtime}}</div>
+            </div>
+        </div>
+        <div layout="row" layout-padding="">
+            <div flex="33">Dripoid : {{inf.dripoid}}</div>
+            <div flex="33">Device Charge at Start: {{inf.batcharge_start}}</div>
+            <div flex="33">Device Charge at End: {{inf.batcharge_stop}}</div>
+        </div>
+        <div ng-repeat="batcharge in inf.batcharge_err">
+            <div layout = "row" layout-align="center center" layout-padding="">
+                <div flex="50" layout-align="center center">{{batcharge.errtime}}</div>
+                <div flex="50" layout-align="center center">{{batcharge.batcharge}}</div>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+
+<div  ng-if="noinfs==true">
+    NO INFUSIONS 
+</div>
+
     </md-content>
 </div>

@@ -21,6 +21,10 @@ var Patient = require('../models/patients');
 var Medication = require('../models/medications');
 var Task = require('../models/tasks');
 var Synapse = require('../models/synapselist');
+var Infusionhistory = require('../models/infusionhistories');
+var Analysis = require('../models/analysis');
+
+
 
 var jwt = require('jsonwebtoken');
 var secret = 'lauraiswolverinesdaughter';
@@ -2039,6 +2043,25 @@ router.get('/su/hostname', function(req,res){
 			else{
 
 				res.json({success:true,message:'Synapses found',synapses:synapse});
+			}
+	});
+});
+
+//route to provide infusion details of selected synapse to superuser
+router.get('/su/getinfdetails', function(req,res){
+	var hname=req.query.hostname;
+	var date= req.query.date;
+	console.log(req.query);
+	Analysis.find({hostname:hname,date:req.query.day}).sort({infdate: -1}).exec(function(err, inf) {	
+			if (err) throw err;
+			console.log(inf);
+			if(!inf.length){
+				res.json({success:false,message:'No infusion'});
+			}
+			
+			else{
+
+				res.json({success:true,message:'Synapses found',infs:inf});
 			}
 	});
 });
