@@ -51,7 +51,7 @@ angular.module('homeController',['homeServices'])
             	else{
             		$scope.inprogresstasks[key].span = 4;
             	}
-              if(data.data.inprogresstasks[key].status=='start' || data.data.inprogresstasks[key].status=='infusing'){
+              if(data.data.inprogresstasks[key].infusionstatus=='start' || data.data.inprogresstasks[key].infusionstatus=='infusing'){
                 $scope.inprogresstasks[key].prgbar = 'md-primary';
               }
               else{

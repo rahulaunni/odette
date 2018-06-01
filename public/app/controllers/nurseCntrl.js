@@ -65,6 +65,9 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		}
 		else{
 			$scope.nopatient = true;
+			$scope.pageloaded=true;
+
+
 		}
 	});
 
