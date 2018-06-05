@@ -52,7 +52,7 @@ router.post('/register', function(req,res){
 	user.save(function(err){
 		if (err) {
 			//responding error back to frontend
-			res.json({success:false,message:'User already exist'});
+			res.json({success:false,message:'User alfy exist'});
 		}
 		else{
 			//nodemailer config
@@ -694,7 +694,7 @@ router.post('/admin/bed',function (req,res) {
 
 //route for fetching all the bed details to the admin view
 router.get('/admin/bed', function(req,res){
-	Bed.find({username: req.decoded.username}).exec(function(err, bed) {	
+	Bed.find({username: req.decoded.username}).sort({'bedname':1}).exec(function(err, bed) {	
 			if (err) throw err;
 			if(!bed.length){
 				res.json({success:false,message:'Add Beds and Start Managing'});
@@ -1146,7 +1146,7 @@ router.post('/nurse/setstation', function(req,res){
 //route for fetching all the bed details to nurse while adding patient
 router.get('/nurse/viewbed', function(req,res){
 	if(req.decoded.admin && req.decoded.station){
-		Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'unoccupied'}).exec(function(err,bed) {	
+		Bed.find({username: req.decoded.admin,stationname:req.decoded.station,status:'unoccupied'}).sort({'bedname':1}).exec(function(err,bed) {	
 			if (err) throw err;
 			if(!bed.length){
 				res.json({success:false,message:'No bed found, Contact admin'});

@@ -141,7 +141,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 		  					$scope.nopatient = true;
 		  				}
 		  			});
-		  			$location.path('/managepatients');
+		  			$route.reload('/managepatients');
 		  		}
 		  	});
 
