@@ -160,6 +160,7 @@ angular.module('nurseController',['authServices','userServices','adminServices',
 			Nurse.showPatientDetails(patient).then(function (data) {
 				if(data.data.success){
 					$scope.patientdetails = data.data.patientdetails;
+					console.log(data.data.patientdetails);
 					app.showOnPatientDetails = true;
 				}
 				else{
@@ -264,7 +265,7 @@ $scope.showEditPatient= function(ev,patDet) {
 '                        <md-input-container class="md-icon-float md-block" flex>'+
 '                            <label>Age</label>'+
 '                            <md-icon class="md-default-theme" class="material-icons">child_care</md-icon>'+
-'                            <input ng-model="editpatData.patientage" type="number" name="patientage" required ng-min="10" min="0">'+
+'                            <input ng-model="editpatData.patientage" type="number" name="patientage"   min="0">'+
 '                            <div ng-messages="patientForm.patientage.$error" role="alert" multiple>'+
 '                                <div ng-message="required" class="my-message">This field is required</div>'+
 '                                <div ng-message="min" class="my-message">Age cant be negative</div>'+
@@ -273,7 +274,7 @@ $scope.showEditPatient= function(ev,patDet) {
 '                        <md-input-container class="md-icon-float md-block" flex>'+
 '                            <label>Weight</label>'+
 '                            <md-icon class="md-default-theme" class="material-icons">person_pin_circle</md-icon>'+
-'                            <input ng-model="editpatData.patientweight" type="number" name="patientweight" required ng-min="0" min="0" ng-value="0">'+
+'                            <input ng-model="editpatData.patientweight" type="number" name="patientweight"  ng-min="0" min="0" ng-value="0">'+
 '                            <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>'+
 '                                <div ng-message="required" class="my-message">This field is required</div>'+
 '                                <div ng-message="min" class="my-message">Weight cant be negative</div>'+
@@ -381,7 +382,7 @@ $scope.showEditPatient= function(ev,patDet) {
  		'                        <md-input-container class="md-icon-float md-block" flex>'+
  		'                            <label>Age</label>'+
  		'                            <md-icon class="md-default-theme" class="material-icons">child_care</md-icon>'+
- 		'                            <input ng-model="editpatData.patientage" type="number" name="patientage" required ng-min="10" min="0">'+
+ 		'                            <input ng-model="editpatData.patientage" type="number" name="patientage"  min="0">'+
  		'                            <div ng-messages="patientForm.patientage.$error" role="alert" multiple>'+
  		'                                <div ng-message="required" class="my-message">This field is required</div>'+
  		'                                <div ng-message="min" class="my-message">Age cant be negative</div>'+
@@ -390,7 +391,7 @@ $scope.showEditPatient= function(ev,patDet) {
  		'                        <md-input-container class="md-icon-float md-block" flex>'+
  		'                            <label>Weight</label>'+
  		'                            <md-icon class="md-default-theme" class="material-icons">person_pin_circle</md-icon>'+
- 		'                            <input ng-model="editpatData.patientweight" type="number" name="patientweight" required ng-min="0" min="0" ng-value="0">'+
+ 		'                            <input ng-model="editpatData.patientweight" type="number" name="patientweight" ng-min="0" min="0" ng-value="0">'+
  		'                            <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>'+
  		'                                <div ng-message="required" class="my-message">This field is required</div>'+
  		'                                <div ng-message="min" class="my-message">Weight cant be negative</div>'+

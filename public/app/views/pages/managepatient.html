@@ -101,7 +101,7 @@
                 </div>
                 <div ng-repeat="infusion in medication._infusionhistory">
                     <md-button class="md-no-style md-button md-ink-ripple md-clickable" layout-padding="" layout="row" layout-align="start center" layout-padding layout-fill style="background: rgba(0,0,0,.5);margin-bottom: 2em" ng-click="showInfusionDetails(infusion._id,toggleView);">
-                             Infusion {{$index+1}}
+                             Infusion Details
                              <md-tooltip>Click to see details</md-tooltip>
                     </md-button>
                     <div id="{{infusion._id}}" style="display:none">
@@ -169,7 +169,7 @@
                         <md-input-container class="md-icon-float md-block" flex>
                             <label>Age</label>
                             <md-icon class="md-default-theme" class="material-icons">child_care</md-icon>
-                            <input ng-model="data.patientage" type="number" name="patientage" required ng-min="10" min="0">
+                            <input ng-model="data.patientage" type="number" name="patientage"  min="0">
                             <div ng-messages="patientForm.patientage.$error" role="alert" multiple>
                                 <div ng-message="required" class="my-message">This field is required</div>
                                 <div ng-message="min" class="my-message">Age can't be negative</div>
@@ -179,7 +179,7 @@
                         <md-input-container class="md-icon-float md-block" flex>
                             <label>Weight</label>
                             <md-icon class="md-default-theme" class="material-icons">person_pin_circle</md-icon>
-                            <input ng-model="data.patientweight" type="number" name="patientweight" required ng-min="0" min="0" ng-value="0">
+                            <input ng-model="data.patientweight" type="number" name="patientweight"  ng-min="0" min="0" ng-value="0">
                             <div ng-messages="patientForm.patientweight.$error" role="alert" multiple>
                                 <div ng-message="required" class="my-message">This field is required</div>
                                 <div ng-message="min" class="my-message">Weight can't be negative</div>

@@ -1292,7 +1292,7 @@ router.put('/nurse/patient',function (req,res) {
 				res.json({success:false,message:'Invalid patient id'})
 			}
 			else{
-				if(req.body.patientname && req.body.patientage && req.body.patientweight && req.body.bedname){
+				if(req.body.patientname && req.body.bedname){
 					patient.patientname= req.body.patientname;
 					patient.patientage= req.body.patientage;
 					patient.gender= req.body.gender;
@@ -2016,6 +2016,7 @@ router.get('/nurse/patientdetails', function(req,res){
 
 			}
 			else{
+				console.log(JSON.stringify(patient));
 				res.json({success:true,patientdetails:patient});
 
 

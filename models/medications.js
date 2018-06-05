@@ -12,7 +12,7 @@ var medication= new Schema({
 	_task:{ type: Schema.ObjectId, ref: 'Task'},
 	_bed:{ type: Schema.ObjectId, ref: 'Bed'},
 	_patient:{ type: Schema.ObjectId, ref: 'Patient'},
-	_infusionhistory:{ type: Schema.ObjectId, ref: 'Infusionhistory'},
+	_infusionhistory:[{ type: Schema.ObjectId, ref: 'Infusionhistory'}],
 });
 
 
